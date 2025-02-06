@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LatestPost } from "~/app/_components/post";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
+import { UserProfile } from "./_components/profile";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -35,6 +36,7 @@ export default async function Home() {
           </div>
 
           {session?.user && <LatestPost />}
+          {session?.user && <UserProfile />}
         </div>
       </main>
     </HydrateClient>
