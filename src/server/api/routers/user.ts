@@ -14,5 +14,4 @@ export const userRouter = createTRPCRouter({
 
     return profile ?? null;
   }),
-
 });
