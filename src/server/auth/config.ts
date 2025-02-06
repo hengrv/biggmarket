@@ -56,5 +56,13 @@ export const authConfig = {
         id: user.id,
       },
     }),
+    async redirect({ url, baseUrl }) {
+      // Check if the URL is an internal path
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      // Redirect to the base URL if it's an external URL
+      return baseUrl;
+    },
   },
 } satisfies NextAuthConfig;
