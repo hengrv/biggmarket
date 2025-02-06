@@ -13,10 +13,25 @@ model Post {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
+    
     createdById String
-
+    item        Item   @relation(fields: [itemId], references:[id], onDelete: Cascade)
     @@index([name])
+}
+
+model Item{
+    id                       int @id @default(autoincrement())
+    image                    String 
+    description              String?
+    category                 String
+    status                   Boolean @default(false)
+    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdBy   User   @relation(fields: [createdById], references: [id])
+
+}
+
+model Transaction{
+    id                      int @id @default(cuid())
 }
 
 // Necessary for Next auth
@@ -56,6 +71,8 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    role          String @default("end_user")
+    location      String[]
 }
 
 model VerificationToken {
