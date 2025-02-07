@@ -6,7 +6,6 @@ import { api } from "~/trpc/react";
 
 export function UserProfile() {
   const [userProfile] = api.user.getProfile.useSuspenseQuery();
-  console.log(userProfile);
   return (
     <div className="w-full max-w-xs">
       {userProfile ? (
