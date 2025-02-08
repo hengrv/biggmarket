@@ -7,17 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    
-    createdById String
-    item        Item   @relation(fields: [itemId], references:[id], onDelete: Cascade)
-    @@index([name])
-}
 
 model Item{
     id                       Int @id @default(autoincrement())
@@ -25,8 +14,10 @@ model Item{
     description              String?
     category                 String
     status                   Boolean @default(false)
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdBy                User    @relation(fields: [createdById], references: [id])
+    userId                   String
+    createdById              String
+    user                     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdBy                User @relation(fields: [createdById], references: [id])
 
 }
 
@@ -79,7 +70,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    //items         Item[]
     role          String @default("end_user")
     location      String[]
 }
