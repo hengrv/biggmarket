@@ -7,7 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-<<<<<<< HEAD
 
 model Item{
     id                       Int @id @default(autoincrement())
@@ -83,63 +82,6 @@ model User {
     location      String[]
     givenTransactions Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
-=======
-    review        Float? @default(0)
-    role          String @default("end_user")
-    location      String[]
-
-    givenTransactions Transaction[] @relation("giver")
-    receivedTransactions Transaction[] @relation("receiver")
-    logs Log[]
-}
-
-// enum for Item status
-enum ItemStatus {
-    AVAILABLE
-    SWAPPED
-    HIDDEN
-}
-
-model Item {
-    id            String      @id @default(cuid())
-    image         String    // URL
-    userId        String
-    description   String?
-    category      String
-    status        ItemStatus @default(AVAILABLE)
-    review        Float?   @default(0) @db.DoublePrecision
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    transactions  Transaction[]
-}
-
-model Transaction{
-    id                      String @id @default(cuid())
-    giverId                 String
-    receiverId              String
-    itemId                  String
-    completed               Boolean @default(false)
-    createdAt               DateTime @default(now()) 
-
-    giver                   User @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
-    receiver                User @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    item                    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-    logs                    Log[]    
-}
-
-model Log{
-    id              String @id @default(cuid())
-    userId          String?
-    transactionId   String?
-    description     String
-    createdAt       DateTime @default(now())
-    ipAddress       String
-
-    user        User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-    transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
->>>>>>> a3aaa19ded073ba682838502e678ccbdc6ea68f1
 }
 
 model VerificationToken {
