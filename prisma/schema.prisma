@@ -7,16 +7,31 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
+model Item{
+    id                       Int @id @default(autoincrement())
+    image                    String 
+    description              String?
+    category                 String
+    status                   Boolean @default(false)
+    userId                   String
+    createdById              String
+    user                     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdBy                User @relation(fields: [createdById], references: [id])
 
-    @@index([name])
+}
+
+model Transaction{
+    id                      String @id @default(cuid())
+    giverId                 Int
+    receiverId              Int
+    itemId                  Int
+
+    giver                   User @relation(fields: [giverId], references: [id])
+    receiver                User @relation(fields: [receiverId], references: [id])
+    item                    Item @relation(fields: [itemId], references: [id])
+
+    createdAt DateTime @default(now()) 
 }
 
 // Necessary for Next auth
@@ -55,7 +70,9 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    //items         Item[]
+    role          String @default("end_user")
+    location      String[]
 }
 
 model VerificationToken {
