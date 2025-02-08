@@ -16,19 +16,22 @@ model Item{
     status                   Boolean @default(false)
     userId                   String
     createdById              String
-    user                     User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdBy                User @relation(fields: [createdById], references: [id])
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    //createdBy                User @relation(fields: [createdById], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    transactions Transaction[]
 
 }
 
 model Transaction{
     id                      String @id @default(cuid())
-    giverId                 Int
-    receiverId              Int
+    giverId                 String
+    receiverId              String
     itemId                  Int
 
-    giver                   User @relation(fields: [giverId], references: [id])
-    receiver                User @relation(fields: [receiverId], references: [id])
+    giver                   User @relation(name: "giver" ,fields: [giverId], references: [id])
+    receiver                User @relation(name: "receiver", fields: [receiverId], references: [id])
     item                    Item @relation(fields: [itemId], references: [id])
 
     createdAt DateTime @default(now()) 
@@ -70,9 +73,11 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    //items         Item[]
+    items         Item[]
     role          String @default("end_user")
     location      String[]
+    givenTransactions Transaction[] @relation("giver")
+    receivedTransactions Transaction[] @relation("receiver")
 }
 
 model VerificationToken {
