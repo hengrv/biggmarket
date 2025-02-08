@@ -45,16 +45,18 @@ model User {
     accounts      Account[]
     sessions      Session[]
     items         Item[]
+    swipes        Item[] @relation("ItemSwipes")
+    matches       Int
     review        Float? @default(0)
     role          String @default("end_user")
     location      String[]
 
-    givenTransactions Transaction[] @relation("giver")
+    givenTransactions   Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
     logs Log[]
 }
 
-// enum for Item status
+// Enum for Item status
 enum ItemStatus {
     AVAILABLE
     SWAPPED
@@ -63,19 +65,20 @@ enum ItemStatus {
 
 model Item {
     id            String      @id @default(cuid())
-    image         String    // URL
+    image         String[]    // URL
     userId        String
     description   String?
     category      String
     status        ItemStatus @default(AVAILABLE)
     review        Float?   @default(0) @db.DoublePrecision
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     transactions  Transaction[]
-}
 
+    usersWhoSwiped User[] @relation("ItemSwipes")
+}
 model Transaction{
     id                      String @id @default(cuid())
     giverId                 String
