@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
+import Auth0Provider from "next-auth/providers/auth0";
 import GoogleProvider from "next-auth/providers/google";
 import { env } from "~/env";
 
@@ -37,12 +38,13 @@ export const authConfig = {
       clientId: env.GOOGLE_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
+    Auth0Provider({
+      clientId: env.AUTH0_CLIENT_ID,
+      clientSecret: env.AUTH0_CLIENT_SECRET,
+      issuer: env.AUTH0_ISSUER,
+    }),
     /**
      * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
      *
      * @see https://next-auth.js.org/providers/github
      */
@@ -56,13 +58,5 @@ export const authConfig = {
         id: user.id,
       },
     }),
-    async redirect({ url, baseUrl }) {
-      // Check if the URL is an internal path
-      if (url.startsWith(baseUrl)) {
-        return url;
-      }
-      // Redirect to the base URL if it's an external URL
-      return baseUrl;
-    },
   },
 } satisfies NextAuthConfig;
