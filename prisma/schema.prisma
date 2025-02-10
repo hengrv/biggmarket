@@ -24,7 +24,6 @@ model Account {
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
-
     @@unique([provider, providerAccountId])
 }
 
@@ -50,6 +49,7 @@ model User {
     role          String @default("end_user")
     location      String[]
     logs Log[]
+    swipes Swipes[]
 }
 
 // enum for Item status
@@ -69,7 +69,10 @@ model Item {
     review        Float?   @default(0) @db.DoublePrecision
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    swipes        Swipes[]
 
+    matches Matches[] @relation("user1")
+    matches2 Matches[] @relation("user2")
     
     givenTransactions Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
@@ -78,17 +81,31 @@ model Item {
     //transactions  Transaction[]
 }
 
+// model to keep track of matches between users
+model Matches {
+    id          String @id @default(cuid())
+    item1id     String
+    item2id     String
+    status      machedStatus @default(PENDING)
+    createdAt   DateTime @default(now())
+    useritem1                Item @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
+    useritem2                Item @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+}
+
+enum machedStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+}
+
 model Transaction{
     id                      String @id @default(cuid())
     giverId                 String
     receiverId              String
-    itemId                  String
     completed               Boolean @default(false)
     createdAt               DateTime @default(now()) 
-
     giver                   Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
     receiver                Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    //item                    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
     logs                    Log[]    
 }
 // Log model to keep track of user actions
@@ -104,10 +121,24 @@ model Log{
     transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 }
 
+model Swipes {
+    id          String @id @default(cuid())
+    userId      String
+    itemId      String
+    createdAt   DateTime @default(now())
+    direction   SwipeDirection
+    user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    item        Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+enum SwipeDirection {
+    LEFT
+    RIGHT
+}
+
 model VerificationToken {
     identifier String
     token      String   @unique
     expires    DateTime
-
     @@unique([identifier, token])
 }
