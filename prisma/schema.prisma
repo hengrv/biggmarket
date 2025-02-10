@@ -49,9 +49,6 @@ model User {
     review        Float? @default(0)
     role          String @default("end_user")
     location      String[]
-
-    givenTransactions Transaction[] @relation("giver")
-    receivedTransactions Transaction[] @relation("receiver")
     logs Log[]
 }
 
@@ -73,8 +70,12 @@ model Item {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    
+    givenTransactions Transaction[] @relation("giver")
+    receivedTransactions Transaction[] @relation("receiver")
+
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    transactions  Transaction[]
+    //transactions  Transaction[]
 }
 
 model Transaction{
@@ -85,9 +86,9 @@ model Transaction{
     completed               Boolean @default(false)
     createdAt               DateTime @default(now()) 
 
-    giver                   User @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
-    receiver                User @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    item                    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+    giver                   Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
+    receiver                Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    //item                    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
     logs                    Log[]    
 }
 // Log model to keep track of user actions
