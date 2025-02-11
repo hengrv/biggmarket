@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { z } from "zod";
 import { api } from "~/trpc/react";
 
 export default function ItemTester() {
@@ -27,7 +28,7 @@ export default function ItemTester() {
     onSuccess: () => refetchItems(),
   });
 
-  const handleCreateItem = async (e) => {
+  const handleCreateItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await createItem.mutateAsync(newItemData);
@@ -37,7 +38,7 @@ export default function ItemTester() {
     }
   };
 
-  const handleUpdateItem = async (itemId) => {
+  const handleUpdateItem = async (itemId: string) => {
     try {
       await updateItem.mutateAsync({
         id: itemId,
@@ -50,7 +51,7 @@ export default function ItemTester() {
     }
   };
 
-  const handleDeleteItem = async (itemId) => {
+  const handleDeleteItem = async (itemId: string) => {
     try {
       await deleteItem.mutateAsync({ id: itemId });
     } catch (error) {
@@ -58,7 +59,7 @@ export default function ItemTester() {
     }
   };
 
-  const handleToggleVisibility = async (itemId) => {
+  const handleToggleVisibility = async (itemId: string) => {
     try {
       await toggleVisibility.mutateAsync({ id: itemId });
     } catch (error) {
