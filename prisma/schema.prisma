@@ -57,14 +57,14 @@ model User {
 // Item model to keep track of user items
 model Item {
     id            String      @id @default(cuid())
-    image         String    // URL
+    image         String[]    // URL
     userId        String
     description   String?
     category      String
     status        ItemStatus @default(AVAILABLE)
     review        Float?   @default(0) @db.DoublePrecision
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     swipes        Swipes[]
 
     matches Match[] @relation("user1")
@@ -73,7 +73,7 @@ model Item {
     givenTransactions Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
 
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Enum for Item status
@@ -109,8 +109,8 @@ model Transaction {
     receiverId  String
     completed   Boolean @default(false)
     createdAt   DateTime @default(now()) 
-    item1       Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
-    item2       Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    giver       Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
+    receiver    Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
     logs        Log[]    
 }
 
