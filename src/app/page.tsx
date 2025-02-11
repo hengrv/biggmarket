@@ -2,7 +2,8 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { UserProfile } from "./_components/profile";
+import { UserProfile } from "@components/profile";
+import ItemTester from "@components/itemtest";
 
 export default async function Home() {
   const session = await auth();
@@ -29,7 +30,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
-
+          {session?.user && <ItemTester />}
           {session?.user && <UserProfile />}
         </div>
       </main>
