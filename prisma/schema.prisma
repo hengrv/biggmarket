@@ -67,8 +67,8 @@ model Item {
     updatedAt DateTime @updatedAt
     swipes        Swipes[]
 
-    matches Match[] @relation("user1")
-    matches2 Match[] @relation("user2")
+    matches Matches[] @relation("user1")
+    matches2 Matches[] @relation("user2")
     
     givenTransactions Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
@@ -85,7 +85,7 @@ enum ItemStatus {
 
 
 // Model to keep track of item matches between users
-model Match {
+model Matches {
     id          String @id @default(cuid())
     item1id     String
     item2id     String
@@ -103,7 +103,7 @@ enum machedStatus {
 }
 
 // Transaction model to keep track of item transactions
-model Transaction {
+model Transaction{
     id          String @id @default(cuid())
     giverId     String
     receiverId  String
@@ -115,7 +115,7 @@ model Transaction {
 }
 
 // Log model to keep track of user actions
-model Log {
+model Log{
     id              String @id @default(cuid())
     userId          String?
     transactionId   String?
