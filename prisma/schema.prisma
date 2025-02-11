@@ -27,6 +27,7 @@ model Account {
     @@unique([provider, providerAccountId])
 }
 
+
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
@@ -35,7 +36,6 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// User model to keep track of user data
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -54,7 +54,13 @@ model User {
     swipes Swipes[]
 }
 
-// Item model to keep track of user items
+// Enum for Item status
+enum ItemStatus {
+    AVAILABLE
+    SWAPPED
+    HIDDEN
+}
+
 model Item {
     id            String      @id @default(cuid())
     image         String[]    // URL
@@ -74,46 +80,36 @@ model Item {
     receivedTransactions Transaction[] @relation("receiver")
 
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    //transactions  Transaction[]
 }
 
-// Enum for Item status
-enum ItemStatus {
-    AVAILABLE
-    SWAPPED
-    HIDDEN
-}
-
-
-// Model to keep track of item matches between users
+// model to keep track of matches between users
 model Matches {
     id          String @id @default(cuid())
     item1id     String
     item2id     String
     status      machedStatus @default(PENDING)
     createdAt   DateTime @default(now())
-    useritem1   Item @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
-    useritem2   Item @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+    useritem1                Item @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
+    useritem2                Item @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
 }
 
-// Enum for Match status
 enum machedStatus {
     PENDING
     ACCEPTED
     REJECTED
 }
 
-// Transaction model to keep track of item transactions
 model Transaction{
-    id          String @id @default(cuid())
-    giverId     String
-    receiverId  String
-    completed   Boolean @default(false)
-    createdAt   DateTime @default(now()) 
-    giver       Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
-    receiver    Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    logs        Log[]    
+    id                      String @id @default(cuid())
+    giverId                 String
+    receiverId              String
+    completed               Boolean @default(false)
+    createdAt               DateTime @default(now()) 
+    giver                   Item @relation(name: "giver", fields: [giverId], references: [id], onDelete: Cascade)
+    receiver                Item @relation(name: "receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    logs                    Log[]    
 }
-
 // Log model to keep track of user actions
 model Log{
     id              String @id @default(cuid())
@@ -127,7 +123,6 @@ model Log{
     transaction Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 }
 
-// Swipes model to keep track of user swipes
 model Swipes {
     id          String @id @default(cuid())
     userId      String
@@ -138,7 +133,6 @@ model Swipes {
     item        Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 }
 
-// Enum for swipe direction
 enum SwipeDirection {
     LEFT
     RIGHT
