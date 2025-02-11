@@ -20,27 +20,18 @@ model Post {
 }
 
 model Item{
-    id                       Int @id @default(autoincrement())
+    id                       int @id @default(autoincrement())
     image                    String 
     description              String?
     category                 String
     status                   Boolean @default(false)
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdBy                User    @relation(fields: [createdById], references: [id])
+    createdBy   User   @relation(fields: [createdById], references: [id])
 
 }
 
 model Transaction{
-    id                      String @id @default(cuid())
-    giverId                 Int
-    receiverId              Int
-    itemId                  Int
-
-    giver                   User @relation(fields: [giverId], references: [id])
-    receiver                User @relation(fields: [receiverId], references: [id])
-    item                    Item @relation(fields: [itemId], references: [id])
-
-    createdAt DateTime @default(now()) 
+    id                      int @id @default(cuid())
 }
 
 // Necessary for Next auth
