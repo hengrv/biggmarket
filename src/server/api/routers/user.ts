@@ -6,6 +6,11 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
+const userProfileInput = z.object({
+    image: z.string().url("Must be a valid URL").optional()
+  });
+
+  
 export const userRouter = createTRPCRouter({
     // * Get profile
     getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -27,7 +32,18 @@ export const userRouter = createTRPCRouter({
 
     // ! TODO
     // * Update profile
-    
+    updateProfile: protectedProcedure
+    .input(userProfileInput)
+    .mutation(async ({ ctx, input }) => {
+        const profile = await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+                ...input,
+            }
+        })
+
+        return profile ?? null;
+    })
 
     // ! TODO
     

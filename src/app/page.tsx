@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { UserProfile } from "@components/profile";
+import { ProfileTester } from "~/app/_components/profiletest";
 import ItemTester from "@components/itemtest";
 
 export default async function Home() {
@@ -31,7 +31,7 @@ export default async function Home() {
             </div>
           </div>
           {session?.user && <ItemTester />}
-          {session?.user && <UserProfile />}
+          {session?.user && <ProfileTester />}
         </div>
       </main>
     </HydrateClient>
