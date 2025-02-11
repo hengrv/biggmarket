@@ -8,6 +8,37 @@ datasource db {
 }
 
 
+model Item{
+    id                       Int @id @default(autoincrement())
+    image                    String 
+    description              String?
+    category                 String
+    status                   Boolean @default(false)
+    userId                   String
+    createdById              String
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    //createdBy                User @relation(fields: [createdById], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    transactions Transaction[]
+
+}
+
+model Transaction{
+    id                      String @id @default(cuid())
+    giverId                 String
+    receiverId              String
+    itemId                  Int
+
+    giver                   User @relation(name: "giver" ,fields: [giverId], references: [id])
+    receiver                User @relation(name: "receiver", fields: [receiverId], references: [id])
+    item                    Item @relation(fields: [itemId], references: [id])
+
+    createdAt DateTime @default(now()) 
+}
+
+=======
+>>>>>>> a3aaa19ded073ba682838502e678ccbdc6ea68f1
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -93,7 +124,7 @@ model Transaction{
     item                    Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
     logs                    Log[]    
 }
-// Log model to keep track of user actions
+
 model Log{
     id              String @id @default(cuid())
     userId          String?
