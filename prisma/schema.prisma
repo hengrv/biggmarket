@@ -45,7 +45,6 @@ model User {
     accounts      Account[]
     sessions      Session[]
     items         Item[]
-    matches       Int
     review        Float?    @default(0)
     role          String    @default("end_user")
     location      String[]
