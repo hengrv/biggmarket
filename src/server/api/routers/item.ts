@@ -366,7 +366,7 @@ export const itemRouter = createTRPCRouter({
 
         // If a potential match is found, create a match
         if (potentialMatch) {
-          await ctx.db.match.create({
+          await ctx.db.matches.create({
             data: {
               item1id: potentialMatch.id,
               item2id: input.itemId,
@@ -383,7 +383,7 @@ export const itemRouter = createTRPCRouter({
     const userId = ctx.session.user.id;
 
     // Fetch matches for the user, including item and user details
-    const matches = await ctx.db.match.findMany({
+    const matches = await ctx.db.matches.findMany({
       where: {
         OR: [
           {
@@ -445,7 +445,7 @@ export const itemRouter = createTRPCRouter({
       const userId = ctx.session.user.id;
 
       // Verify the match exists and the user is part of it
-      const match = await ctx.db.match.findUnique({
+      const match = await ctx.db.matches.findUnique({
         where: { id: input.matchId },
         include: {
           useritem1: true,
@@ -472,7 +472,7 @@ export const itemRouter = createTRPCRouter({
       }
 
       // Update match status
-      const updatedMatch = await ctx.db.match.update({
+      const updatedMatch = await ctx.db.matches.update({
         where: { id: input.matchId },
         data: {
           status: input.status as machedStatus,
