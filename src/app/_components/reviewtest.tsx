@@ -14,9 +14,10 @@ export function ReviewTester() {
     });
 
     // API Hooks
-    const { data: userReviews, error: userReviewsError, refetch: refetchItems } = api.user.getProfileReviews.useQuery();
-
+    const { data: userReviews, refetch: refetchReviews } = api.user.getProfileReviews.useQuery();
     const addReview = api.user.addProfileReview.useMutation();
+
+    // Handler
     const handleReview = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
