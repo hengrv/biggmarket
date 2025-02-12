@@ -15,7 +15,9 @@ export function ReviewTester() {
 
     // API Hooks
     const { data: userReviews, refetch: refetchReviews } = api.user.getProfileReviews.useQuery();
-    const addReview = api.user.addProfileReview.useMutation();
+    const addReview = api.user.addProfileReview.useMutation({
+        onSuccess: () => refetchReviews(),
+    });
 
     // Handler
     const handleReview = async (e: React.FormEvent<HTMLFormElement>) => {
