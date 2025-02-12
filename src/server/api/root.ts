@@ -1,6 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { userRouter } from "~/server/api/routers/user";
-import { transactionRouter } from "~/server/api/routers/transaction";
 import { itemRouter } from "~/server/api/routers/item";
 
 /**
@@ -10,7 +9,6 @@ import { itemRouter } from "~/server/api/routers/item";
  */
 export const appRouter = createTRPCRouter({
   user: userRouter,
-  transaction: transactionRouter,
   item: itemRouter,
 });
 

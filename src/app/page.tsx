@@ -4,6 +4,7 @@ import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import { ProfileTester } from "~/app/_components/profiletest";
 import ItemTester from "@components/itemtest";
+import { ReviewTester } from "./_components/reviewtest";
 
 export default async function Home() {
   const session = await auth();
@@ -32,6 +33,7 @@ export default async function Home() {
           </div>
           {session?.user && <ItemTester />}
           {session?.user && <ProfileTester />}
+          {session?.user && <ReviewTester />}
         </div>
       </main>
     </HydrateClient>
