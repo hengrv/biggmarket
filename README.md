@@ -1,5 +1,6 @@
 # BiggMarket
 
+Repository location: [https://github.com/hengrv/biggmarket](https://github,com/hengrv/biggmarket)
 Add useful links here, for quick access:
 
 - [planning document](https://docs.google.com/document/d/1fKAm-ThGSWcT_wdQAW1xUyvlBsldpEAbiKgfMQTacuw/edit?tab=t.0)
