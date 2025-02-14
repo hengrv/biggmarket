@@ -8,8 +8,9 @@ import { api } from "~/trpc/react";
 export function ProfileTester() {
     const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery();
     const [newProfileData, setNewProfileData] = useState({
-        image: "",
-        email: ""
+        image: userProfile?.image ?? "",
+        email: userProfile?.email ?? "",
+        name: userProfile?.name ?? "",
     });
 
     const updateProfile = api.user.updateProfile.useMutation({
@@ -26,7 +27,11 @@ export function ProfileTester() {
         e.preventDefault();
         try {
             await updateProfile.mutateAsync(newProfileData);
-            setNewProfileData({ image: "", email: "" });
+            setNewProfileData({ 
+                image: userProfile?.image ?? "",
+                email: userProfile?.email ?? "",
+                name: userProfile?.name ?? "",
+            });
         } catch (error) {
             console.error("Profile update error:", error);
         }
@@ -51,16 +56,37 @@ export function ProfileTester() {
         <form onSubmit={handleUpdateProfile} className="space-y-4">
             <div>
             <label className="mb-1 block">Image URL:</label>
-            <input
-                type="text"
-                value={newProfileData.image}
-                onChange={(e) =>
-                    setNewProfileData((prev) => ({ ...prev, image: e.target.value }))
-                }
-                className="w-full rounded border p-2 text-black"
-                placeholder="https://example.com/image.jpg"
-            />
+                <input
+                    type="text"
+                    value={newProfileData.image}
+                    onChange={(e) =>
+                        setNewProfileData((prev) => ({ ...prev, image: e.target.value }))
+                    }
+                    className="w-full rounded border p-2 text-black"
+                    placeholder="https://example.com/image.jpg"
+                />
+                <label className="mb-1 block">Name:</label>
+                <input
+                    type="text"
+                    value={newProfileData.name}
+                    onChange={(e) =>
+                        setNewProfileData((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    className="w-full rounded border p-2 text-black"
+                    placeholder="https://example.com/image.jpg"
+                />
+                <label className="mb-1 block">Email:</label>
+                <input
+                    type="email"
+                    value={newProfileData.email}
+                    onChange={(e) =>
+                        setNewProfileData((prev) => ({ ...prev, email: e.target.value }))
+                    }
+                    className="w-full rounded border p-2 text-black"
+                    placeholder="https://example.com/image.jpg"
+                />
             </div>
+
             
             <button
             type="submit"

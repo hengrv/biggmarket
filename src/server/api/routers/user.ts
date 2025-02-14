@@ -7,7 +7,9 @@ import {
 } from "~/server/api/trpc";
 
 const userProfileInput = z.object({
-    image: z.string().url("Must be a valid URL").optional()
+    image: z.string().url("Must be a valid URL").optional(),
+    email: z.string().email("Must be a valid email").optional(),
+    name: z.string().optional(),
   });
 
   const reviewInput = z.object({
