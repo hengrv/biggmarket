@@ -83,6 +83,7 @@ export default function ItemTester() {
               onChange={(e) =>
                 setNewItemData((prev) => ({ ...prev, image: e.target.value }))
               }
+
               className="w-full rounded border p-2 text-black"
               placeholder="https://example.com/image.jpg"
             />

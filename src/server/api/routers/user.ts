@@ -16,7 +16,6 @@ const userProfileInput = z.object({
     rating: z.number(),
   })
 
-  
 export const userRouter = createTRPCRouter({
     // * Get profile
     getProfile: protectedProcedure.query(async ({ ctx }) => {
