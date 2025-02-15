@@ -48,9 +48,17 @@ model User {
     reviews       Review[] @relation("reviewedUser")
     reviewed      Review[] @relation("reviewerUser")
     role          String    @default("end_user")
-    location      String[]
+    location      Location?
     logs          Log[]
     swipes        Swipes[]
+}
+
+model Location {
+    id       String  @id @default(cuid())
+    latitude  Decimal
+    longitude Decimal
+    userId   String   @unique // 1 - 1 relationship - must be unique
+    user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Review {
