@@ -4,6 +4,7 @@ import { useState } from "react";
 import { api } from "~/trpc/react";
 
 export function LocationTester() {
+    // State
     const [postcode, setPostcode] = useState("");
     const [locationResult, setLocationResult] = useState({
         postcode: "",
@@ -15,17 +16,36 @@ export function LocationTester() {
         enabled: false,
     });
 
+    // Api hooks
+    const updateProfileMutation = api.user.updateProfile.useMutation({
+        onSuccess: () => {
+            console.log("Profile updated successfully");
+        },
+        onError: (err) => {
+            console.error("Error updating profile:", err);
+            setErrorMessage("Error updating profile location.");
+        },
+    });
+
+    // Form handler
     const handlePostcodeLookup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setErrorMessage("");
 
         try {
             const result = await refetch();
+
             if (result.data) {
+                const { latitude, longitude } = result.data;
+
                 setLocationResult({
                     postcode: postcode,
-                    longitude: result.data.longitude,
-                    latitude: result.data.latitude,
+                    longitude: longitude,
+                    latitude: latitude,
+                });
+
+                updateProfileMutation.mutate({
+                    location: { latitude, longitude },
                 });
             } else {
                 setErrorMessage("Invalid postcode");
@@ -38,9 +58,10 @@ export function LocationTester() {
     return (
         <div className="w-full max-w-xs">
             <div className="mb-8 rounded border p-4">
-                <h2 className="mb-4 text-xl font-semibold">Get Longitude / Latitude from postcode</h2>
+                <h2 className="mb-4 text-xl font-semibold">Update location</h2>
                 {locationResult.latitude !== 0 && locationResult.longitude !== 0 ? (
                     <div>
+                        <p className="truncate">Successfully updated!</p>
                         <p className="truncate">Postcode: {postcode}</p>
                         <p className="truncate">Long: {locationResult.longitude}</p>
                         <p className="truncate">Lat: {locationResult.latitude}</p>
@@ -62,7 +83,7 @@ export function LocationTester() {
                         className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                         disabled={postcode.length < 7 || isLoading}
                     >
-                        {isLoading ? "Loading..." : "Get Location"}
+                        {isLoading ? "Loading..." : "Set Location"}
                     </button>
                 </form>
             </div>
