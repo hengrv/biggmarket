@@ -45,8 +45,8 @@ model User {
     accounts      Account[]
     sessions      Session[]
     items         Item[]
-    reviews       Review[] @relation("reviewedUser")
-    reviewed      Review[] @relation("reviewerUser")
+    reviews       Review[]  @relation("reviewedUser")
+    reviewed      Review[]  @relation("reviewerUser")
     role          String    @default("end_user")
     location      Location?
     logs          Log[]
@@ -54,22 +54,23 @@ model User {
 }
 
 model Location {
-    id       String  @id @default(cuid())
+    id        String  @id @default(cuid())
     latitude  Decimal
     longitude Decimal
-    userId   String   @unique // 1 - 1 relationship - must be unique
-    user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    postcode  String
+    userId    String  @unique // 1 - 1 relationship - must be unique
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Review {
-    id        String    @id @default(cuid())
-    userId    String
-    reviewer  String
-    rating    Float
-    review    String
-    createdAt DateTime  @default(now())
-    user      User      @relation(name: "reviewedUser", fields: [userId], references: [id], onDelete: Cascade)
-    reviewerUser  User  @relation(name: "reviewerUser", fields: [reviewer], references: [id], onDelete: Cascade)
+    id           String   @id @default(cuid())
+    userId       String
+    reviewer     String
+    rating       Float
+    review       String
+    createdAt    DateTime @default(now())
+    user         User     @relation(name: "reviewedUser", fields: [userId], references: [id], onDelete: Cascade)
+    reviewerUser User     @relation(name: "reviewerUser", fields: [reviewer], references: [id], onDelete: Cascade)
 }
 
 // Item model to keep track of user items
