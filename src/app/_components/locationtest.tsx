@@ -35,7 +35,7 @@ export function LocationTester() {
 
     useEffect(() => {
         if (isError) {
-            setErrorMessage(error.message || "Something went wrong.");
+            setErrorMessage("Something went wrong.");
         }
     }, [isError, error]);
 
