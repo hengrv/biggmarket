@@ -5,10 +5,6 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {
-    images: {
-        unoptimized: true, //! REMEMBER TO CHANGE THIS TO FALSE IN PRODUCTION
-    },
-};
+const config = {};
 
 export default config;

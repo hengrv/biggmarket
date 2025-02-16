@@ -83,8 +83,7 @@ export default function ItemTester() {
               onChange={(e) =>
                 setNewItemData((prev) => ({ ...prev, image: e.target.value }))
               }
-
-              className="w-full rounded border p-2 text-black"
+              className="w-full rounded border p-2"
               placeholder="https://example.com/image.jpg"
             />
           </div>
@@ -99,7 +98,7 @@ export default function ItemTester() {
                   category: e.target.value,
                 }))
               }
-              className="w-full rounded border p-2 text-black"
+              className="w-full rounded border p-2"
               placeholder="Electronics"
             />
           </div>
@@ -113,7 +112,7 @@ export default function ItemTester() {
                   description: e.target.value,
                 }))
               }
-              className="w-full rounded border p-2 text-black"
+              className="w-full rounded border p-2"
               placeholder="Item description"
             />
           </div>
