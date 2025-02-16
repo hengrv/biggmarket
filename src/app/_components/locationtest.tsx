@@ -36,7 +36,7 @@ export function LocationTester() {
             const result = await refetch();
 
             if (result.data) {
-                const { latitude, longitude } = result.data;
+                const { longitude, latitude } = result.data;
 
                 setLocationResult({
                     postcode: postcode,
@@ -45,7 +45,7 @@ export function LocationTester() {
                 });
 
                 updateProfileMutation.mutate({
-                    location: { latitude, longitude },
+                    location: { longitude, latitude },
                 });
             } else {
                 setErrorMessage("Invalid postcode");
