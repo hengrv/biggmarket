@@ -51,6 +51,8 @@ model User {
     location      Location?
     logs          Log[]
     swipes        Swipes[]
+    sender        messages[] @relation("sender")
+    receiver      messages[] @relation("receiver")
 }
 
 model Location {
@@ -181,4 +183,22 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model messages {
+    id        String   @id @default(cuid())
+    senderId  String
+    receiverId String
+    message   String
+    chatId    String
+    createdAt DateTime @default(now())
+    sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+    receiver  User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+    chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model Chat {
+    id        String    @id @default(cuid())
+    messages  messages[]
+    createdAt DateTime  @default(now())
 }
