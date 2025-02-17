@@ -51,8 +51,8 @@ model User {
     location      Location?
     logs          Log[]
     swipes        Swipes[]
-    sender        messages[] @relation("sender")
-    receiver      messages[] @relation("receiver")
+    sender        Messages[] @relation("sender")
+    receiver      Messages[] @relation("receiver")
 }
 
 model Location {
@@ -104,7 +104,7 @@ enum ItemStatus {
     HIDDEN
 }
 
-// Model to keep track of item matches between users
+// Model to keep track of item matches between user
 model Match {
     id        String       @id @default(cuid())
     item1id   String
@@ -177,19 +177,12 @@ enum Category {
     Other
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
-
-    @@unique([identifier, token])
-}
-
-model messages {
+model Messages {
     id        String   @id @default(cuid())
     senderId  String
     receiverId String
-    message   String
+    message1   String? // Sender message
+    message2   String? // Receiver message
     chatId    String
     createdAt DateTime @default(now())
     sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
@@ -197,8 +190,17 @@ model messages {
     chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
+// Chat model to keep track of user chats
 model Chat {
     id        String    @id @default(cuid())
-    messages  messages[]
+    messages Messages[]
     createdAt DateTime  @default(now())
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
 }
