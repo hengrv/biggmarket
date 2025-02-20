@@ -6,6 +6,8 @@ import { ProfileTester } from "~/app/_components/profiletest";
 import ItemTester from "@components/itemtest";
 import { ReviewTester } from "./_components/reviewtest";
 import { LocationTester } from "./_components/locationtest";
+import { ViewItemsTester } from "./_components/viewitemstest";
+
 export default async function Home() {
   const session = await auth();
 
@@ -35,6 +37,7 @@ export default async function Home() {
           {session?.user && <ProfileTester />}
           {session?.user && <ReviewTester />}
           {session?.user && <LocationTester />}
+          {session?.user && <ViewItemsTester />}
         </div>
       </main>
     </HydrateClient>

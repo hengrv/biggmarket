@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import type { SwipeDirection, machedStatus } from "@prisma/client";
+import geolib from 'geolib';
 
 const itemInputSchema = z.object({
   image: z.string().url("Must be a valid URL"),
@@ -16,6 +17,22 @@ export const itemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
 
+      // Check if user has locaiton set
+        const userLocation = await ctx.db.user.findUnique({
+            where: {
+                id: userId,
+            },
+            include: {
+                location: true,
+            },
+        });
+        if(!userLocation?.location) {
+            throw new TRPCError({
+                code: "FORBIDDEN",
+                message: "User location not set",
+            });
+        }
+        
       const item = await ctx.db.item.create({
         data: {
           ...input,
@@ -498,4 +515,39 @@ export const itemRouter = createTRPCRouter({
 
     return stats;
   }),
+
+    getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    const userLocation = await ctx.db.user.findUnique({
+        where: { 
+            id: userId 
+        },
+        include: {
+            location: true,
+        },
+    });
+
+    // Get all user items and sort by lowest distance
+    const items = await ctx.db.item.findMany({
+        where: {
+            userId: {
+                not: userId,
+            },
+            status: "AVAILABLE",
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                },
+                include: {
+                    location: true,
+                },
+            },
+        },
+    });
+
+    }),
 });
