@@ -17,7 +17,7 @@ export const itemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
 
-      // Check if user has locaiton set
+        // Check if user has locaiton set
         const userLocation = await ctx.db.user.findUnique({
             where: {
                 id: userId,
@@ -32,7 +32,7 @@ export const itemRouter = createTRPCRouter({
                 message: "User location not set",
             });
         }
-        
+
       const item = await ctx.db.item.create({
         data: {
           ...input,
@@ -265,74 +265,75 @@ export const itemRouter = createTRPCRouter({
 
       return updatedItem;
     }),
-  getNextItem: protectedProcedure
-    .input(
-      z.object({
-        // Optional last seen item id to ensure we don't show the same item
-        lastSeenItemId: z.string().optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
+//   getNextItem: protectedProcedure
+//     .input(
+//       z.object({
+//         // Optional last seen item id to ensure we don't show the same item
+//         lastSeenItemId: z.string().optional(),
+//       }),
+//     )
+//     .query(async ({ ctx, input }) => {
+//       const userId = ctx.session.user.id;
 
-      // Get an item that:
-      // 1. User hasn't swiped on
-      // 2. Isn't their own item
-      // 3. Is still available
-      // 4. Isn't the last seen item
-      const nextItem = await ctx.db.item.findFirst({
-        where: {
-          AND: [
-            // Exclude items user has already swiped on
-            {
-              NOT: {
-                swipes: {
-                  some: {
-                    userId,
-                  },
-                },
-              },
-            },
-            // Exclude user's own items
-            {
-              NOT: {
-                userId,
-              },
-            },
-            // Only available items
-            {
-              status: "AVAILABLE",
-            },
-            // Exclude last seen item if provided
-            input.lastSeenItemId
-              ? {
-                NOT: {
-                  id: input.lastSeenItemId,
-                },
-              }
-              : {},
-          ],
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-        },
-      });
+//       // Get an item that:
+//       // 1. User hasn't swiped on
+//       // 2. Isn't their own item
+//       // 3. Is still available
+//       // 4. Isn't the last seen item
+//       const nextItem = await ctx.db.item.findFirst({
+//         where: {
+//           AND: [
+//             // Exclude items user has already swiped on
+//             {
+//               NOT: {
+//                 swipes: {
+//                   some: {
+//                     userId,
+//                   },
+//                 },
+//               },
+//             },
+//             // Exclude user's own items
+//             {
+//               NOT: {
+//                 userId,
+//               },
+//             },
+//             // Only available items
+//             {
+//               status: "AVAILABLE",
+//             },
+//             // Exclude last seen item if provided
+//             input.lastSeenItemId
+//               ? {
+//                 NOT: {
+//                   id: input.lastSeenItemId,
+//                 },
+//               }
+//               : {},
+//           ],
+//         },
+//         include: {
+//           user: {
+//             select: {
+//               id: true,
+//               name: true,
+//               image: true,
+//             },
+//           },
+//         },
+//       });
 
-      if (!nextItem) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "No more items available",
-        });
-      }
+//       if (!nextItem) {
+//         throw new TRPCError({
+//           code: "NOT_FOUND",
+//           message: "No more items available",
+//         });
+//       }
 
-      return nextItem;
-    }),
+//       return nextItem;
+//     }),
+
   swipeItem: protectedProcedure
     .input(
       z.object({
