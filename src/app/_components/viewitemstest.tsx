@@ -13,7 +13,6 @@ export function ViewItemsTester() {
     });
     const [errorMessage, setErrorMessage] = useState("");
 
-
     return (
         <div className="w-full max-w-xs">
             <div className="mb-8 rounded border p-4">

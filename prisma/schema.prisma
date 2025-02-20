@@ -79,7 +79,7 @@ model Item {
     image       String // URL
     userId      String
     description String?
-    category    String
+    category    Category
     status      ItemStatus @default(AVAILABLE)
     review      Float?     @default(0) @db.DoublePrecision
     createdAt   DateTime   @default(now())
@@ -160,6 +160,18 @@ model Swipes {
 enum SwipeDirection {
     LEFT
     RIGHT
+}
+
+enum Category {
+    Electronics
+	Vehicles
+	HomeAndFurniture
+	ClothingAndAccessories
+	SportsAndOutdoors
+	ToysAndGames
+	Leisure
+	HealthAndBeauty
+	BusinessAndIndustrial
 }
 
 model VerificationToken {
