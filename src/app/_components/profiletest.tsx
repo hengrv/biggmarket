@@ -88,12 +88,12 @@ export function ProfileTester() {
                         placeholder="https://example.com/image.jpg"
                     />
                     <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                    disabled={updateProfile.isPending}
-                    >
-                    {updateProfile.isPending ? "Updating..." : "Update Profile"}
-                </button>
+                        type="submit"
+                        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                        disabled={updateProfile.isPending}
+                        >
+                        {updateProfile.isPending ? "Updating..." : "Update Profile"}
+                    </button>
             </form>
         </div>
     </div>
