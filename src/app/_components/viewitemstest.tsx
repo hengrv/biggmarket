@@ -8,15 +8,19 @@ export function ViewItemsTester() {
     // State
     const [userProfile] = api.user.getProfile.useSuspenseQuery();
 
-    let items, refetchItems;
+    const longitude = userProfile?.location?.longitude
+        ? userProfile.location.longitude
+        : 0;
 
-    if (userProfile?.location?.longitude) {
-        [items, { refetch: refetchItems }] =
-            api.algorithm.getItemsByDistance.useSuspenseQuery({
-                longitude: Number(userProfile?.location?.longitude) ?? 0,
-                latitude: Number(userProfile?.location?.latitude) ?? 0,
-            });
-    }
+    const latitude = userProfile?.location?.latitude
+        ? userProfile.location.latitude
+        : 0;
+
+    const [items, { refetch: refetchItems }] =
+        api.algorithm.getItemsByDistance.useSuspenseQuery({
+            longitude: Number(longitude) ?? 0,
+            latitude: Number(latitude) ?? 0,
+        });
 
     const [errorMessage, setErrorMessage] = useState("");
 
