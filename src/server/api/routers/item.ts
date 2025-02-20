@@ -7,7 +7,7 @@ import geolib from 'geolib';
 const itemInputSchema = z.object({
   image: z.string().url("Must be a valid URL"),
   description: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
+  category: z.string().min(1, "Category is required"), // ! Change to enum
   status: z.enum(["AVAILABLE", "SWAPPED", "HIDDEN"]).optional(),
 });
 
