@@ -8,17 +8,20 @@ import {
 } from "~/server/api/trpc";
 
 const distanceInput = z.object({
-  latitude: z.number().nullable(), // user's latitude
-  longitude: z.number().nullable(), // user's longitude
+  latitude: z.number().nullish(), // user's latitude
+  longitude: z.number().nullish(), // user's longitude
 });
 
 export const algoRouter = createTRPCRouter({
   getItemsByDistance: protectedProcedure
     .input(distanceInput)
     .query(async ({ ctx, input }) => {
-      const { latitude: userLatitude, longitude: userLongitude } = input;
+      let { latitude: userLatitude, longitude: userLongitude } = input;
 
-      if (!input.latitude && !input.longitude) {
+      userLatitude = userLatitude !== null ? userLatitude : undefined;
+      userLongitude = userLongitude !== null ? userLongitude : undefined;
+
+      if (!userLatitude && !userLongitude) {
         return [];
       }
 
@@ -41,13 +44,15 @@ export const algoRouter = createTRPCRouter({
           },
         },
       });
-
       // Map each item to include a distance field computed from user's location
       const itemsWithDistance = items.map((item) => {
         const itemLocation = item.user?.location;
         if (itemLocation?.latitude && itemLocation?.longitude) {
           const distance = geolib.getDistance(
-            { latitude: userLatitude, longitude: userLongitude },
+            {
+              latitude: userLatitude!,
+              longitude: userLongitude!,
+            },
             {
               latitude: Number(itemLocation.latitude),
               longitude: Number(itemLocation.longitude),
