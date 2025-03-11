@@ -50,7 +50,9 @@ model User {
     role          String    @default("end_user")
     location      Location?
     logs          Log[]
-    swipes        Swipes[]
+    swipes        Swipe[]
+    sender        Message[] @relation("sender")
+    receiver      Message[] @relation("receiver")
 }
 
 model Location {
@@ -84,7 +86,7 @@ model Item {
     review      Float?     @default(0) @db.DoublePrecision
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
-    swipes      Swipes[]
+    swipes      Swipe[]
 
     matches  Match[] @relation("user1")
     matches2 Match[] @relation("user2")
@@ -102,7 +104,7 @@ enum ItemStatus {
     HIDDEN
 }
 
-// Model to keep track of item matches between users
+// Model to keep track of item matches between user
 model Match {
     id        String       @id @default(cuid())
     item1id   String
@@ -146,7 +148,7 @@ model Log {
 }
 
 // Swipes model to keep track of user swipes
-model Swipes {
+model Swipe {
     id        String         @id @default(cuid())
     userId    String
     itemId    String
@@ -173,6 +175,26 @@ enum Category {
 	HealthAndBeauty
 	BusinessAndIndustrial
     Other
+}
+
+model Message {
+    id        String   @id @default(cuid())
+    senderId  String
+    receiverId String
+    message1   String? // Sender message
+    message2   String? // Receiver message
+    chatId    String
+    createdAt DateTime @default(now())
+    sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+    receiver  User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+    chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+// Chat model to keep track of user chats
+model Chat {
+    id        String    @id @default(cuid())
+    messages Message[]
+    createdAt DateTime  @default(now())
 }
 
 model VerificationToken {

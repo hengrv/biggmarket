@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import type { SwipeDirection, machedStatus } from "@prisma/client";
-import geolib from 'geolib';
+import geolib from "geolib";
 
 const itemInputSchema = z.object({
   image: z.string().url("Must be a valid URL"),
@@ -17,21 +17,21 @@ export const itemRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.session.user.id;
 
-        // Check if user has locaiton set
-        const userLocation = await ctx.db.user.findUnique({
-            where: {
-                id: userId,
-            },
-            include: {
-                location: true,
-            },
+      // Check if user has locaiton set
+      const userLocation = await ctx.db.user.findUnique({
+        where: {
+          id: userId,
+        },
+        include: {
+          location: true,
+        },
+      });
+      if (!userLocation?.location) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "User location not set",
         });
-        if(!userLocation?.location) {
-            throw new TRPCError({
-                code: "FORBIDDEN",
-                message: "User location not set",
-            });
-        }
+      }
 
       const item = await ctx.db.item.create({
         data: {
@@ -265,74 +265,74 @@ export const itemRouter = createTRPCRouter({
 
       return updatedItem;
     }),
-//   getNextItem: protectedProcedure
-//     .input(
-//       z.object({
-//         // Optional last seen item id to ensure we don't show the same item
-//         lastSeenItemId: z.string().optional(),
-//       }),
-//     )
-//     .query(async ({ ctx, input }) => {
-//       const userId = ctx.session.user.id;
+  //   getNextItem: protectedProcedure
+  //     .input(
+  //       z.object({
+  //         // Optional last seen item id to ensure we don't show the same item
+  //         lastSeenItemId: z.string().optional(),
+  //       }),
+  //     )
+  //     .query(async ({ ctx, input }) => {
+  //       const userId = ctx.session.user.id;
 
-//       // Get an item that:
-//       // 1. User hasn't swiped on
-//       // 2. Isn't their own item
-//       // 3. Is still available
-//       // 4. Isn't the last seen item
-//       const nextItem = await ctx.db.item.findFirst({
-//         where: {
-//           AND: [
-//             // Exclude items user has already swiped on
-//             {
-//               NOT: {
-//                 swipes: {
-//                   some: {
-//                     userId,
-//                   },
-//                 },
-//               },
-//             },
-//             // Exclude user's own items
-//             {
-//               NOT: {
-//                 userId,
-//               },
-//             },
-//             // Only available items
-//             {
-//               status: "AVAILABLE",
-//             },
-//             // Exclude last seen item if provided
-//             input.lastSeenItemId
-//               ? {
-//                 NOT: {
-//                   id: input.lastSeenItemId,
-//                 },
-//               }
-//               : {},
-//           ],
-//         },
-//         include: {
-//           user: {
-//             select: {
-//               id: true,
-//               name: true,
-//               image: true,
-//             },
-//           },
-//         },
-//       });
+  //       // Get an item that:
+  //       // 1. User hasn't swiped on
+  //       // 2. Isn't their own item
+  //       // 3. Is still available
+  //       // 4. Isn't the last seen item
+  //       const nextItem = await ctx.db.item.findFirst({
+  //         where: {
+  //           AND: [
+  //             // Exclude items user has already swiped on
+  //             {
+  //               NOT: {
+  //                 swipes: {
+  //                   some: {
+  //                     userId,
+  //                   },
+  //                 },
+  //               },
+  //             },
+  //             // Exclude user's own items
+  //             {
+  //               NOT: {
+  //                 userId,
+  //               },
+  //             },
+  //             // Only available items
+  //             {
+  //               status: "AVAILABLE",
+  //             },
+  //             // Exclude last seen item if provided
+  //             input.lastSeenItemId
+  //               ? {
+  //                 NOT: {
+  //                   id: input.lastSeenItemId,
+  //                 },
+  //               }
+  //               : {},
+  //           ],
+  //         },
+  //         include: {
+  //           user: {
+  //             select: {
+  //               id: true,
+  //               name: true,
+  //               image: true,
+  //             },
+  //           },
+  //         },
+  //       });
 
-//       if (!nextItem) {
-//         throw new TRPCError({
-//           code: "NOT_FOUND",
-//           message: "No more items available",
-//         });
-//       }
+  //       if (!nextItem) {
+  //         throw new TRPCError({
+  //           code: "NOT_FOUND",
+  //           message: "No more items available",
+  //         });
+  //       }
 
-//       return nextItem;
-//     }),
+  //       return nextItem;
+  //     }),
 
   swipeItem: protectedProcedure
     .input(
@@ -357,7 +357,7 @@ export const itemRouter = createTRPCRouter({
       }
 
       // Create swipe record
-      const swipe = await ctx.db.swipes.create({
+      const swipe = await ctx.db.swipe.create({
         data: {
           userId,
           itemId: input.itemId,
@@ -506,7 +506,7 @@ export const itemRouter = createTRPCRouter({
   getSwipeStats: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
 
-    const stats = await ctx.db.swipes.groupBy({
+    const stats = await ctx.db.swipe.groupBy({
       by: ["direction"],
       where: {
         userId,
@@ -517,38 +517,37 @@ export const itemRouter = createTRPCRouter({
     return stats;
   }),
 
-    getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
+  getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
     const userLocation = await ctx.db.user.findUnique({
-        where: { 
-            id: userId 
-        },
-        include: {
-            location: true,
-        },
+      where: {
+        id: userId,
+      },
+      include: {
+        location: true,
+      },
     });
 
     // Get all user items and sort by lowest distance
     const items = await ctx.db.item.findMany({
-        where: {
-            userId: {
-                not: userId,
-            },
-            status: "AVAILABLE",
+      where: {
+        userId: {
+          not: userId,
         },
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    image: true,
-                },
-                include: {
-                    location: true,
-                },
-            },
+        status: "AVAILABLE",
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+          include: {
+            location: true,
+          },
         },
+      },
     });
-
-    }),
+  }),
 });
