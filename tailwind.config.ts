@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 
+import { withUt } from "uploadthing/tw";
 const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.tsx"],
@@ -20,6 +21,8 @@ const config: Config = {
       },
       colors: {
         "background-1": "#1a1a1a",
+        "bm-white": "#f3f3f3",
+        "bm-black": "#1a1a1a",
         "text-1": "#f3f3f3",
         error: "#f87171",
         border: "hsl(var(--border))",
@@ -66,4 +69,4 @@ const config: Config = {
   plugins: [tailwindcssAnimate],
 } satisfies Config;
 
-export default config;
+export default withUt(config);

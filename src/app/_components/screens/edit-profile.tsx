@@ -1,39 +1,122 @@
 "use client";
 
-import { useState } from "react";
+import { z } from "zod";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import AppShell from "@/components/app-shell";
+import { api } from "~/trpc/react";
+import { TRPCClientError } from "@trpc/client";
+import { ProfileImageUploader } from "../profile/image-uploader";
 
+// Client-Side validators
+const inputParser = z.object({
+  email: z.string().email("Must be a valid email"),
+  postcode: z
+    .string()
+    .regex(
+      /^[A-Z]{1,2}[0-9]{1,2}[A-Z]?(\s*)[0-9][A-Z]{2}$/i,
+      "Invalid UK postcode",
+    ),
+});
 
 function EditProfileScreen({
   setActiveSubScreen,
 }: {
   setActiveSubScreen: (screen: string | null) => void;
 }) {
-  const [name, setName] = useState("John");
-  const [username, setUsername] = useState("@johnswapper");
-  const [bio, setBio] = useState(
-    "Passionate about sustainable living and reducing waste through swapping unwanted items.",
+  // Fetch user profile data
+  const [userProfile, { refetch: refetchProfile }] =
+    api.user.getProfile.useSuspenseQuery();
+
+  // State for form fields
+  const [name, setName] = useState(userProfile?.name ?? "");
+  const [email, setEmail] = useState(userProfile?.email ?? "");
+  const [bio, setBio] = useState(""); // Bio isn't in the current schema
+  const [postcode, setPostcode] = useState(
+    userProfile?.location?.postcode ?? "",
   );
-  const [location, setLocation] = useState("The Toon");
   const [profileImage, setProfileImage] = useState(
-    "/placeholder.svg?height=96&width=96",
+    userProfile?.image ?? "/placeholder.svg?height=96&width=96",
   );
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleProfileImageChange = (newImage: string) => {
-    setProfileImage(newImage);
-  };
+  const [postcodeError, setPostcodeError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
 
-  const handleSave = () => {
-    setIsLoading(true);
+  const { error: errorPostcode, refetch: refetchPostcode } =
+    api.user.postcodeToLongLat.useQuery(postcode, {
+      enabled: false,
+      retry: false,
+    });
 
-    // Simulate saving profile
-    setTimeout(() => {
-      setIsLoading(false);
-      setActiveSubScreen(null);
-    }, 1000);
+  // Update state when profile data changes
+  useEffect(() => {
+    if (userProfile) {
+      setName(userProfile.name ?? "");
+      setEmail(userProfile.email ?? "");
+      setPostcode(userProfile.location?.postcode ?? "");
+      setProfileImage(
+        userProfile.image ?? "/placeholder.svg?height=96&width=96",
+      );
+    }
+  }, [userProfile]);
+
+  // Update profile mutation
+  const updateProfileMutation = api.user.updateProfile.useMutation({
+    onSuccess: async () => {
+      await refetchProfile();
+      setActiveSubScreen(null); // Return to profile page after successful update
+    },
+  });
+
+  const handleSave = async () => {
+    let longitude, latitude;
+
+    setEmailError("");
+
+    setPostcodeError("");
+    const parseInput = inputParser.safeParse({ email, postcode });
+
+    if (!parseInput.success) {
+      parseInput.error.errors.forEach((error) => {
+        if (error.path[0] === "email") {
+          setEmailError("Invalid Email!");
+        }
+        if (error.path[0] === "postcode") {
+          setPostcodeError("Invalid UK Postcode!");
+        }
+      });
+
+      return;
+    }
+
+    try {
+      const result = await refetchPostcode();
+      if (result.isSuccess) {
+        longitude = result.data.longitude;
+        latitude = result.data.latitude;
+      }
+    } catch {
+      return;
+    }
+
+    try {
+      await updateProfileMutation.mutateAsync({
+        name,
+        email,
+        ...(postcode
+          ? {
+            location: {
+              postcode: postcode,
+              latitude: Number(latitude ?? 0),
+              longitude: Number(longitude ?? 0),
+            },
+          }
+          : {}),
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
@@ -44,11 +127,10 @@ function EditProfileScreen({
       activeScreen="profile"
     >
       <div className="p-4">
-        <div className="mb-6 flex flex-col items-center">
-          <div className="relative mb-2 h-24 w-24">
-            <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#c1ff72]">
+        <ProfileImageUploader imageUrl={profileImage} />
+        {/*<div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#c1ff72]">
               <Image
-                src={profileImage || "/placeholder.svg"}
+                src={profileImage ?? "/placeholder.svg?height=96&width=96"}
                 alt="Profile"
                 width={96}
                 height={96}
@@ -59,17 +141,21 @@ function EditProfileScreen({
               className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#c1ff72] shadow-md"
               onClick={() => {
                 const randomId = Math.floor(Math.random() * 1000);
-                handleProfileImageChange(
-                  `/placeholder.svg?height=96&width=96&id=${randomId}`,
+                setProfileImage(
+                  `/ placeholder.svg ? height = 96 & width=96 & id=${randomId}`,
                 );
               }}
             >
               <Camera className="h-4 w-4 text-black" />
             </button>
-          </div>
-        </div>
-
-        <form className="space-y-4">
+          </div> */}
+        <form
+          className="space-y-4"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleSave();
+          }}
+        >
           <div>
             <label className="text-muted mb-1 block text-xs">Full Name</label>
             <input
@@ -81,13 +167,15 @@ function EditProfileScreen({
           </div>
 
           <div>
-            <label className="text-muted mb-1 block text-xs">Username</label>
+            <label className="text-muted mb-1 block text-xs">Email</label>
             <input
-              type="text"
+              type="email"
               className="bg-secondary text-foreground w-full rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
+
+            {emailError && <h3 className="text-error text-sm">{emailError}</h3>}
           </div>
 
           <div>
@@ -96,28 +184,35 @@ function EditProfileScreen({
               className="bg-secondary text-foreground h-24 w-full resize-none rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
+              placeholder="Tell us about yourself"
             ></textarea>
           </div>
 
           <div>
-            <label className="text-muted mb-1 block text-xs">Location</label>
+            <label className="text-muted mb-1 block text-xs">
+              Location (Postcode)
+            </label>
             <input
               type="text"
               className="bg-secondary text-foreground w-full rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={postcode}
+              onChange={(e) => setPostcode(e.target.value)}
+              placeholder="e.g. NE1 7RU"
             />
+            {postcodeError && (
+              <h3 className="text-error text-sm">{postcodeError}</h3>
+            )}
           </div>
 
           <div className="pt-4">
             <button
-              type="button"
-              onClick={handleSave}
+              type="submit"
               className="flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black"
+              disabled={updateProfileMutation.isPending}
             >
-              {isLoading ? (
+              {updateProfileMutation.isPending ? (
                 <span className="flex items-center">
-                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-b-transparent"></span>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </span>
               ) : (

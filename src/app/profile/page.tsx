@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   UserPlus,
   Heart,
@@ -15,12 +15,31 @@ import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { useRouter } from "next/navigation";
 
+import { api } from "~/trpc/react";
+
 import EditProfileScreen from "@screens/edit-profile";
 import FollowingScreen from "@screens/following-screen";
 import FollowersScreen from "@screens/followers-screen";
 import SwapsHistoryScreen from "@screens/swaps-history-screen";
 
 export default function ProfilePage() {
+
+  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery()
+
+  const [name, setName] = useState(userProfile?.name ?? "")
+  const [email, setEmail] = useState(userProfile?.email ?? "");
+  const [location, setLocation] = useState(userProfile?.location?.postcode ?? "")
+  const [profileImage, setProfileImage] = useState(userProfile?.image ?? "/placeholder.svg?height=96&width=96")
+
+  useEffect(() => {
+    if (userProfile) {
+      setName(userProfile.name ?? "")
+      setEmail(userProfile.email ?? "")
+      setLocation(userProfile.location?.postcode ?? "")
+      setProfileImage(userProfile.image ?? "/placeholder.svg?height=96&width=96")
+    }
+  }, [userProfile])
+
   const router = useRouter();
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
@@ -105,7 +124,7 @@ export default function ProfilePage() {
           <div className="flex items-center">
             <div className="mr-4 h-16 w-16 overflow-hidden rounded-full border-2 border-[#c1ff72]">
               <Image
-                src="/placeholder.svg?height=64&width=64"
+                src={profileImage}
                 alt="Profile"
                 width={64}
                 height={64}
@@ -114,8 +133,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="flex-1">
-              <h3 className="text-foreground text-lg font-bold">John</h3>
-              <div className="text-muted text-xs">@johnswapper</div>
+              <h3 className="text-foreground text-lg font-bold">{name}</h3>
+              <div className="text-muted text-xs">{email}</div>
               <div className="text-muted mt-1 text-xs">The Toon</div>
             </div>
 
