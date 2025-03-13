@@ -1,12 +1,10 @@
-import type { Config } from "tailwindcss"
-import { fontFamily } from "tailwindcss/defaultTheme"
-import tailwindcssAnimate from "tailwindcss-animate"
+import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
-  content: [
-    "./src/**/*.tsx",
-  ],
+  content: ["./src/**/*.tsx"],
   theme: {
     container: {
       center: true,
@@ -23,6 +21,7 @@ const config: Config = {
       colors: {
         "background-1": "#1a1a1a",
         "text-1": "#f3f3f3",
+        error: "#f87171",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -65,6 +64,6 @@ const config: Config = {
     },
   },
   plugins: [tailwindcssAnimate],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;
