@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UploadButton } from "~/utils/uploadthing";
+import { type OurFileRouter, UploadButton } from "~/utils/uploadthing";
 import { api } from "~/trpc/react";
 import { Loader2, Upload } from "lucide-react";
 
@@ -21,22 +21,22 @@ export function ProfileImageUpload() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <UploadButton
+      <UploadButton<OurFileRouter, "profileImage">
         endpoint="profileImage"
         onClientUploadComplete={(res) => {
           // Do something with the response
           if (res && res.length > 0) {
             setIsUploading(true);
-            console.log("Upload completed, file URL:", res[0].url);
+            console.log("Upload completed, file URL:", res[0]?.ufsUrl);
 
             // Update the profile with the new image URL
             updateProfile.mutate(
-              { image: res[0].url },
+              { image: res[0]?.ufsUrl },
               {
                 onSuccess: () => {
                   console.log(
                     "Profile updated successfully with new image:",
-                    res[0].url,
+                    res[0]?.ufsUrl,
                   );
                   setIsUploading(false);
                   setUploadError(null);
