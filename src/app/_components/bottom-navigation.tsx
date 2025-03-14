@@ -1,74 +1,72 @@
-"use client"
+"use client";
 
-import { Home, Search, Heart, MessageSquare, User } from "lucide-react"
-import Link from "next/link"
+import { Home, Search, Heart, MessageSquare, User } from "lucide-react";
+import Link from "next/link";
+import { memo } from "react";
 
-export default function BottomNavigation({
-  activeScreen = "home",
-}: {
-  activeScreen?: string
-}) {
+interface BottomNavigationProps {
+  activeScreen?: string;
+}
+
+function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#1A1A1A] border-t border-[#242424] flex justify-around items-center h-[72px] px-4 w-full">
+    <div className="fixed bottom-0 left-0 right-0 flex h-[72px] w-full items-center justify-around border-t border-[#242424] bg-[#1A1A1A] px-4">
       <Link
         href="/"
-        className={`flex flex-col items-center justify-center h-full w-16 transition-colors duration-200 ${
-          activeScreen === "home"
-            ? "text-[#c1ff72] relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#c1ff72]"
+        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "home"
+            ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
-        }`}
+          }`}
       >
-        <Home className="w-6 h-6 mb-0.5" />
+        <Home className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Home</span>
       </Link>
 
       <Link
         href="/search"
-        className={`flex flex-col items-center justify-center h-full w-16 transition-colors duration-200 ${
-          activeScreen === "search"
-            ? "text-[#c1ff72] relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#c1ff72]"
+        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "search"
+            ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
-        }`}
+          }`}
       >
-        <Search className="w-6 h-6 mb-0.5" />
+        <Search className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Search</span>
       </Link>
 
       <Link
         href="/swap"
-        className={`flex flex-col items-center justify-center h-full w-16 transition-colors duration-200 ${
-          activeScreen === "swap"
-            ? "text-[#c1ff72] relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#c1ff72]"
+        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "swap"
+            ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
-        }`}
+          }`}
       >
-        <Heart className="w-6 h-6 mb-0.5" />
+        <Heart className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Wishlist</span>
       </Link>
 
       <Link
         href="/feed"
-        className={`flex flex-col items-center justify-center h-full w-16 transition-colors duration-200 ${
-          activeScreen === "feed"
-            ? "text-[#c1ff72] relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#c1ff72]"
+        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "feed"
+            ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
-        }`}
+          }`}
       >
-        <MessageSquare className="w-6 h-6 mb-0.5" />
+        <MessageSquare className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Feed</span>
       </Link>
 
       <Link
         href="/profile"
-        className={`flex flex-col items-center justify-center h-full w-16 transition-colors duration-200 ${
-          activeScreen === "profile"
-            ? "text-[#c1ff72] relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:rounded-full after:bg-[#c1ff72]"
+        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "profile"
+            ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
-        }`}
+          }`}
       >
-        <User className="w-6 h-6 mb-0.5" />
+        <User className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Profile</span>
       </Link>
     </div>
-  )
+  );
 }
+
+export default memo(BottomNavigation);
