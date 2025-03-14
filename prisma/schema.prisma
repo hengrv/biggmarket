@@ -53,6 +53,10 @@ model User {
     swipes        Swipe[]
     sender        Message[] @relation("sender")
     receiver      Message[] @relation("receiver")
+
+    // User can follow other users
+    following Follow[] @relation("follower")
+    followers Follow[] @relation("following")
 }
 
 model Location {
@@ -195,6 +199,18 @@ model Chat {
     id        String    @id @default(cuid())
     messages Message[]
     createdAt DateTime  @default(now())
+}
+
+model Follow {
+    id          String   @id @default(cuid())
+    followerId  String
+    followingId String
+    createdAt   DateTime @default(now())
+
+    follower  User @relation(fields: [followerId], references: [id], name: "follower")
+    following User @relation(fields: [followingId], references: [id], name: "following")
+
+    @@unique([followerId, followingId])
 }
 
 model VerificationToken {
