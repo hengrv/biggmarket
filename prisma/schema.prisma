@@ -55,9 +55,8 @@ model User {
     receiver      Message[] @relation("receiver")
 
     // User can follow other users
-    following     follow[] @relation("follower")
-    follower      follow[] @relation("following")
- 
+    following Follow[] @relation("follower")
+    followers Follow[] @relation("following")
 }
 
 model Location {
@@ -202,15 +201,16 @@ model Chat {
     createdAt DateTime  @default(now())
 }
 
-model follow {
-    id        String @id @default(cuid())
-    follower  String
-    following String
-    createdAt DateTime @default(now())
+model Follow {
+    id          String   @id @default(cuid())
+    followerId  String
+    followingId String
+    createdAt   DateTime @default(now())
 
-    user      User @relation(fields: [follower], references: [id], onDelete: Cascade, name: "follower")
-    user1     User @relation(fields: [following], references: [id], onDelete: Cascade, name: "following")
+    follower  User @relation(fields: [followerId], references: [id], name: "follower")
+    following User @relation(fields: [followingId], references: [id], name: "following")
 
+    @@unique([followerId, followingId])
 }
 
 model VerificationToken {
