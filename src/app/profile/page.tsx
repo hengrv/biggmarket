@@ -23,22 +23,39 @@ import FollowersScreen from "@screens/followers-screen";
 import SwapsHistoryScreen from "@screens/swaps-history-screen";
 
 export default function ProfilePage() {
+  const [userProfile, { refetch: refetchProfile }] =
+    api.user.getProfile.useSuspenseQuery();
 
-  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery()
+  const [followers] = api.user.getFollowerCount.useSuspenseQuery({
+    userId: userProfile?.id ?? "",
+  });
 
-  const [name, setName] = useState(userProfile?.name ?? "")
+  const [following] = api.user.getFollowingCount.useSuspenseQuery({
+    userId: userProfile?.id ?? "",
+  });
+
+  const [stats] = api.item.getSwipeStats.useSuspenseQuery();
+
+  console.log(stats);
+  const [name, setName] = useState(userProfile?.name ?? "");
   const [email, setEmail] = useState(userProfile?.email ?? "");
-  const [location, setLocation] = useState(userProfile?.location?.postcode ?? "")
-  const [profileImage, setProfileImage] = useState(userProfile?.image ?? "/placeholder.svg?height=96&width=96")
+  const [postcode, setPostcode] = useState(
+    userProfile?.location?.postcode ?? "",
+  );
+  const [profileImage, setProfileImage] = useState(
+    userProfile?.image ?? "/placeholder.svg?height=96&width=96",
+  );
 
   useEffect(() => {
     if (userProfile) {
-      setName(userProfile.name ?? "")
-      setEmail(userProfile.email ?? "")
-      setLocation(userProfile.location?.postcode ?? "")
-      setProfileImage(userProfile.image ?? "/placeholder.svg?height=96&width=96")
+      setName(userProfile.name ?? "");
+      setEmail(userProfile.email ?? "");
+      setPostcode(userProfile.location?.postcode ?? "");
+      setProfileImage(
+        userProfile.image ?? "/placeholder.svg?height=96&width=96",
+      );
     }
-  }, [userProfile])
+  }, [userProfile]);
 
   const router = useRouter();
   const [profileTab, setProfileTab] = useState("gear");
@@ -155,9 +172,7 @@ export default function ProfilePage() {
               <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
-                12 Swaps
-              </span>
+              <span className="text-foreground text-xs font-medium">Swaps</span>
             </button>
 
             <button
@@ -168,7 +183,7 @@ export default function ProfilePage() {
                 <User className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-foreground text-xs font-medium">
-                24 Following
+                {following} Following
               </span>
             </button>
 
@@ -180,7 +195,7 @@ export default function ProfilePage() {
                 <UserPlus className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-foreground text-xs font-medium">
-                18 Followers
+                {followers} Followers
               </span>
             </button>
           </div>
