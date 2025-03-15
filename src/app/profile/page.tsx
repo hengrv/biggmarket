@@ -21,22 +21,30 @@ import EditProfileScreen from "@screens/edit-profile";
 import FollowingScreen from "@screens/following-screen";
 import FollowersScreen from "@screens/followers-screen";
 import SwapsHistoryScreen from "@screens/swaps-history-screen";
+import { useFollow } from "~/hooks/useFollow";
+import FollowButton from "../_components/profile/follow-button";
 
 export default function ProfilePage() {
   const [userProfile, { refetch: refetchProfile }] =
     api.user.getProfile.useSuspenseQuery();
 
-  const [followers] = api.user.getFollowerCount.useSuspenseQuery({
-    userId: userProfile?.id ?? "",
-  });
+  const { useFollowerCount, useFollowingCount } = useFollow();
 
-  const [following] = api.user.getFollowingCount.useSuspenseQuery({
-    userId: userProfile?.id ?? "",
-  });
+  const { count: followers, isLoading: loadingFollowers } = useFollowerCount(
+    userProfile?.id ?? "",
+  );
 
-  const [stats] = api.item.getSwipeStats.useSuspenseQuery();
+  const { count: following, isLoading: loadingFollowing } = useFollowingCount(
+    userProfile?.id ?? "",
+  );
 
-  console.log(stats);
+
+
+  const { data: swipeStats } = api.item.getSwipeStats.useQuery({
+    userId: userProfile?.id,
+  })
+
+
   const [name, setName] = useState(userProfile?.name ?? "");
   const [email, setEmail] = useState(userProfile?.email ?? "");
   const [postcode, setPostcode] = useState(
@@ -61,6 +69,17 @@ export default function ProfilePage() {
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
+  // Fetch user's items - move hook call outside conditional render
+  const { data: userItems, isLoading: loadingItems } = api.item.getUserItems.useQuery(
+    {
+      userId: userProfile?.id,
+      status: "AVAILABLE", // Only show available items by default
+    },
+    {
+      enabled: !!userProfile?.id,
+    },
+  )
+
   if (activeSubScreen === "edit-profile") {
     return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />;
   }
@@ -77,26 +96,10 @@ export default function ProfilePage() {
     return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
-  const userItems = [
-    {
-      id: 1,
-      name: "Vintage Record Player",
-      image: "/placeholder.svg?height=150&width=150",
-      likes: 12,
-    },
-    {
-      id: 2,
-      name: "Leather Jacket",
-      image: "/placeholder.svg?height=150&width=150",
-      likes: 8,
-    },
-    {
-      id: 3,
-      name: "Polaroid Camera",
-      image: "/placeholder.svg?height=150&width=150",
-      likes: 15,
-    },
-  ];
+
+  const totalLikes =
+    swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) || 0
+
 
   const userReviews = [
     {
@@ -172,7 +175,7 @@ export default function ProfilePage() {
               <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">Swaps</span>
+              <span className="text-foreground text-xs font-medium">{totalLikes} Swaps</span>
             </button>
 
             <button
@@ -198,6 +201,7 @@ export default function ProfilePage() {
                 {followers} Followers
               </span>
             </button>
+            <FollowButton userId={"cm877u0qq0000f7bwti093ka5"} />
           </div>
         </div>
 
@@ -216,46 +220,60 @@ export default function ProfilePage() {
           </button>
         </div>
 
+
         {profileTab === "gear" ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-foreground font-semibold">Your Items</h3>
-              <button
-                className="flex items-center text-xs text-[#c1ff72]"
-                onClick={() => router.push("/swap")}
-              >
+              <button className="flex items-center text-xs text-[#c1ff72]" onClick={() => router.push("/swap")}>
                 Add New
                 <ChevronRight className="ml-1 h-4 w-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {userItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-secondary overflow-hidden rounded-lg shadow-lg"
+            {loadingItems ? (
+              <div className="flex justify-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
+              </div>
+            ) : userItems && userItems.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {userItems.map((item) => (
+                  <div key={item.id} className="bg-secondary overflow-hidden rounded-lg shadow-lg">
+                    <div className="relative">
+                      <Image
+                        src={item.image || "/placeholder.svg?height=150&width=150"}
+                        alt={item.name || "Item"}
+                        width={150}
+                        height={150}
+                        className="h-32 w-full object-cover"
+                      />
+                      <div className="absolute right-2 top-2 flex items-center rounded-full bg-black/50 px-2 py-0.5">
+                        <Heart className="mr-1 h-3 w-3 text-[#c1ff72]" />
+                        <span className="text-xs text-white">{item._count?.swipes || 0}</span>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <div className="text-foreground text-sm font-semibold truncate">
+                        {item.description || "No description"}
+                      </div>
+                      <div className="text-muted text-xs">{item.category}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
+                <Package className="mx-auto mb-3 h-10 w-10 text-[#c1ff72]" />
+                <h3 className="mb-2 text-foreground font-semibold">No items yet</h3>
+                <p className="text-muted text-sm">Add some items to start swapping!</p>
+                <button
+                  className="mt-4 rounded-lg bg-[#c1ff72] px-4 py-2 text-sm font-medium text-black"
+                  onClick={() => router.push("/swap")}
                 >
-                  <div className="relative">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      width={150}
-                      height={150}
-                      className="h-32 w-full object-cover"
-                    />
-                    <div className="absolute right-2 top-2 flex items-center rounded-full bg-black/50 px-2 py-0.5">
-                      <Heart className="mr-1 h-3 w-3 text-[#c1ff72]" />
-                      <span className="text-xs text-white">{item.likes}</span>
-                    </div>
-                  </div>
-                  <div className="p-2">
-                    <div className="text-foreground text-sm font-semibold">
-                      {item.name}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  Add Your First Item
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-4">

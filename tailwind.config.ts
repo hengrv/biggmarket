@@ -23,6 +23,7 @@ const config: Config = {
         "background-1": "#1a1a1a",
         "bm-white": "#f3f3f3",
         "bm-black": "#1a1a1a",
+        "bm-green": "#c1ff72",
         "text-1": "#f3f3f3",
         error: "#f87171",
         border: "hsl(var(--border))",

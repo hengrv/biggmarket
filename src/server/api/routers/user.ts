@@ -43,6 +43,10 @@ interface PostcodeResponse {
 }
 
 export const userRouter = createTRPCRouter({
+    getCurrentlyAuthenticatedUser: protectedProcedure.query(async ({ ctx }) => {
+        return ctx.session.user.id;
+    }),
+
     // * Get profile
     getProfile: protectedProcedure.query(async ({ ctx }) => {
         const profile = await ctx.db.user.findUnique({
@@ -159,7 +163,6 @@ export const userRouter = createTRPCRouter({
                 });
             }
         }),
-
 
     followUser: protectedProcedure
         .input(

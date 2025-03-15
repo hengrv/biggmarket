@@ -503,19 +503,27 @@ export const itemRouter = createTRPCRouter({
   /**
    *  getSwipeStats - returns the statitics about how many swipes a user has made
    * */
-  getSwipeStats: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
+  getSwipeStats: protectedProcedure
+    .input(
+      z
+        .object({
+          userId: z.string().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = input?.userId ?? ctx.session.user.id
 
-    const stats = await ctx.db.swipe.groupBy({
-      by: ["direction"],
-      where: {
-        userId,
-      },
-      _count: true,
-    });
+      const stats = await ctx.db.swipe.groupBy({
+        by: ["direction"],
+        where: {
+          userId,
+        },
+        _count: true,
+      })
 
-    return stats;
-  }),
+      return stats
+    }),
 
   getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
