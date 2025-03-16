@@ -48,15 +48,23 @@ export const userRouter = createTRPCRouter({
     }),
 
     // * Get profile
-    getProfile: protectedProcedure.query(async ({ ctx }) => {
-        const profile = await ctx.db.user.findUnique({
-            where: { id: ctx.session.user.id },
-            include: {
-                location: true,
-            },
-        });
-        return profile ?? null;
-    }),
+    getProfile: protectedProcedure
+        .input(
+            z.object({
+                userId: z.string().optional(),
+            }).optional(),
+        )
+        .query(async ({ ctx, input }) => {
+            const userId = input?.userId ?? ctx.session.user.id
+
+            const profile = await ctx.db.user.findUnique({
+                where: { id: userId },
+                include: {
+                    location: true,
+                },
+            });
+            return profile ?? null;
+        }),
 
     // * Update profile
     updateProfile: protectedProcedure

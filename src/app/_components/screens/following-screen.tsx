@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Loader2 } from "lucide-react"
 import { useFollow } from "~/hooks/useFollow"
 import { api } from "~/trpc/react"
-import { User } from "@prisma/client"
+import { type User } from "@prisma/client"
 
 function FollowingScreen({
   setActiveSubScreen,
@@ -40,8 +40,8 @@ function FollowingScreen({
           </div>
         ) : following.length === 0 ? (
           <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
-            <h3 className="text-foreground font-semibold mb-2">You're not following anyone yet</h3>
-            <p className="text-muted text-sm">When you follow people, they'll appear here.</p>
+            <h3 className="text-foreground font-semibold mb-2">{"You're not following anyone yet"}</h3>
+            <p className="text-muted text-sm">{"When you follow people, they'll appear here."}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -74,7 +74,17 @@ function FollowingScreen({
   )
 }
 
-function FollowingCard({ user }: { user: User }) {
+function FollowingCard(
+  { user }: {
+    user: {
+      followedAt: Date,
+      id: string,
+      email: string | null
+    }
+  }) {
+
+  const { data: followedUser } = api.user.getProfile.useQuery({ userId: user.id })
+
   const { useFollowActions } = useFollow()
   const { isLoading, toggleFollow } = useFollowActions(user.id)
 
@@ -82,8 +92,8 @@ function FollowingCard({ user }: { user: User }) {
     <div className="bg-secondary flex items-center rounded-lg p-4 shadow-lg">
       <div className="mr-4 h-14 w-14 overflow-hidden rounded-full">
         <Image
-          src={user.image ?? "/placeholder.svg?height=56&width=56"}
-          alt={user.name ?? user.email ?? "User"}
+          src={followedUser?.image ?? "/placeholder.svg?height=56&width=56"}
+          alt={followedUser?.name ?? followedUser?.email ?? "User"}
           width={56}
           height={56}
           className="h-full w-full object-cover"
@@ -91,7 +101,7 @@ function FollowingCard({ user }: { user: User }) {
       </div>
 
       <div className="flex-1">
-        <div className="text-foreground font-semibold">{user.name || user.email}</div>
+        <div className="text-foreground font-semibold">{followedUser?.name ?? user.email}</div>
         <div className="text-muted text-xs">{user.email}</div>
         <div className="text-muted mt-1 line-clamp-1 text-xs">
           Following since {new Date(user.followedAt).toLocaleDateString()}
