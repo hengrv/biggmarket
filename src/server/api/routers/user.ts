@@ -112,6 +112,9 @@ export const userRouter = createTRPCRouter({
             where: {
                 userId,
             },
+            include: {
+                reviewerUser: true,
+            },
         });
         return reviews;
     }),

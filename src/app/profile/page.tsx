@@ -38,12 +38,9 @@ export default function ProfilePage() {
     userProfile?.id ?? "",
   );
 
-
-
   const { data: swipeStats } = api.item.getSwipeStats.useQuery({
     userId: userProfile?.id,
   })
-
 
   const [name, setName] = useState(userProfile?.name ?? "");
   const [email, setEmail] = useState(userProfile?.email ?? "");
@@ -100,42 +97,43 @@ export default function ProfilePage() {
   const totalLikes =
     swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) || 0
 
+  const { data: userReviews } = api.user.getProfileReviews.useQuery();
 
-  const userReviews = [
-    {
-      id: 1,
-      reviewer: {
-        name: "Sarah Johnson",
-        image: "/placeholder.svg?height=48&width=48",
-      },
-      rating: 5,
-      text: "Great experience swapping with John! The item was exactly as described and the exchange was smooth.",
-      date: "2 weeks ago",
-      item: "Vintage Record Player",
-    },
-    {
-      id: 2,
-      reviewer: {
-        name: "Mike Peters",
-        image: "/placeholder.svg?height=48&width=48",
-      },
-      rating: 4,
-      text: "Good communication and fair trade. Would swap with again!",
-      date: "1 month ago",
-      item: "Leather Jacket",
-    },
-    {
-      id: 3,
-      reviewer: {
-        name: "Emily Davis",
-        image: "/placeholder.svg?height=48&width=48",
-      },
-      rating: 5,
-      text: "John is a reliable swapper. Item was in perfect condition and he was very responsive.",
-      date: "2 months ago",
-      item: "Polaroid Camera",
-    },
-  ];
+  // const userReviews = [
+  //   {
+  //     id: 1,
+  //     reviewer: {
+  //       name: "Sarah Johnson",
+  //       image: "/placeholder.svg?height=48&width=48",
+  //     },
+  //     rating: 5,
+  //     text: "Great experience swapping with John! The item was exactly as described and the exchange was smooth.",
+  //     date: "2 weeks ago",
+  //     item: "Vintage Record Player",
+  //   },
+  //   {
+  //     id: 2,
+  //     reviewer: {
+  //       name: "Mike Peters",
+  //       image: "/placeholder.svg?height=48&width=48",
+  //     },
+  //     rating: 4,
+  //     text: "Good communication and fair trade. Would swap with again!",
+  //     date: "1 month ago",
+  //     item: "Leather Jacket",
+  //   },
+  //   {
+  //     id: 3,
+  //     reviewer: {
+  //       name: "Emily Davis",
+  //       image: "/placeholder.svg?height=48&width=48",
+  //     },
+  //     rating: 5,
+  //     text: "John is a reliable swapper. Item was in perfect condition and he was very responsive.",
+  //     date: "2 months ago",
+  //     item: "Polaroid Camera",
+  //   },
+  // ];
 
   return (
     <AppShell activeScreen="profile" title="Profile">
@@ -281,15 +279,17 @@ export default function ProfilePage() {
               <h3 className="text-foreground font-semibold">Your Reviews</h3>
               <div className="flex items-center">
                 <Star className="mr-1 h-4 w-4 text-[#c1ff72]" />
-                <span className="text-foreground font-semibold">4.7</span>
+                <span className="text-foreground font-semibold">
+                  {(userReviews ?? []).reduce((acc, review) => acc + review.rating, 0) / (userReviews?.length ?? 1)}
+                </span>
                 <span className="text-muted ml-1 text-xs">
-                  ({userReviews.length})
+                  ({userReviews?.length ?? 0})
                 </span>
               </div>
             </div>
 
             <div className="space-y-3">
-              {userReviews.map((review) => (
+              {userReviews?.map((review) => (
                 <div
                   key={review.id}
                   className="bg-secondary rounded-lg p-4 shadow-lg"
@@ -298,12 +298,12 @@ export default function ProfilePage() {
                     <div
                       className="mr-3 h-10 w-10 cursor-pointer overflow-hidden rounded-full"
                       onClick={() => {
-                        alert(`Viewing ${review.reviewer.name}'s profile`);
+                        alert(`Viewing ${review.reviewerUser.name}'s profile`);
                       }}
                     >
                       <Image
-                        src={review.reviewer.image || "/placeholder.svg"}
-                        alt={review.reviewer.name}
+                        src={review.reviewerUser.image ?? "/placeholder.svg"}
+                        alt={review.reviewerUser.name ?? "Anonymous"}
                         width={40}
                         height={40}
                         className="h-full w-full object-cover"
@@ -313,10 +313,10 @@ export default function ProfilePage() {
                       <div
                         className="text-foreground cursor-pointer font-semibold"
                         onClick={() => {
-                          alert(`Viewing ${review.reviewer.name}'s profile`);
+                          alert(`Viewing ${review.reviewerUser.name}'s profile`);
                         }}
                       >
-                        {review.reviewer.name}
+                        {review.reviewerUser.name}
                       </div>
                       <div className="flex items-center">
                         <div className="mr-2 flex">
@@ -337,15 +337,16 @@ export default function ProfilePage() {
                         </span>
                         <span className="text-muted mx-2 text-xs">•</span>
                         <span className="text-muted text-xs">
-                          {review.date}
+                          {review.createdAt.toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-foreground mb-2 text-sm">{review.text}</p>
-                  <div className="text-muted text-xs">
+                  <p className="text-foreground mb-2 text-sm">{review.review}</p>
+                  {/* //! TODO: Add item box here */}
+                  {/* <div className="text-muted text-xs">
                     Item: <span className="text-[#c1ff72]">{review.item}</span>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>
