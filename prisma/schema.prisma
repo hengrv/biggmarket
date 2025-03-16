@@ -82,7 +82,7 @@ model Review {
 // Item model to keep track of user items
 model Item {
     id          String     @id @default(cuid())
-    title       String
+    title       String     @default("title")
     image       String // URL
     userId      String
     description String?
