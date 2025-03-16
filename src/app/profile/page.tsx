@@ -77,6 +77,12 @@ export default function ProfilePage() {
     },
   )
 
+
+  const totalLikes =
+    swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
+
+  const { data: userReviews } = api.user.getProfileReviews.useQuery();
+
   if (activeSubScreen === "edit-profile") {
     return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />;
   }
@@ -94,10 +100,6 @@ export default function ProfilePage() {
   }
 
 
-  const totalLikes =
-    swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
-
-  const { data: userReviews } = api.user.getProfileReviews.useQuery();
 
   // const userReviews = [
   //   {
