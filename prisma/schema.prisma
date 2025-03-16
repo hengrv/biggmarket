@@ -82,6 +82,7 @@ model Review {
 // Item model to keep track of user items
 model Item {
     id          String     @id @default(cuid())
+    title       String
     image       String // URL
     userId      String
     description String?
@@ -170,34 +171,34 @@ enum SwipeDirection {
 
 enum Category {
     Electronics
-	Vehicles
-	HomeAndFurniture
-	ClothingAndAccessories
-	SportsAndOutdoors
-	ToysAndGames
-	Leisure
-	HealthAndBeauty
-	BusinessAndIndustrial
+    Vehicles
+    HomeAndFurniture
+    ClothingAndAccessories
+    SportsAndOutdoors
+    ToysAndGames
+    Leisure
+    HealthAndBeauty
+    BusinessAndIndustrial
     Other
 }
 
 model Message {
-    id        String   @id @default(cuid())
-    senderId  String
+    id         String   @id @default(cuid())
+    senderId   String
     receiverId String
     message1   String? // Sender message
     message2   String? // Receiver message
-    chatId    String
-    createdAt DateTime @default(now())
-    sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
-    receiver  User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
-    chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+    chatId     String
+    createdAt  DateTime @default(now())
+    sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+    receiver   User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+    chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 // Chat model to keep track of user chats
 model Chat {
     id        String    @id @default(cuid())
-    messages Message[]
+    messages  Message[]
     createdAt DateTime  @default(now())
 }
 
@@ -220,3 +221,4 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
