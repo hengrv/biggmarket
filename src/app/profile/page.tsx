@@ -44,9 +44,11 @@ export default function ProfilePage() {
 
   const [name, setName] = useState(userProfile?.name ?? "");
   const [email, setEmail] = useState(userProfile?.email ?? "");
+
   const [postcode, setPostcode] = useState(
     userProfile?.location?.postcode ?? "",
   );
+
   const [profileImage, setProfileImage] = useState(
     userProfile?.image ?? "/placeholder.svg?height=96&width=96",
   );
@@ -66,7 +68,7 @@ export default function ProfilePage() {
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
-  // Fetch user's items - move hook call outside conditional render
+  // Fetch user's items
   const { data: userItems, isLoading: loadingItems } = api.item.getUserItems.useQuery(
     {
       userId: userProfile?.id,
@@ -76,7 +78,6 @@ export default function ProfilePage() {
       enabled: !!userProfile?.id,
     },
   )
-
 
   const totalLikes =
     swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
@@ -98,44 +99,6 @@ export default function ProfilePage() {
   if (activeSubScreen === "swaps") {
     return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />;
   }
-
-
-
-  // const userReviews = [
-  //   {
-  //     id: 1,
-  //     reviewer: {
-  //       name: "Sarah Johnson",
-  //       image: "/placeholder.svg?height=48&width=48",
-  //     },
-  //     rating: 5,
-  //     text: "Great experience swapping with John! The item was exactly as described and the exchange was smooth.",
-  //     date: "2 weeks ago",
-  //     item: "Vintage Record Player",
-  //   },
-  //   {
-  //     id: 2,
-  //     reviewer: {
-  //       name: "Mike Peters",
-  //       image: "/placeholder.svg?height=48&width=48",
-  //     },
-  //     rating: 4,
-  //     text: "Good communication and fair trade. Would swap with again!",
-  //     date: "1 month ago",
-  //     item: "Leather Jacket",
-  //   },
-  //   {
-  //     id: 3,
-  //     reviewer: {
-  //       name: "Emily Davis",
-  //       image: "/placeholder.svg?height=48&width=48",
-  //     },
-  //     rating: 5,
-  //     text: "John is a reliable swapper. Item was in perfect condition and he was very responsive.",
-  //     date: "2 months ago",
-  //     item: "Polaroid Camera",
-  //   },
-  // ];
 
   return (
     <AppShell activeScreen="profile" title="Profile">
