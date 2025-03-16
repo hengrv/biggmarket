@@ -95,7 +95,7 @@ export default function ProfilePage() {
 
 
   const totalLikes =
-    swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) || 0
+    swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
 
   const { data: userReviews } = api.user.getProfileReviews.useQuery();
 
@@ -240,7 +240,7 @@ export default function ProfilePage() {
                     <div className="relative">
                       <Image
                         src={item.image || "/placeholder.svg?height=150&width=150"}
-                        alt={item.name || "Item"}
+                        alt={item.title ?? "Item"}
                         width={150}
                         height={150}
                         className="h-32 w-full object-cover"
@@ -252,7 +252,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="p-2">
                       <div className="text-foreground text-sm font-semibold truncate">
-                        {item.description || "No description"}
+                        {item.description ?? "No description"}
                       </div>
                       <div className="text-muted text-xs">{item.category}</div>
                     </div>
