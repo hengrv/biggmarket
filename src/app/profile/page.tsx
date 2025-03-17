@@ -83,6 +83,8 @@ export default function ProfilePage() {
     swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
 
   const { data: userReviews } = api.user.getProfileReviews.useQuery();
+  const [{ averageRating, reviewCount }] = api.user.getAverageRating.useSuspenseQuery();
+
 
   if (activeSubScreen === "edit-profile") {
     return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />;
@@ -245,10 +247,10 @@ export default function ProfilePage() {
               <div className="flex items-center">
                 <Star className="mr-1 h-4 w-4 text-[#c1ff72]" />
                 <span className="text-foreground font-semibold">
-                  {(userReviews ?? []).reduce((acc, review) => acc + review.rating, 0) / (userReviews?.length ?? 1)}
+                  {averageRating}
                 </span>
                 <span className="text-muted ml-1 text-xs">
-                  ({userReviews?.length ?? 0})
+                  ({reviewCount})
                 </span>
               </div>
             </div>

@@ -114,19 +114,58 @@ export const userRouter = createTRPCRouter({
         }),
 
     // * Get reviews
-    getProfileReviews: protectedProcedure.query(async ({ ctx }) => {
-        const userId = ctx.session.user.id;
-        const reviews = await ctx.db.review.findMany({
-            where: {
-                userId,
-            },
-            include: {
-                reviewerUser: true,
-            },
-        });
-        return reviews;
-    }),
+    getProfileReviews: protectedProcedure
+        .input(
+            z.object({
+                userId: z.string()
+            }).optional())
+        .query(async ({ ctx, input }) => {
+            const userId = input?.userId ?? ctx.session.user.id;
+            const reviews = await ctx.db.review.findMany({
+                where: {
+                    userId,
+                },
+                include: {
+                    reviewerUser: true,
+                },
+            });
+            return reviews;
+        }),
+    getAverageRating: protectedProcedure
+        .input(
+            z.object({
+                userId: z.string()
+            }).optional())
+        .query(async ({ ctx, input }) => {
+            const userId = input?.userId ?? ctx.session.user.id;
 
+            const result = await ctx.db.review.aggregate({
+                where: {
+                    userId,
+                },
+                _avg: {
+                    rating: true,
+                },
+                _count: {
+                    rating: true,
+                },
+            })
+
+            if (result._count.rating === 0) {
+                return {
+                    averageRating: 0,
+                    reviewCount: 0,
+                }
+            }
+
+            // Round to 1 decimal place if needed
+            const averageRating = result._avg.rating ? Math.round(result._avg.rating * 10) / 10 : 0
+
+            return {
+                averageRating,
+                reviewCount: result._count.rating,
+            }
+        }),
     // * Postcode to long and lat
     postcodeToLongLat: protectedProcedure
         .input(postcodeInput)
