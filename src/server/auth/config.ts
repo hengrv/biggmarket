@@ -63,10 +63,10 @@ export const authConfig = {
   events: {
     createUser: async ({ user }) => {
       // This event is triggered only when a new user is created
-      if (user.email) {
+      if (user?.email) {
         try {
           // Extract base username from email (part before @)
-          const baseUsername = user.email.split("@")[0].toLowerCase()
+          const baseUsername = user.email.split("@")[0]?.toLowerCase()
 
           // Check if username exists and generate a unique one if needed
           let uniqueUsername = baseUsername
