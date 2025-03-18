@@ -5,6 +5,7 @@ import type { SwipeDirection, machedStatus } from "@prisma/client";
 import geolib from "geolib";
 
 const itemInputSchema = z.object({
+  title: z.string(),
   image: z.string().url("Must be a valid URL"),
   description: z.string().optional(),
   category: z.string().min(1, "Category is required"), // ! Change to enum

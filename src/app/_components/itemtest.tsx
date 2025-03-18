@@ -7,6 +7,7 @@ import { api } from "~/trpc/react";
 export default function ItemTester() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [newItemData, setNewItemData] = useState({
+    title: "",
     image: "",
     description: "",
     category: "",
@@ -32,7 +33,7 @@ export default function ItemTester() {
     e.preventDefault();
     try {
       await createItem.mutateAsync(newItemData);
-      setNewItemData({ image: "", description: "", category: "" });
+      setNewItemData({ title: "", image: "", description: "", category: "" });
     } catch (error) {
       console.error("Create error:", error);
     }
@@ -148,10 +149,10 @@ export default function ItemTester() {
               <strong>Status:</strong>{" "}
               <span
                 className={`rounded px-2 py-1 text-sm ${item.status === "AVAILABLE"
-                    ? "bg-green-100 text-green-800"
-                    : item.status === "HIDDEN"
-                      ? "bg-gray-100 text-gray-800"
-                      : "bg-blue-100 text-blue-800"
+                  ? "bg-green-100 text-green-800"
+                  : item.status === "HIDDEN"
+                    ? "bg-gray-100 text-gray-800"
+                    : "bg-blue-100 text-blue-800"
                   }`}
               >
                 {item.status}
