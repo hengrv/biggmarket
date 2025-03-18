@@ -55,8 +55,8 @@ model User {
     receiver      Message[] @relation("receiver")
 
     // User can follow other users
-    following Follow[] @relation("follower")
-    followers Follow[] @relation("following")
+    follower Follow[] @relation("follower")
+    following Follow[] @relation("following")
 }
 
 model Location {
