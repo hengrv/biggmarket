@@ -1,16 +1,13 @@
-import { z } from "zod";
-import { TRPCError } from "@trpc/server";
-import {
-    createTRPCRouter,
-    protectedProcedure,
-    publicProcedure,
-} from "~/server/api/trpc";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { z } from "zod"
+import { TRPCError } from "@trpc/server"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
 const userProfileInput = z.object({
     image: z.string().url("Must be a valid URL").optional(),
     email: z.string().email("Must be a valid email").optional(),
     name: z.string().optional(),
+    username: z.string().optional(),
     location: z
         .object({
             postcode: z.string(),
@@ -18,109 +15,147 @@ const userProfileInput = z.object({
             longitude: z.number(), // Decimal
         })
         .optional(),
-});
+})
 
 const reviewInput = z.object({
     userId: z.string(),
     review: z.string(),
     rating: z.number(),
-});
+})
 
-export const postcodeInput = z
-    .string()
-    .regex(
-        /^[A-Z]{1,2}[0-9]{1,2}[A-Z]?(\s*)[0-9][A-Z]{2}$/i,
-        "Invalid UK postcode",
-    );
+export const postcodeInput = z.string().regex(/^[A-Z]{1,2}[0-9]{1,2}[A-Z]?(\s*)[0-9][A-Z]{2}$/i, "Invalid UK postcode")
 
 interface PostcodeResponse {
-    status: number;
+    status: number
     result: {
-        postcode: string;
-        latitude: number;
-        longitude: number;
-    };
+        postcode: string
+        latitude: number
+        longitude: number
+    }
 }
 
 export const userRouter = createTRPCRouter({
     getCurrentlyAuthenticatedUser: protectedProcedure.query(async ({ ctx }) => {
-        return ctx.session.user.id;
+        return ctx.session.user.id
     }),
 
     // * Get profile
     getProfile: protectedProcedure
         .input(
-            z.object({
-                userId: z.string().optional(),
-            }).optional(),
+            z
+                .object({
+                    userId: z.string().optional(),
+                    username: z.string().optional(),
+                })
+                .optional(),
         )
         .query(async ({ ctx, input }) => {
-            const userId = input?.userId ?? ctx.session.user.id
+            // If no input is provided, return the current user's profile
+            if (!input || (!input.userId && !input.username)) {
+                const userId = ctx.session.user.id
+                const profile = await ctx.db.user.findUnique({
+                    where: { id: userId },
+                    include: {
+                        location: true,
+                    },
+                })
+                return profile ?? null
+            }
 
+            // If username is provided, find by username
+            if (input.username) {
+                // If username starts with @, remove it
+                const cleanUsername = input.username.startsWith("@") ? input.username.substring(1) : input.username
+
+                const profile = await ctx.db.user.findUnique({
+                    where: { username: cleanUsername },
+                    include: {
+                        location: true,
+                    },
+                })
+                return profile ?? null
+            }
+
+            // Otherwise find by userId
             const profile = await ctx.db.user.findUnique({
-                where: { id: userId },
+                where: { id: input.userId },
                 include: {
                     location: true,
                 },
-            });
-            return profile ?? null;
+            })
+            return profile ?? null
         }),
 
     // * Update profile
-    updateProfile: protectedProcedure
-        .input(userProfileInput)
-        .mutation(async ({ ctx, input }) => {
-            const { location, ...userData } = input;
-            const profile = await ctx.db.user.update({
-                where: { id: ctx.session.user.id },
-                data: {
-                    ...userData,
-                    location: location
-                        ? {
-                            upsert: {
-                                create: {
-                                    postcode: location.postcode,
-                                    latitude: location.latitude,
-                                    longitude: location.longitude,
-                                },
-                                update: {
-                                    postcode: location.postcode,
-                                    latitude: location.latitude,
-                                    longitude: location.longitude,
-                                },
+    updateProfile: protectedProcedure.input(userProfileInput).mutation(async ({ ctx, input }) => {
+        const { location, username, ...userData } = input
+
+        // If username is being updated, check if it's unique
+        if (username) {
+            const existingUser = await ctx.db.user.findUnique({
+                where: { username },
+            })
+
+            if (existingUser && existingUser.id !== ctx.session.user.id) {
+                throw new TRPCError({
+                    code: "CONFLICT",
+                    message: "Username already taken",
+                })
+            }
+        }
+
+        const profile = await ctx.db.user.update({
+            where: { id: ctx.session.user.id },
+            data: {
+                ...userData,
+                username,
+                location: location
+                    ? {
+                        upsert: {
+                            create: {
+                                postcode: location.postcode,
+                                latitude: location.latitude,
+                                longitude: location.longitude,
                             },
-                        }
-                        : undefined,
-                },
-            });
-            return profile ?? null;
-        }),
+                            update: {
+                                postcode: location.postcode,
+                                latitude: location.latitude,
+                                longitude: location.longitude,
+                            },
+                        },
+                    }
+                    : undefined,
+            },
+        })
+        return profile ?? null
+    }),
 
     // * Add review
-    addProfileReview: protectedProcedure
-        .input(reviewInput)
-        .mutation(async ({ ctx, input }) => {
-            const userId = ctx.session.user.id;
-            const review = await ctx.db.review.create({
-                data: {
-                    userId: input.userId, // This should be the user being reviewed
-                    reviewer: userId, // Current user
-                    review: input.review,
-                    rating: input.rating,
-                },
-            });
+    addProfileReview: protectedProcedure.input(reviewInput).mutation(async ({ ctx, input }) => {
+        const userId = ctx.session.user.id
+        const review = await ctx.db.review.create({
+            data: {
+                userId: input.userId, // This should be the user being reviewed
+                reviewer: userId, // Current user
+                review: input.review,
+                rating: input.rating,
+            },
+        })
 
-            return review;
-        }),
+        return review
+    }),
 
     // * Get reviews
     getProfileReviews: protectedProcedure
         .input(
-            z.object({
-                userId: z.string()
-            }).optional())
+            z
+                .object({
+                    userId: z.string(),
+                })
+                .optional(),
+        )
         .query(async ({ ctx, input }) => {
-            const userId = input?.userId ?? ctx.session.user.id;
+            const userId = input?.userId ?? ctx.session.user.id
             const reviews = await ctx.db.review.findMany({
                 where: {
                     userId,
@@ -128,16 +163,19 @@ export const userRouter = createTRPCRouter({
                 include: {
                     reviewerUser: true,
                 },
-            });
-            return reviews;
+            })
+            return reviews
         }),
     getAverageRating: protectedProcedure
         .input(
-            z.object({
-                userId: z.string()
-            }).optional())
+            z
+                .object({
+                    userId: z.string(),
+                })
+                .optional(),
+        )
         .query(async ({ ctx, input }) => {
-            const userId = input?.userId ?? ctx.session.user.id;
+            const userId = input?.userId ?? ctx.session.user.id
 
             const result = await ctx.db.review.aggregate({
                 where: {
@@ -167,52 +205,48 @@ export const userRouter = createTRPCRouter({
             }
         }),
     // * Postcode to long and lat
-    postcodeToLongLat: protectedProcedure
-        .input(postcodeInput)
-        .query(async ({ input }) => {
-            // Format postcode by removing any spaces for the API call
-            const formattedPostcode = input.replace(/\s+/g, "");
+    postcodeToLongLat: protectedProcedure.input(postcodeInput).query(async ({ input }) => {
+        // Format postcode by removing any spaces for the API call
+        const formattedPostcode = input.replace(/\s+/g, "")
 
-            try {
-                const response = await fetch(
-                    `https://api.postcodes.io/postcodes/${formattedPostcode}`,
-                );
+        try {
+            const response = await fetch(`https://api.postcodes.io/postcodes/${formattedPostcode}`)
 
-                if (!response.ok) {
-                    throw new TRPCError({
-                        code: "BAD_REQUEST",
-                        message: `Invalid postcode or API error: ${response.statusText}`,
-                    });
-                }
-
-                const data = (await response.json()) as PostcodeResponse;
-
-                if (data.status !== 200) {
-                    throw new TRPCError({
-                        code: "BAD_REQUEST",
-                        message: "Invalid postcode",
-                    });
-                }
-
-                return {
-                    latitude: data.result.latitude,
-                    longitude: data.result.longitude,
-                };
-            } catch (error) {
-                // If it's already a TRPCError, rethrow it
-                if (error instanceof TRPCError) {
-                    throw error;
-                }
-
-                // Otherwise, wrap it in a TRPCError
-                console.error("Error converting postcode:", error);
+            if (!response.ok) {
                 throw new TRPCError({
-                    code: "INTERNAL_SERVER_ERROR",
-                    message: "Failed to convert postcode to coordinates",
-                    cause: error,
-                });
+                    code: "BAD_REQUEST",
+                    message: `Invalid postcode or API error: ${response.statusText}`,
+                })
             }
-        }),
+
+            const data = (await response.json()) as PostcodeResponse
+
+            if (data.status !== 200) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Invalid postcode",
+                })
+            }
+
+            return {
+                latitude: data.result.latitude,
+                longitude: data.result.longitude,
+            }
+        } catch (error) {
+            // If it's already a TRPCError, rethrow it
+            if (error instanceof TRPCError) {
+                throw error
+            }
+
+            // Otherwise, wrap it in a TRPCError
+            console.error("Error converting postcode:", error)
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to convert postcode to coordinates",
+                cause: error,
+            })
+        }
+    }),
 
     followUser: protectedProcedure
         .input(
@@ -221,14 +255,14 @@ export const userRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const followerId = ctx.session.user.id;
+            const followerId = ctx.session.user.id
 
             // Prevent self-following
             if (followerId === input.followingId) {
                 throw new TRPCError({
                     code: "BAD_REQUEST",
                     message: "You cannot follow yourself",
-                });
+                })
             }
 
             try {
@@ -237,32 +271,26 @@ export const userRouter = createTRPCRouter({
                         follower: { connect: { id: followerId } },
                         following: { connect: { id: input.followingId } },
                     },
-                });
-                return follow;
+                })
+                return follow
             } catch (error) {
                 // Handle unique constraint violation (already following)
-                if (
-                    error instanceof PrismaClientKnownRequestError &&
-                    error.code === "P2002"
-                ) {
+                if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
                     throw new TRPCError({
                         code: "CONFLICT",
                         message: "You are already following this user",
-                    });
+                    })
                 }
-                if (
-                    error instanceof PrismaClientKnownRequestError &&
-                    error.code === "P2025"
-                ) {
+                if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
                     throw new TRPCError({
                         code: "NOT_FOUND",
                         message: "User not found",
-                    });
+                    })
                 }
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to follow user",
-                });
+                })
             }
         }),
 
@@ -274,7 +302,7 @@ export const userRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const followerId = ctx.session.user.id;
+            const followerId = ctx.session.user.id
 
             try {
                 const result = await ctx.db.follow.deleteMany({
@@ -282,25 +310,25 @@ export const userRouter = createTRPCRouter({
                         followerId,
                         followingId: input.followingId,
                     },
-                });
+                })
 
                 if (result.count === 0) {
                     throw new TRPCError({
                         code: "NOT_FOUND",
                         message: "You are not following this user",
-                    });
+                    })
                 }
 
-                return { success: true };
+                return { success: true }
             } catch (error) {
                 if (error instanceof TRPCError) {
-                    throw error; // Re-throw TRPCError as is
+                    throw error // Re-throw TRPCError as is
                 }
 
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to unfollow user",
-                });
+                })
             }
         }),
     // Get followers of a user
@@ -313,7 +341,7 @@ export const userRouter = createTRPCRouter({
             }),
         )
         .query(async ({ ctx, input }) => {
-            const { userId, limit, cursor } = input;
+            const { userId, limit, cursor } = input
 
             try {
                 const followers = await ctx.db.follow.findMany({
@@ -335,12 +363,12 @@ export const userRouter = createTRPCRouter({
                     orderBy: {
                         createdAt: "desc",
                     },
-                });
+                })
 
-                let nextCursor: string | undefined = undefined;
+                let nextCursor: string | undefined = undefined
                 if (followers.length > limit) {
-                    const nextItem = followers.pop();
-                    nextCursor = nextItem?.id;
+                    const nextItem = followers.pop()
+                    nextCursor = nextItem?.id
                 }
 
                 return {
@@ -349,19 +377,19 @@ export const userRouter = createTRPCRouter({
                         followedAt: f.createdAt,
                     })),
                     nextCursor,
-                };
+                }
             } catch (error) {
                 if (error instanceof PrismaClientKnownRequestError) {
                     throw new TRPCError({
                         code: "INTERNAL_SERVER_ERROR",
                         message: "Database error occurred",
-                    });
+                    })
                 }
 
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to fetch followers",
-                });
+                })
             }
         }),
 
@@ -375,7 +403,7 @@ export const userRouter = createTRPCRouter({
             }),
         )
         .query(async ({ ctx, input }) => {
-            const { userId, limit, cursor } = input;
+            const { userId, limit, cursor } = input
 
             try {
                 const following = await ctx.db.follow.findMany({
@@ -397,12 +425,12 @@ export const userRouter = createTRPCRouter({
                     orderBy: {
                         createdAt: "desc",
                     },
-                });
+                })
 
-                let nextCursor: string | undefined = undefined;
+                let nextCursor: string | undefined = undefined
                 if (following.length > limit) {
-                    const nextItem = following.pop();
-                    nextCursor = nextItem?.id;
+                    const nextItem = following.pop()
+                    nextCursor = nextItem?.id
                 }
 
                 return {
@@ -411,19 +439,19 @@ export const userRouter = createTRPCRouter({
                         followedAt: f.createdAt,
                     })),
                     nextCursor,
-                };
+                }
             } catch (error) {
                 if (error instanceof PrismaClientKnownRequestError) {
                     throw new TRPCError({
                         code: "INTERNAL_SERVER_ERROR",
                         message: "Database error occurred",
-                    });
+                    })
                 }
 
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to fetch following users",
-                });
+                })
             }
         }),
 
@@ -435,7 +463,7 @@ export const userRouter = createTRPCRouter({
             }),
         )
         .query(async ({ ctx, input }) => {
-            const followerId = ctx.session.user.id;
+            const followerId = ctx.session.user.id
 
             try {
                 const follow = await ctx.db.follow.findFirst({
@@ -443,14 +471,14 @@ export const userRouter = createTRPCRouter({
                         followerId,
                         followingId: input.followingId,
                     },
-                });
+                })
 
-                return !!follow;
+                return !!follow
             } catch (error) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to check follow status",
-                });
+                })
             }
         }),
 
@@ -467,14 +495,14 @@ export const userRouter = createTRPCRouter({
                     where: {
                         followingId: input.userId,
                     },
-                });
+                })
 
-                return count;
+                return count
             } catch (error) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to get follower count",
-                });
+                })
             }
         }),
 
@@ -491,14 +519,15 @@ export const userRouter = createTRPCRouter({
                     where: {
                         followerId: input.userId,
                     },
-                });
+                })
 
-                return count;
+                return count
             } catch (error) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to get following count",
-                });
+                })
             }
         }),
-});
+})
+

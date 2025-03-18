@@ -1,12 +1,17 @@
-import AppShell from "../app-shell";
-import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import AppShell from "../app-shell"
+import Image from "next/image"
+import { ChevronRight } from "lucide-react"
 
 function SwapsHistoryScreen({
   setActiveSubScreen,
+  userId,
 }: {
-  setActiveSubScreen: (screen: string | null) => void;
+  setActiveSubScreen: (screen: string | null) => void
+  userId?: string
 }) {
+  // You can use the userId to fetch swaps specific to that user
+  // For now, we'll keep the existing mock data
+
   return (
     <AppShell
       title="Swaps History"
@@ -50,10 +55,7 @@ function SwapsHistoryScreen({
               with: "Emily",
             },
           ].map((order) => (
-            <div
-              key={order.id}
-              className="bg-secondary flex items-center rounded-lg p-4 shadow-lg"
-            >
+            <div key={order.id} className="bg-secondary flex items-center rounded-lg p-4 shadow-lg">
               <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                 <Image
                   src={order.image || "/placeholder.svg"}
@@ -65,12 +67,8 @@ function SwapsHistoryScreen({
               </div>
 
               <div className="flex-1">
-                <div className="text-foreground font-semibold">
-                  {order.name}
-                </div>
-                <div className="text-muted text-xs">
-                  Swapped with {order.with}
-                </div>
+                <div className="text-foreground font-semibold">{order.name}</div>
+                <div className="text-muted text-xs">Swapped with {order.with}</div>
                 <div className="text-muted text-xs">{order.date}</div>
                 <div
                   className={`mt-1 text-xs ${order.status === "Completed" ? "text-[#c1ff72]" : "text-red-400"} font-medium`}
@@ -87,7 +85,8 @@ function SwapsHistoryScreen({
         </div>
       </div>
     </AppShell>
-  );
+  )
 }
 
-export default SwapsHistoryScreen;
+export default SwapsHistoryScreen
+

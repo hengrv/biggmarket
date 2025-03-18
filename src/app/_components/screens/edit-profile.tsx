@@ -1,109 +1,108 @@
-"use client";
+"use client"
 
-import { z } from "zod";
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Camera, Loader2 } from "lucide-react";
-import AppShell from "@/components/app-shell";
-import { api } from "~/trpc/react";
-import { TRPCClientError } from "@trpc/client";
-import { ProfileImageUploader } from "../profile/image-uploader";
+import { z } from "zod"
+import { useState, useEffect } from "react"
+import { Loader2 } from "lucide-react"
+import AppShell from "@/components/app-shell"
+import { api } from "~/trpc/react"
+import { ProfileImageUploader } from "../profile/image-uploader"
 
 // Client-Side validators
 const inputParser = z.object({
   email: z.string().email("Must be a valid email"),
-  postcode: z
-    .string()
-    .regex(
-      /^[A-Z]{1,2}[0-9]{1,2}[A-Z]?(\s*)[0-9][A-Z]{2}$/i,
-      "Invalid UK postcode",
-    ),
-});
+  postcode: z.string().regex(/^[A-Z]{1,2}[0-9]{1,2}[A-Z]?(\s*)[0-9][A-Z]{2}$/i, "Invalid UK postcode"),
+  username: z.string().min(3, "Username must be at least 3 characters").optional(),
+})
 
 function EditProfileScreen({
   setActiveSubScreen,
 }: {
-  setActiveSubScreen: (screen: string | null) => void;
+  setActiveSubScreen: (screen: string | null) => void
 }) {
   // Fetch user profile data
-  const [userProfile, { refetch: refetchProfile }] =
-    api.user.getProfile.useSuspenseQuery();
+  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery()
 
   // State for form fields
-  const [name, setName] = useState(userProfile?.name ?? "");
-  const [email, setEmail] = useState(userProfile?.email ?? "");
-  const [bio, setBio] = useState(""); // Bio isn't in the current schema
-  const [postcode, setPostcode] = useState(
-    userProfile?.location?.postcode ?? "",
-  );
-  const [profileImage, setProfileImage] = useState(
-    userProfile?.image ?? "/placeholder.svg?height=96&width=96",
-  );
+  const [name, setName] = useState(userProfile?.name ?? "")
+  const [email, setEmail] = useState(userProfile?.email ?? "")
+  const [username, setUsername] = useState(userProfile?.username ?? "")
+  const [bio, setBio] = useState("") // Bio isn't in the current schema
+  const [postcode, setPostcode] = useState(userProfile?.location?.postcode ?? "")
+  const [profileImage, setProfileImage] = useState(userProfile?.image ?? "/placeholder.svg?height=96&width=96")
 
-  const [postcodeError, setPostcodeError] = useState<string>("");
-  const [emailError, setEmailError] = useState<string>("");
+  const [postcodeError, setPostcodeError] = useState<string>("")
+  const [emailError, setEmailError] = useState<string>("")
+  const [usernameError, setUsernameError] = useState<string>("")
 
-  const { error: errorPostcode, refetch: refetchPostcode } =
-    api.user.postcodeToLongLat.useQuery(postcode, {
-      enabled: false,
-      retry: false,
-    });
+  const { error: errorPostcode, refetch: refetchPostcode } = api.user.postcodeToLongLat.useQuery(postcode, {
+    enabled: false,
+    retry: false,
+  })
 
   // Update state when profile data changes
   useEffect(() => {
     if (userProfile) {
-      setName(userProfile.name ?? "");
-      setEmail(userProfile.email ?? "");
-      setPostcode(userProfile.location?.postcode ?? "");
-      setProfileImage(
-        userProfile.image ?? "/placeholder.svg?height=96&width=96",
-      );
+      setName(userProfile.name ?? "")
+      setEmail(userProfile.email ?? "")
+      setUsername(userProfile.username ?? "")
+      setPostcode(userProfile.location?.postcode ?? "")
+      setProfileImage(userProfile.image ?? "/placeholder.svg?height=96&width=96")
     }
-  }, [userProfile]);
+  }, [userProfile])
 
   // Update profile mutation
   const updateProfileMutation = api.user.updateProfile.useMutation({
     onSuccess: async () => {
-      await refetchProfile();
-      setActiveSubScreen(null); // Return to profile page after successful update
+      await refetchProfile()
+      setActiveSubScreen(null) // Return to profile page after successful update
     },
-  });
+    onError: (error) => {
+      if (error.message.includes("Username already taken")) {
+        setUsernameError("Username already taken")
+      }
+    },
+  })
 
   const handleSave = async () => {
-    let longitude, latitude;
+    let longitude, latitude
 
-    setEmailError("");
+    setEmailError("")
+    setPostcodeError("")
+    setUsernameError("")
 
-    setPostcodeError("");
-    const parseInput = inputParser.safeParse({ email, postcode });
+    const parseInput = inputParser.safeParse({ email, postcode, username })
 
     if (!parseInput.success) {
       parseInput.error.errors.forEach((error) => {
         if (error.path[0] === "email") {
-          setEmailError("Invalid Email!");
+          setEmailError("Invalid Email!")
         }
         if (error.path[0] === "postcode") {
-          setPostcodeError("Invalid UK Postcode!");
+          setPostcodeError("Invalid UK Postcode!")
         }
-      });
+        if (error.path[0] === "username") {
+          setUsernameError(error.message)
+        }
+      })
 
-      return;
+      return
     }
 
     try {
-      const result = await refetchPostcode();
+      const result = await refetchPostcode()
       if (result.isSuccess) {
-        longitude = result.data.longitude;
-        latitude = result.data.latitude;
+        longitude = result.data.longitude
+        latitude = result.data.latitude
       }
     } catch {
-      return;
+      return
     }
 
     try {
       await updateProfileMutation.mutateAsync({
         name,
         email,
+        username,
         ...(postcode
           ? {
             location: {
@@ -113,47 +112,22 @@ function EditProfileScreen({
             },
           }
           : {}),
-      });
+      })
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error updating profile:", error)
     }
-  };
+  }
 
   return (
-    <AppShell
-      title="Edit Profile"
-      showBackButton={true}
-      onBack={() => setActiveSubScreen(null)}
-      activeScreen="profile"
-    >
+    <AppShell title="Edit Profile" showBackButton={true} onBack={() => setActiveSubScreen(null)} activeScreen="profile">
       <div className="p-4">
         <ProfileImageUploader imageUrl={profileImage} />
-        {/*<div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#c1ff72]">
-              <Image
-                src={profileImage ?? "/placeholder.svg?height=96&width=96"}
-                alt="Profile"
-                width={96}
-                height={96}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <button
-              className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#c1ff72] shadow-md"
-              onClick={() => {
-                const randomId = Math.floor(Math.random() * 1000);
-                setProfileImage(
-                  `/ placeholder.svg ? height = 96 & width=96 & id=${randomId}`,
-                );
-              }}
-            >
-              <Camera className="h-4 w-4 text-black" />
-            </button>
-          </div> */}
+
         <form
           className="space-y-4"
           onSubmit={async (e) => {
-            e.preventDefault();
-            await handleSave();
+            e.preventDefault()
+            await handleSave()
           }}
         >
           <div>
@@ -164,6 +138,18 @@ function EditProfileScreen({
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+          </div>
+
+          <div>
+            <label className="text-muted mb-1 block text-xs">Username</label>
+            <input
+              type="text"
+              className="bg-secondary text-foreground w-full rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+            />
+            {usernameError && <h3 className="text-error text-sm">{usernameError}</h3>}
           </div>
 
           <div>
@@ -189,9 +175,7 @@ function EditProfileScreen({
           </div>
 
           <div>
-            <label className="text-muted mb-1 block text-xs">
-              Location (Postcode)
-            </label>
+            <label className="text-muted mb-1 block text-xs">Location (Postcode)</label>
             <input
               type="text"
               className="bg-secondary text-foreground w-full rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
@@ -199,9 +183,7 @@ function EditProfileScreen({
               onChange={(e) => setPostcode(e.target.value)}
               placeholder="e.g. NE1 7RU"
             />
-            {postcodeError && (
-              <h3 className="text-error text-sm">{postcodeError}</h3>
-            )}
+            {postcodeError && <h3 className="text-error text-sm">{postcodeError}</h3>}
           </div>
 
           <div className="pt-4">
@@ -223,7 +205,8 @@ function EditProfileScreen({
         </form>
       </div>
     </AppShell>
-  );
+  )
 }
 
-export default EditProfileScreen;
+export default EditProfileScreen
+

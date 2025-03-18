@@ -1,72 +1,52 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import {
-  UserPlus,
-  Heart,
-  Package,
-  User,
-  ChevronRight,
-  Camera,
-  Star,
-  Pencil,
-} from "lucide-react";
-import Image from "next/image";
-import AppShell from "@/components/app-shell";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
+import { UserPlus, Heart, Package, User, ChevronRight, Star, Pencil } from "lucide-react"
+import Image from "next/image"
+import AppShell from "@/components/app-shell"
+import { useRouter } from "next/navigation"
 
-import { api } from "~/trpc/react";
+import { api } from "~/trpc/react"
 
-import EditProfileScreen from "@screens/edit-profile";
-import FollowingScreen from "@screens/following-screen";
-import FollowersScreen from "@screens/followers-screen";
-import SwapsHistoryScreen from "@screens/swaps-history-screen";
-import { useFollow } from "~/hooks/useFollow";
-import FollowButton from "../_components/profile/follow-button";
+import EditProfileScreen from "@screens/edit-profile"
+import FollowingScreen from "@screens/following-screen"
+import FollowersScreen from "@screens/followers-screen"
+import SwapsHistoryScreen from "@screens/swaps-history-screen"
+import { useFollow } from "~/hooks/useFollow"
+import FollowButton from "../_components/profile/follow-button"
 
 export default function ProfilePage() {
-  const [userProfile, { refetch: refetchProfile }] =
-    api.user.getProfile.useSuspenseQuery();
+  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery()
 
-  const { useFollowerCount, useFollowingCount } = useFollow();
+  const { useFollowerCount, useFollowingCount } = useFollow()
 
-  const { count: followers, isLoading: loadingFollowers } = useFollowerCount(
-    userProfile?.id ?? "",
-  );
+  const { count: followers, isLoading: loadingFollowers } = useFollowerCount(userProfile?.id ?? "")
 
-  const { count: following, isLoading: loadingFollowing } = useFollowingCount(
-    userProfile?.id ?? "",
-  );
+  const { count: following, isLoading: loadingFollowing } = useFollowingCount(userProfile?.id ?? "")
 
   const { data: swipeStats } = api.item.getSwipeStats.useQuery({
     userId: userProfile?.id,
   })
 
-  const [name, setName] = useState(userProfile?.name ?? "");
-  const [email, setEmail] = useState(userProfile?.email ?? "");
+  const [name, setName] = useState(userProfile?.name ?? "")
+  const [email, setEmail] = useState(userProfile?.email ?? "")
 
-  const [postcode, setPostcode] = useState(
-    userProfile?.location?.postcode ?? "",
-  );
+  const [postcode, setPostcode] = useState(userProfile?.location?.postcode ?? "")
 
-  const [profileImage, setProfileImage] = useState(
-    userProfile?.image ?? "/placeholder.svg?height=96&width=96",
-  );
+  const [profileImage, setProfileImage] = useState(userProfile?.image ?? "/placeholder.svg?height=96&width=96")
 
   useEffect(() => {
     if (userProfile) {
-      setName(userProfile.name ?? "");
-      setEmail(userProfile.email ?? "");
-      setPostcode(userProfile.location?.postcode ?? "");
-      setProfileImage(
-        userProfile.image ?? "/placeholder.svg?height=96&width=96",
-      );
+      setName(userProfile.name ?? "")
+      setEmail(userProfile.email ?? "")
+      setPostcode(userProfile.location?.postcode ?? "")
+      setProfileImage(userProfile.image ?? "/placeholder.svg?height=96&width=96")
     }
-  }, [userProfile]);
+  }, [userProfile])
 
-  const router = useRouter();
-  const [profileTab, setProfileTab] = useState("gear");
-  const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
+  const router = useRouter()
+  const [profileTab, setProfileTab] = useState("gear")
+  const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null)
 
   // Fetch user's items
   const { data: userItems, isLoading: loadingItems } = api.item.getUserItems.useQuery(
@@ -82,24 +62,23 @@ export default function ProfilePage() {
   const totalLikes =
     swipeStats?.filter((stat) => stat.direction === "RIGHT").reduce((acc, stat) => acc + stat._count, 0) ?? 0
 
-  const { data: userReviews } = api.user.getProfileReviews.useQuery();
-  const [{ averageRating, reviewCount }] = api.user.getAverageRating.useSuspenseQuery();
-
+  const { data: userReviews } = api.user.getProfileReviews.useQuery()
+  const [{ averageRating, reviewCount }] = api.user.getAverageRating.useSuspenseQuery()
 
   if (activeSubScreen === "edit-profile") {
-    return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />;
+    return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />
   }
 
   if (activeSubScreen === "following") {
-    return <FollowingScreen setActiveSubScreen={setActiveSubScreen} />;
+    return <FollowingScreen setActiveSubScreen={setActiveSubScreen} />
   }
 
   if (activeSubScreen === "followers") {
-    return <FollowersScreen setActiveSubScreen={setActiveSubScreen} />;
+    return <FollowersScreen setActiveSubScreen={setActiveSubScreen} />
   }
 
   if (activeSubScreen === "swaps") {
-    return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />;
+    return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />
   }
 
   return (
@@ -109,7 +88,7 @@ export default function ProfilePage() {
           <div className="flex items-center">
             <div className="mr-4 h-16 w-16 overflow-hidden rounded-full border-2 border-[#c1ff72]">
               <Image
-                src={profileImage}
+                src={profileImage || "/placeholder.svg"}
                 alt="Profile"
                 width={64}
                 height={64}
@@ -119,7 +98,7 @@ export default function ProfilePage() {
 
             <div className="flex-1">
               <h3 className="text-foreground text-lg font-bold">{name}</h3>
-              <div className="text-muted text-xs">{email}</div>
+              <div className="text-muted text-xs">{userProfile?.username ? `@${userProfile?.username}` : email}</div>
               <div className="text-muted mt-1 text-xs">The Toon</div>
             </div>
 
@@ -133,38 +112,25 @@ export default function ProfilePage() {
           </div>
 
           <div className="border-background mt-4 flex justify-around border-t pt-4">
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setActiveSubScreen("swaps")}
-            >
+            <button className="flex flex-col items-center" onClick={() => setActiveSubScreen("swaps")}>
               <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-foreground text-xs font-medium">{totalLikes} Swaps</span>
             </button>
 
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setActiveSubScreen("following")}
-            >
+            <button className="flex flex-col items-center" onClick={() => setActiveSubScreen("following")}>
               <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
                 <User className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
-                {following} Following
-              </span>
+              <span className="text-foreground text-xs font-medium">{following} Following</span>
             </button>
 
-            <button
-              className="flex flex-col items-center"
-              onClick={() => setActiveSubScreen("followers")}
-            >
+            <button className="flex flex-col items-center" onClick={() => setActiveSubScreen("followers")}>
               <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
                 <UserPlus className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
-                {followers} Followers
-              </span>
+              <span className="text-foreground text-xs font-medium">{followers} Followers</span>
             </button>
             <FollowButton userId={"cm877u0qq0000f7bwti093ka5"} />
           </div>
@@ -184,7 +150,6 @@ export default function ProfilePage() {
             Reviews
           </button>
         </div>
-
 
         {profileTab === "gear" ? (
           <div className="space-y-4">
@@ -246,26 +211,19 @@ export default function ProfilePage() {
               <h3 className="text-foreground font-semibold">Your Reviews</h3>
               <div className="flex items-center">
                 <Star className="mr-1 h-4 w-4 text-[#c1ff72]" />
-                <span className="text-foreground font-semibold">
-                  {averageRating}
-                </span>
-                <span className="text-muted ml-1 text-xs">
-                  ({reviewCount})
-                </span>
+                <span className="text-foreground font-semibold">{averageRating}</span>
+                <span className="text-muted ml-1 text-xs">({reviewCount})</span>
               </div>
             </div>
 
             <div className="space-y-3">
               {userReviews?.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-secondary rounded-lg p-4 shadow-lg"
-                >
+                <div key={review.id} className="bg-secondary rounded-lg p-4 shadow-lg">
                   <div className="mb-2 flex items-center">
                     <div
                       className="mr-3 h-10 w-10 cursor-pointer overflow-hidden rounded-full"
                       onClick={() => {
-                        alert(`Viewing ${review.reviewerUser.name}'s profile`);
+                        alert(`Viewing ${review.reviewerUser.name}'s profile`)
                       }}
                     >
                       <Image
@@ -280,7 +238,7 @@ export default function ProfilePage() {
                       <div
                         className="text-foreground cursor-pointer font-semibold"
                         onClick={() => {
-                          alert(`Viewing ${review.reviewerUser.name}'s profile`);
+                          alert(`Viewing ${review.reviewerUser.name}'s profile`)
                         }}
                       >
                         {review.reviewerUser.name}
@@ -299,13 +257,9 @@ export default function ProfilePage() {
                               </span>
                             ))}
                         </div>
-                        <span className="text-foreground text-xs font-medium">
-                          {review.rating}/5
-                        </span>
+                        <span className="text-foreground text-xs font-medium">{review.rating}/5</span>
                         <span className="text-muted mx-2 text-xs">•</span>
-                        <span className="text-muted text-xs">
-                          {review.createdAt.toLocaleDateString()}
-                        </span>
+                        <span className="text-muted text-xs">{review.createdAt.toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
@@ -321,5 +275,6 @@ export default function ProfilePage() {
         )}
       </div>
     </AppShell>
-  );
+  )
 }
+

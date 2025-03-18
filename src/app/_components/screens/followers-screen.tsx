@@ -1,32 +1,31 @@
-"use client";
+"use client"
 
-import AppShell from "@components/app-shell";
-import Image from "next/image";
-import { UserPlus, Loader2 } from "lucide-react";
-import { useFollow } from "~/hooks/useFollow";
-import { api } from "~/trpc/react";
+import AppShell from "@components/app-shell"
+import Image from "next/image"
+import { UserPlus, Loader2 } from "lucide-react"
+import { useFollow } from "~/hooks/useFollow"
+import { api } from "~/trpc/react"
 
 function FollowersScreen({
   setActiveSubScreen,
+  userId,
 }: {
-  setActiveSubScreen: (screen: string | null) => void;
+  setActiveSubScreen: (screen: string | null) => void
+  userId?: string
 }) {
-  const [userProfile] = api.user.getProfile.useSuspenseQuery();
-  const { useFollowers, useFollowActions } = useFollow();
+  const [userProfile] = api.user.getProfile.useSuspenseQuery(userId ? { userId } : undefined)
+  const { useFollowers, useFollowActions } = useFollow()
 
-  const {
-    followers,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useFollowers(userProfile?.id ?? "", 10);
+  const { followers, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFollowers(
+    userId ?? userProfile?.id ?? "",
+    10,
+  )
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      fetchNextPage()
     }
-  };
+  }
 
   return (
     <AppShell
@@ -42,12 +41,8 @@ function FollowersScreen({
           </div>
         ) : followers.length === 0 ? (
           <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
-            <h3 className="text-foreground mb-2 font-semibold">
-              No followers yet
-            </h3>
-            <p className="text-muted text-sm">
-              When people follow you, they'll appear here.
-            </p>
+            <h3 className="text-foreground mb-2 font-semibold">No followers yet</h3>
+            <p className="text-muted text-sm">When people follow you, they'll appear here.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -77,24 +72,24 @@ function FollowersScreen({
         )}
       </div>
     </AppShell>
-  );
+  )
 }
 
 function FollowerCard({
   user,
 }: {
   user: {
-    followedAt: Date;
-    id: string;
-    email: string | null;
-  };
+    followedAt: Date
+    id: string
+    email: string | null
+  }
 }) {
   const { data: follower } = api.user.getProfile.useQuery({
     userId: user.id,
-  });
+  })
 
-  const { useFollowActions } = useFollow();
-  const { isFollowing, isLoading, toggleFollow } = useFollowActions(user.id);
+  const { useFollowActions } = useFollow()
+  const { isFollowing, isLoading, toggleFollow } = useFollowActions(user.id)
 
   return (
     <div className="bg-secondary flex items-center rounded-lg p-4 shadow-lg">
@@ -109,9 +104,7 @@ function FollowerCard({
       </div>
 
       <div className="flex-1">
-        <div className="text-foreground font-semibold">
-          {follower?.name ?? follower?.email}
-        </div>
+        <div className="text-foreground font-semibold">{follower?.name ?? follower?.email}</div>
         <div className="text-muted text-xs">{user.email}</div>
         <div className="text-muted mt-1 line-clamp-1 text-xs">
           Followed you {new Date(user.followedAt).toLocaleDateString()}
@@ -134,7 +127,8 @@ function FollowerCard({
         )}
       </button>
     </div>
-  );
+  )
 }
 
-export default FollowersScreen;
+export default FollowersScreen
+

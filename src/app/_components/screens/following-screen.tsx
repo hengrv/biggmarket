@@ -5,18 +5,19 @@ import Image from "next/image"
 import { Loader2 } from "lucide-react"
 import { useFollow } from "~/hooks/useFollow"
 import { api } from "~/trpc/react"
-import { type User } from "@prisma/client"
 
 function FollowingScreen({
   setActiveSubScreen,
+  userId,
 }: {
   setActiveSubScreen: (screen: string | null) => void
+  userId?: string
 }) {
-  const [userProfile] = api.user.getProfile.useSuspenseQuery()
+  const [userProfile] = api.user.getProfile.useSuspenseQuery(userId ? { userId } : undefined)
   const { useFollowing, useFollowActions } = useFollow()
 
   const { following, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFollowing(
-    userProfile?.id ?? "",
+    userId ?? userProfile?.id ?? "",
     10,
   )
 
@@ -74,15 +75,15 @@ function FollowingScreen({
   )
 }
 
-function FollowingCard(
-  { user }: {
-    user: {
-      followedAt: Date,
-      id: string,
-      email: string | null
-    }
-  }) {
-
+function FollowingCard({
+  user,
+}: {
+  user: {
+    followedAt: Date
+    id: string
+    email: string | null
+  }
+}) {
   const { data: followedUser } = api.user.getProfile.useQuery({ userId: user.id })
 
   const { useFollowActions } = useFollow()
