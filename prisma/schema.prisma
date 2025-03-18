@@ -39,9 +39,11 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
+    username      String?   @unique
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    bio           String?   @default("up the toon")
     accounts      Account[]
     sessions      Session[]
     items         Item[]
@@ -55,7 +57,8 @@ model User {
     receiver      Message[] @relation("receiver")
 
     // User can follow other users
-    follower Follow[] @relation("follower")
+
+    follower  Follow[] @relation("follower")
     following Follow[] @relation("following")
 }
 
@@ -208,8 +211,8 @@ model Follow {
     followingId String
     createdAt   DateTime @default(now())
 
-    follower  User @relation(fields: [followerId], references: [id], name: "follower")
-    following User @relation(fields: [followingId], references: [id], name: "following")
+    follower  User @relation(fields: [followerId], references: [id], onDelete: Cascade, name: "follower")
+    following User @relation(fields: [followingId], references: [id], onDelete: Cascade, name: "following")
 
     @@unique([followerId, followingId])
 }
@@ -221,4 +224,3 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
-
