@@ -57,4 +57,40 @@ export const authConfig = {
       },
     }),
   },
-} satisfies NextAuthConfig;
+  events: {
+    createUser: async ({ user }) => {
+      // This event is triggered only when a new user is created
+      if (user?.email) {
+        try {
+          // Extract base username from email (part before @)
+          const baseUsername = user.email.split("@")[0]?.toLowerCase()
+
+          // Check if username exists and generate a unique one if needed
+          let uniqueUsername = baseUsername
+          let counter = 1
+
+          while (true) {
+            const existingUsername = await db.user.findFirst({
+              where: { username: uniqueUsername },
+            })
+
+            if (!existingUsername) break
+
+            // Username exists, try with a number appended
+            uniqueUsername = `${baseUsername}${counter}`
+            counter++
+          }
+
+          // Update the user with the unique username
+          await db.user.update({
+            where: { id: user.id },
+            data: { username: uniqueUsername },
+          })
+        } catch (error) {
+          console.error("Error setting username:", error)
+        }
+      }
+    },
+  },
+} satisfies NextAuthConfig
+
