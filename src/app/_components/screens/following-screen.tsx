@@ -1,10 +1,13 @@
 "use client"
 
+import type React from "react"
+
 import AppShell from "@components/app-shell"
 import Image from "next/image"
 import { Loader2 } from "lucide-react"
 import { useFollow } from "~/hooks/useFollow"
 import { api } from "~/trpc/react"
+import { useRouter } from "next/navigation"
 
 function FollowingScreen({
   setActiveSubScreen,
@@ -14,7 +17,13 @@ function FollowingScreen({
   userId?: string
 }) {
   const [userProfile] = api.user.getProfile.useSuspenseQuery(userId ? { userId } : undefined)
+  const { data: currentUserId } = api.user.getCurrentlyAuthenticatedUser.useQuery()
   const { useFollowing, useFollowActions } = useFollow()
+
+  const isOwnProfile = !userId || userId === currentUserId
+
+  // Get the name of the user whose following list we're viewing
+  const titlePrefix = isOwnProfile ? "People You're" : `${userProfile?.name ?? "User"}'s`
 
   const { following, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFollowing(
     userId ?? userProfile?.id ?? "",
@@ -29,7 +38,7 @@ function FollowingScreen({
 
   return (
     <AppShell
-      title="People You Follow"
+      title={`${titlePrefix} Following`}
       showBackButton={true}
       onBack={() => setActiveSubScreen(null)}
       activeScreen="profile"
@@ -41,8 +50,16 @@ function FollowingScreen({
           </div>
         ) : following.length === 0 ? (
           <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
-            <h3 className="text-foreground font-semibold mb-2">{"You're not following anyone yet"}</h3>
-            <p className="text-muted text-sm">{"When you follow people, they'll appear here."}</p>
+            <h3 className="text-foreground font-semibold mb-2">
+              {isOwnProfile
+                ? "You're not following anyone yet"
+                : `${userProfile?.name ?? "This user"} isn't following anyone yet`}
+            </h3>
+            <p className="text-muted text-sm">
+              {isOwnProfile
+                ? "When you follow people, they'll appear here."
+                : "When they follow people, they'll appear here."}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -84,13 +101,23 @@ function FollowingCard({
     email: string | null
   }
 }) {
+  const router = useRouter()
   const { data: followedUser } = api.user.getProfile.useQuery({ userId: user.id })
 
   const { useFollowActions } = useFollow()
   const { isLoading, toggleFollow } = useFollowActions(user.id)
 
+  const navigateToProfile = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent triggering when clicking the follow button
+    if (followedUser?.username) {
+      router.push(`/profile/@${followedUser.username}`)
+    } else {
+      router.push(`/profile/${user.id}`)
+    }
+  }
+
   return (
-    <div className="bg-secondary flex items-center rounded-lg p-4 shadow-lg">
+    <div className="bg-secondary flex items-center rounded-lg p-4 shadow-lg cursor-pointer" onClick={navigateToProfile}>
       <div className="mr-4 h-14 w-14 overflow-hidden rounded-full">
         <Image
           src={followedUser?.image ?? "/placeholder.svg?height=56&width=56"}
@@ -111,7 +138,10 @@ function FollowingCard({
 
       <button
         className="rounded-full bg-[#c1ff72] px-3 py-1 text-xs font-medium text-black"
-        onClick={toggleFollow}
+        onClick={(e) => {
+          e.stopPropagation() // Prevent navigating when clicking the button
+          toggleFollow()
+        }}
         disabled={isLoading}
       >
         {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Following"}
