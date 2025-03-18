@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { api } from "~/trpc/react"
+import Link from "next/link";
+import Image from "next/image";
+import { api } from "~/trpc/react";
 
 interface UserLinkProps {
-  userId: string
-  className?: string
-  showImage?: boolean
-  imageSize?: number
-  useUsername?: boolean // New prop to control link format
+  userId: string;
+  className?: string;
+  showImage?: boolean;
+  imageSize?: number;
+  useUsername?: boolean; // New prop to control link format
 }
 
 export default function UserLink({
@@ -24,23 +24,29 @@ export default function UserLink({
     {
       enabled: !!userId,
     },
-  )
+  );
 
   if (isLoading) {
-    return <span className={`text-muted ${className}`}>Loading...</span>
+    return <span className={`text-muted ${className}`}>Loading...</span>;
   }
 
   if (!user) {
-    return <span className={`text-muted ${className}`}>Unknown User</span>
+    return <span className={`text-muted ${className}`}>Unknown User</span>;
   }
 
   // Generate the profile link based on the useUsername prop
-  const profileLink = useUsername && user.username ? `/profile/@${user.username}` : `/profile/${user.id}`
+  const profileLink =
+    useUsername && user?.username
+      ? `/profile/@${user.username}`
+      : `/profile/${user.id}`;
 
   return (
     <Link href={profileLink} className={`flex items-center ${className}`}>
       {showImage && (
-        <div className="mr-2 overflow-hidden rounded-full" style={{ width: imageSize, height: imageSize }}>
+        <div
+          className="mr-2 overflow-hidden rounded-full"
+          style={{ width: imageSize, height: imageSize }}
+        >
           <Image
             src={user.image ?? "/placeholder.svg"}
             alt={user.name ?? "User"}
@@ -50,8 +56,9 @@ export default function UserLink({
           />
         </div>
       )}
-      <span className="text-foreground hover:text-primary transition-colors">{user.name ?? user.email ?? "User"}</span>
+      <span className="text-foreground hover:text-primary transition-colors">
+        {user.name ?? user.email ?? "User"}
+      </span>
     </Link>
-  )
+  );
 }
-
