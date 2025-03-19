@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef, useEffect, memo, useCallback } from "react";
+import { useState, useRef, useEffect, memo, useCallback, useMemo } from "react";
 import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
@@ -19,7 +19,7 @@ interface Product {
   image: string;
   distance: string;
   description: string;
-  category: string // added category 
+  category: string; // added category
   owner: ProductOwner;
 }
 
@@ -39,7 +39,7 @@ const ActionButton = memo(function ActionButton({
 }: ActionButtonProps) {
   return (
     <button
-      className={`mr-3 flex flex-1 items-center justify-center rounded-full bg-[#242424] px-3 py-2 text-sm text-[#f3f3f3] transition-colors hover:bg-[#2a2a2a] ${className || ""}`}
+      className={`mr-3 flex flex-1 items-center justify-center rounded-full bg-[#242424] px-3 py-2 text-sm text-[#f3f3f3] transition-colors hover:bg-[#2a2a2a] ${className ?? ""}`}
       onClick={onClick}
     >
       <Icon className="mr-1 h-4 w-4 text-[#c1ff72]" />
@@ -80,22 +80,22 @@ const ProductScreen = function ProductScreen({
   setCurrentProduct: (product: Product) => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) //category
-  const [showCategoryFilter, setShowCategoryFilter] = useState(false) //category 
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   // Categories list
-    const categories = [
-      "Electronics & Tech",
-      "Fashion & Apparel",
-      "Home & Living",
-      "Health & Beauty",
-      "Sports & Outdoors",
-      "Kids & Baby",
-      "Automotive & Tools",
-      "Books & Entertainment",
-      "Pet Supplies",
-      "Cooking Supplies",
-    ]
-  
+  const categories = [
+    "Electronics & Tech",
+    "Fashion & Apparel",
+    "Home & Living",
+    "Health & Beauty",
+    "Sports & Outdoors",
+    "Kids & Baby",
+    "Automotive & Tools",
+    "Books & Entertainment",
+    "Pet Supplies",
+    "Cooking Supplies",
+  ];
+
   const [products] = useState<Product[]>([
     {
       id: 1,
@@ -143,25 +143,68 @@ const ProductScreen = function ProductScreen({
   // filter products based on category
   const filteredProducts = selectedCategory
     ? products.filter((product) => product.category === selectedCategory)
-    : products
+    : products;
 
   // reset index
   useEffect(() => {
-    setCurrentIndex(0)
-  }, [selectedCategory])
+    setCurrentIndex(0);
+  }, [selectedCategory]);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const [startX, setStartX] = useState(0);
   const [offsetX, setOffsetX] = useState(0);
   const swipeThreshold = 100;
 
+  // Get the current product safely
+  const product = useMemo(() => {
+    return filteredProducts.length > 0
+      ? filteredProducts[currentIndex % filteredProducts.length]!
+      : {
+        id: 0,
+        name: "",
+        image: "",
+        distance: "",
+        category: "",
+        description: "",
+        owner: { name: "", rating: 0, image: "" },
+      };
+  }, [filteredProducts, currentIndex]);
+
+  // Define all hooks before any conditional returns
+  const handleViewDetails = useCallback(() => {
+    if (filteredProducts.length > 0) {
+      setCurrentProduct(product);
+      setShowProductDetails(true);
+    }
+  }, [
+    product,
+    setCurrentProduct,
+    setShowProductDetails,
+    filteredProducts.length,
+  ]);
+
+  const handleReport = useCallback(() => {
+    if (filteredProducts.length === 0) return;
+
+    const reason = window.prompt(
+      "Please select a reason for reporting this item:\n\n1. Prohibited item\n2. Inappropriate content\n3. Suspected scam\n4. Other",
+    );
+
+    if (reason) {
+      alert("Thank you for your report. Our team will review this item.");
+      console.log("Item reported:", product.name, "Reason:", reason);
+    }
+  }, [product.name, filteredProducts.length]);
+
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
+    // @ts-expect-error this code doesn't care if e is undefined
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     setStartX(clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
     if (startX === 0) return;
+    // @ts-expect-error this code doesn't care if e is undefined
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const diff = clientX - startX;
     setOffsetX(diff);
@@ -176,13 +219,17 @@ const ProductScreen = function ProductScreen({
       if (offsetX > swipeThreshold) {
         cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
         setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length) ;
+          setCurrentIndex(
+            (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
+          );
           setOffsetX(0);
         }, 300);
       } else if (offsetX < -swipeThreshold) {
         cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
         setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length);
+          setCurrentIndex(
+            (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
+          );
           setOffsetX(0);
         }, 300);
       } else {
@@ -195,53 +242,63 @@ const ProductScreen = function ProductScreen({
 
   // Create stable callback functions for each swipe direction
   const handleLeftSwipe = useCallback(() => {
+    if (filteredProducts.length === 0) return;
+
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % products.length);
+        setCurrentIndex(
+          (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
+        );
         setOffsetX(0);
       }, 300);
     }
-  }, [products.length]);
+  }, [filteredProducts.length]);
 
   const handleRightSwipe = useCallback(() => {
+    if (filteredProducts.length === 0) return;
+
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % filteredProducts.length);
+        setCurrentIndex(
+          (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
+        );
         setOffsetX(0);
       }, 300);
     }
-  }, [products.length]);
+  }, [filteredProducts.length]);
 
   useEffect(() => {
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(0) rotate(0)`;
     }
-  }, [cardRef, currentIndex])
-   // category filtering 
-   if (filteredProducts.length === 0) {
+  }, [cardRef, currentIndex]);
+
+  // Now we can safely have a conditional return
+  if (filteredProducts.length === 0) {
     return (
       <AppShell activeScreen="home" title="Hiya John!">
         <div className="p-4">
-          <div className="flex justify-between items-center mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Find Items</h2>
             <button
-              className="bg-[#242424] rounded-full p-2"
+              className="rounded-full bg-[#242424] p-2"
               onClick={() => setShowCategoryFilter(!showCategoryFilter)}
             >
-              <Filter className="w-5 h-5 text-[#c1ff72]" />
+              <Filter className="h-5 w-5 text-[#c1ff72]" />
             </button>
           </div>
 
           {showCategoryFilter && (
-            <div className="mb-6 bg-[#242424] p-3 rounded-lg shadow-lg animate-in fade-in duration-200">
-              <h3 className="text-sm font-medium mb-2">Filter by Category</h3>
+            <div className="animate-in fade-in mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200">
+              <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`px-3 py-1 rounded-full text-xs ${
-                    selectedCategory === null ? "bg-[#c1ff72] text-black" : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
+                    ? "bg-[#c1ff72] text-black"
+                    : "bg-[#1a1a1a] text-[#f3f3f3]"
+                    }`}
                   onClick={() => setSelectedCategory(null)}
                 >
                   All Items
@@ -249,9 +306,10 @@ const ProductScreen = function ProductScreen({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      selectedCategory === category ? "bg-[#c1ff72] text-black" : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                    className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
+                      ? "bg-[#c1ff72] text-black"
+                      : "bg-[#1a1a1a] text-[#f3f3f3]"
+                      }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
@@ -261,16 +319,16 @@ const ProductScreen = function ProductScreen({
             </div>
           )}
 
-          <div className="bg-[#242424] rounded-lg p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-[#1a1a1a] flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="w-8 h-8 text-[#c1ff72]" />
+          <div className="rounded-lg bg-[#242424] p-6 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#1a1a1a]">
+              <AlertTriangle className="h-8 w-8 text-[#c1ff72]" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">No items found</h3>
-            <p className="text-[#a9a9a9] text-sm mb-4">
+            <h3 className="mb-2 text-lg font-semibold">No items found</h3>
+            <p className="mb-4 text-sm text-[#a9a9a9]">
               There are no items in the {selectedCategory} category right now.
             </p>
             <button
-              className="bg-[#c1ff72] text-black font-medium rounded-lg py-2 px-4"
+              className="rounded-lg bg-[#c1ff72] px-4 py-2 font-medium text-black"
               onClick={() => setSelectedCategory(null)}
             >
               View All Items
@@ -278,46 +336,31 @@ const ProductScreen = function ProductScreen({
           </div>
         </div>
       </AppShell>
-    )
-  }
-
-  //const product = products[currentIndex]
-  const product = filteredProducts[currentIndex]
-
-  const handleViewDetails = useCallback(() => {
-    setCurrentProduct(product);
-    setShowProductDetails(true);
-  }, [product, setCurrentProduct, setShowProductDetails]);
-
-  const handleReport = useCallback(() => {
-    const reason = window.prompt(
-      "Please select a reason for reporting this item:\n\n1. Prohibited item\n2. Inappropriate content\n3. Suspected scam\n4. Other",
     );
-
-    if (reason) {
-      alert("Thank you for your report. Our team will review this item.");
-      console.log("Item reported:", product.name, "Reason:", reason);
-    }
-  }, [product.name]);
+  }
 
   return (
     <AppShell activeScreen="home" title="Hiya John!">
       <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Find Items</h2>
-          <button className="bg-[#242424] rounded-full p-2" onClick={() => setShowCategoryFilter(!showCategoryFilter)}>
-            <Filter className="w-5 h-5 text-[#c1ff72]" />
+          <button
+            className="rounded-full bg-[#242424] p-2"
+            onClick={() => setShowCategoryFilter(!showCategoryFilter)}
+          >
+            <Filter className="h-5 w-5 text-[#c1ff72]" />
           </button>
         </div>
 
         {showCategoryFilter && (
-          <div className="mb-6 bg-[#242424] p-3 rounded-lg shadow-lg animate-in fade-in duration-200">
-            <h3 className="text-sm font-medium mb-2">Filter by Category</h3>
-            <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+          <div className="animate-in fade-in mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200">
+            <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
               <button
-                className={`px-3 py-1 rounded-full text-xs ${
-                  selectedCategory === null ? "bg-[#c1ff72] text-black" : "bg-[#1a1a1a] text-[#f3f3f3]"
-                }`}
+                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
+                  ? "bg-[#c1ff72] text-black"
+                  : "bg-[#1a1a1a] text-[#f3f3f3]"
+                  }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 All Items
@@ -325,9 +368,10 @@ const ProductScreen = function ProductScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`px-3 py-1 rounded-full text-xs ${
-                    selectedCategory === category ? "bg-[#c1ff72] text-black" : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
+                    ? "bg-[#c1ff72] text-black"
+                    : "bg-[#1a1a1a] text-[#f3f3f3]"
+                    }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -356,12 +400,12 @@ const ProductScreen = function ProductScreen({
               height={400}
               className="h-[400px] w-full object-cover"
             />
-            <div className="absolute bottom-1 left-2 bg-black/50 rounded-full px-3 py-1 flex items-center">
-              <MapPin className="w-3 h-3 text-[#c1ff72] mr-1" />
-              <span className="text-white text-xs">{product.distance}</span>
+            <div className="absolute bottom-1 left-2 flex items-center rounded-full bg-black/50 px-3 py-1">
+              <MapPin className="mr-1 h-3 w-3 text-[#c1ff72]" />
+              <span className="text-xs text-white">{product.distance}</span>
             </div>
-            <div className="absolute top-2 left-2 bg-black/50 rounded-full px-2 py-1">
-              <span className="text-white text-xs">{product.category}</span>
+            <div className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-1">
+              <span className="text-xs text-white">{product.category}</span>
             </div>
           </div>
 
