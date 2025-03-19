@@ -13,7 +13,7 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
     <div className="fixed bottom-0 left-0 right-0 flex h-[72px] w-full items-center justify-around border-t border-[#242424] bg-[#1A1A1A] px-4">
       <Link
         href="/"
-        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "home"
+        className={`flex h-full w-1/4 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "home"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
           }`}
@@ -22,7 +22,7 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
         <span className="text-[10px]">Home</span>
       </Link>
 
-      <Link
+      {/* <Link
         href="/search"
         className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "search"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
@@ -31,11 +31,11 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
       >
         <Search className="mb-0.5 h-6 w-6" />
         <span className="text-[10px]">Search</span>
-      </Link>
+      </Link> */}
 
       <Link
         href="/swap"
-        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "swap"
+        className={`flex h-full w-1/4 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "swap"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
           }`}
@@ -46,7 +46,7 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
 
       <Link
         href="/feed"
-        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "feed"
+        className={`flex h-full w-1/4 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "feed"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
           }`}
@@ -57,7 +57,7 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
 
       <Link
         href="/profile"
-        className={`flex h-full w-16 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "profile"
+        className={`flex h-full w-1/4 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "profile"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
           }`}
