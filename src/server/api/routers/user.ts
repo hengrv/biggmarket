@@ -13,8 +13,8 @@ const userProfileInput = z.object({
     location: z
         .object({
             postcode: z.string(),
-            latitude: z.number(), // Decimal
-            longitude: z.number(), // Decimal
+            latitude: z.number(), 
+            longitude: z.number(), 
         })
         .optional(),
 });
@@ -90,7 +90,7 @@ export const userRouter = createTRPCRouter({
             const userId = ctx.session.user.id;
             const review = await ctx.db.review.create({
                 data: {
-                    userId: input.userId, // This should be the user being reviewed
+                    userId: input.userId,
                     reviewer: userId, // Current user
                     review: input.review,
                     rating: input.rating,
