@@ -1,31 +1,34 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import BottomNavigation from "@/components/bottom-navigation"
-import { ArrowLeft } from "lucide-react"
+import type { ReactNode } from "react";
+import { memo } from "react";
+import BottomNavigation from "@/components/bottom-navigation";
+import { ArrowLeft } from "lucide-react";
 
-export default function AppShell({
+interface AppShellProps {
+  children: ReactNode;
+  activeScreen?: string;
+  title?: string;
+  showBackButton?: boolean;
+  onBack?: () => void;
+  rightContent?: ReactNode;
+}
+
+function AppShell({
   children,
   activeScreen = "home",
   title,
   showBackButton = false,
   onBack,
   rightContent,
-}: {
-  children: ReactNode
-  activeScreen?: string
-  title?: string
-  showBackButton?: boolean
-  onBack?: () => void
-  rightContent?: ReactNode
-}) {
+}: AppShellProps) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#1a1a1a] text-[#f3f3f3]">
+    <div className="flex min-h-screen flex-col bg-[#1a1a1a] text-[#f3f3f3]">
       {title && (
-        <header className="p-4 flex items-center border-b border-[#242424]">
+        <header className="flex items-center border-b border-[#242424] p-4">
           {showBackButton && (
             <button onClick={onBack} className="mr-3">
-              <ArrowLeft className="w-6 h-6 text-[#f3f3f3]" />
+              <ArrowLeft className="h-6 w-6 text-[#f3f3f3]" />
             </button>
           )}
           <div className="flex-1">
@@ -34,8 +37,10 @@ export default function AppShell({
           {rightContent}
         </header>
       )}
-      <main className="flex-1 pb-16 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto pb-16">{children}</main>
       <BottomNavigation activeScreen={activeScreen} />
     </div>
-  )
+  );
 }
+
+export default memo(AppShell);

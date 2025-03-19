@@ -1,37 +1,85 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react"
-import Image from "next/image"
-import AppShell from "@/components/app-shell"
-
+import { useState, useRef, useEffect, memo, useCallback } from "react";
+import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
+import Image from "next/image";
+import AppShell from "@/components/app-shell";
 
 interface ProductOwner {
-  name: string
-  rating: number
-  image: string
+  name: string;
+  rating: number;
+  image: string;
 }
 
 interface Product {
-  id: number
-  name: string
-  image: string
-  distance: string
-  description: string
+  id: number;
+  name: string;
+  image: string;
+  distance: string;
+  description: string;
   category: string // added category 
-  owner: ProductOwner
+  owner: ProductOwner;
 }
 
-export default function ProductScreen({
+interface ActionButtonProps {
+  icon: React.ElementType;
+  label: string;
+  onClick: () => void;
+  className?: string;
+}
+
+// Memoized action buttons
+const ActionButton = memo(function ActionButton({
+  icon: Icon,
+  label,
+  onClick,
+  className,
+}: ActionButtonProps) {
+  return (
+    <button
+      className={`mr-3 flex flex-1 items-center justify-center rounded-full bg-[#242424] px-3 py-2 text-sm text-[#f3f3f3] transition-colors hover:bg-[#2a2a2a] ${className || ""}`}
+      onClick={onClick}
+    >
+      <Icon className="mr-1 h-4 w-4 text-[#c1ff72]" />
+      {label}
+    </button>
+  );
+});
+ActionButton.displayName = "ActionButton";
+
+interface SwipeButtonProps {
+  onClick: () => void;
+  icon: React.ElementType;
+  iconColor: string;
+}
+
+// Memoized swipe buttons
+const SwipeButton = memo(function SwipeButton({
+  onClick,
+  icon: Icon,
+  iconColor,
+}: SwipeButtonProps) {
+  return (
+    <button
+      className="flex h-14 w-14 items-center justify-center rounded-full bg-[#242424] shadow-lg transition-colors hover:bg-[#2a2a2a]"
+      onClick={onClick}
+    >
+      <Icon className={`h-7 w-7 ${iconColor}`} />
+    </button>
+  );
+});
+SwipeButton.displayName = "SwipeButton";
+
+const ProductScreen = function ProductScreen({
   setShowProductDetails,
   setCurrentProduct,
 }: {
-  setShowProductDetails: (show: boolean) => void
-  setCurrentProduct: (product: Product) => void
+  setShowProductDetails: (show: boolean) => void;
+  setCurrentProduct: (product: Product) => void;
 }) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null) //category
   const [showCategoryFilter, setShowCategoryFilter] = useState(false) //category 
   // Categories list
@@ -91,7 +139,7 @@ export default function ProductScreen({
         image: "/placeholder.svg?height=40&width=40",
       },
     },
-  ])
+  ]);
   // filter products based on category
   const filteredProducts = selectedCategory
     ? products.filter((product) => product.category === selectedCategory)
@@ -102,72 +150,73 @@ export default function ProductScreen({
     setCurrentIndex(0)
   }, [selectedCategory])
 
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [startX, setStartX] = useState(0)
-  const [offsetX, setOffsetX] = useState(0)
-  const swipeThreshold = 100
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [startX, setStartX] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
+  const swipeThreshold = 100;
 
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-    setStartX(clientX)
-  }
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    setStartX(clientX);
+  };
 
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (startX === 0) return
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-    const diff = clientX - startX
-    setOffsetX(diff)
+    if (startX === 0) return;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const diff = clientX - startX;
+    setOffsetX(diff);
 
     if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`
+      cardRef.current.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
     }
-  }
+  };
 
   const handleTouchEnd = () => {
     if (cardRef.current) {
       if (offsetX > swipeThreshold) {
-        
-        cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`
+        cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
         setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length) 
-          setOffsetX(0)
-        }, 300)
+          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length) ;
+          setOffsetX(0);
+        }, 300);
       } else if (offsetX < -swipeThreshold) {
-        
-        cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`
+        cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
         setTimeout(() => {
-          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length)
-          setOffsetX(0)
-        }, 300)
+          setCurrentIndex((prev) => (prev + 1) % filteredProducts.length);
+          setOffsetX(0);
+        }, 300);
       } else {
-        
-        cardRef.current.style.transform = `translateX(0) rotate(0)`
-        setOffsetX(0)
+        cardRef.current.style.transform = `translateX(0) rotate(0)`;
+        setOffsetX(0);
       }
     }
-    setStartX(0)
-  }
+    setStartX(0);
+  };
 
-  const handleButtonClick = (dir: string) => {
+  // Create stable callback functions for each swipe direction
+  const handleLeftSwipe = useCallback(() => {
     if (cardRef.current) {
-      if (dir === "right") {
-        cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`
-      } else if (dir === "left") {
-        cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`
-      } else {
-        cardRef.current.style.transform = `translateX(0) rotate(0)`
-      }
-
+      cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % filteredProducts.length)
-        setOffsetX(0)
-      }, 300)
+        setCurrentIndex((prev) => (prev + 1) % products.length);
+        setOffsetX(0);
+      }, 300);
     }
-  }
+  }, [products.length]);
+
+  const handleRightSwipe = useCallback(() => {
+    if (cardRef.current) {
+      cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % filteredProducts.length);
+        setOffsetX(0);
+      }, 300);
+    }
+  }, [products.length]);
 
   useEffect(() => {
     if (cardRef.current) {
-      cardRef.current.style.transform = `translateX(0) rotate(0)`
+      cardRef.current.style.transform = `translateX(0) rotate(0)`;
     }
   }, [cardRef, currentIndex])
    // category filtering 
@@ -235,10 +284,21 @@ export default function ProductScreen({
   //const product = products[currentIndex]
   const product = filteredProducts[currentIndex]
 
-  const handleViewDetails = () => {
-    setCurrentProduct(product)
-    setShowProductDetails(true)
-  }
+  const handleViewDetails = useCallback(() => {
+    setCurrentProduct(product);
+    setShowProductDetails(true);
+  }, [product, setCurrentProduct, setShowProductDetails]);
+
+  const handleReport = useCallback(() => {
+    const reason = window.prompt(
+      "Please select a reason for reporting this item:\n\n1. Prohibited item\n2. Inappropriate content\n3. Suspected scam\n4. Other",
+    );
+
+    if (reason) {
+      alert("Thank you for your report. Our team will review this item.");
+      console.log("Item reported:", product.name, "Reason:", reason);
+    }
+  }, [product.name]);
 
   return (
     <AppShell activeScreen="home" title="Hiya John!">
@@ -279,7 +339,7 @@ export default function ProductScreen({
 
         <div
           ref={cardRef}
-          className="bg-[#242424] rounded-lg overflow-hidden mb-3 transition-transform duration-300 ease-out shadow-lg"
+          className="mb-3 overflow-hidden rounded-lg bg-[#242424] shadow-lg transition-transform duration-300 ease-out"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -294,7 +354,7 @@ export default function ProductScreen({
               alt=""
               width={300}
               height={400}
-              className="w-full h-[400px] object-cover"
+              className="h-[400px] w-full object-cover"
             />
             <div className="absolute bottom-1 left-2 bg-black/50 rounded-full px-3 py-1 flex items-center">
               <MapPin className="w-3 h-3 text-[#c1ff72] mr-1" />
@@ -306,71 +366,54 @@ export default function ProductScreen({
           </div>
 
           <div className="p-3">
-            <h2 className="text-[#f3f3f3] text-lg font-bold">{product.name}</h2>
-            <div className="flex items-center mt-1">
-              <div className="w-5 h-5 rounded-full overflow-hidden mr-1">
+            <h2 className="text-lg font-bold text-[#f3f3f3]">{product.name}</h2>
+            <div className="mt-1 flex items-center">
+              <div className="mr-1 h-5 w-5 overflow-hidden rounded-full">
                 <Image
                   src={product.owner.image || "/placeholder.svg"}
                   alt={product.owner.name}
                   width={20}
                   height={20}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               </div>
-              <span className="text-[#a9a9a9] text-xs">
+              <span className="text-xs text-[#a9a9a9]">
                 {product.owner.name} • {product.owner.rating} ★
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center mb-6">
-          <button
-            className="flex-1 bg-[#242424] rounded-full px-3 py-2 text-[#f3f3f3] text-sm flex items-center justify-center mr-3 hover:bg-[#2a2a2a] transition-colors"
+        <div className="mb-6 flex items-center">
+          <ActionButton
+            icon={Eye}
+            label="View Details"
             onClick={handleViewDetails}
-          >
-            <Eye className="w-4 h-4 text-[#c1ff72] mr-1" />
-            View Details
-          </button>
-
-          <button
-            className="flex-1 bg-[#242424] rounded-full px-3 py-2 text-[#f3f3f3] text-sm flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
-            onClick={() => {
-              
-              const reason = window.prompt(
-                "Please select a reason for reporting this item:\n\n1. Prohibited item\n2. Inappropriate content\n3. Suspected scam\n4. Other",
-              )
-
-              if (reason) {
-                
-                alert("Thank you for your report. Our team will review this item.")
-
-                
-                console.log("Item reported:", product.name, "Reason:", reason)
-              }
-            }}
-          >
-            <AlertTriangle className="w-4 h-4 text-[#ff4b55] mr-1" />
-            Report
-          </button>
+          />
+          <ActionButton
+            icon={AlertTriangle}
+            label="Report"
+            onClick={handleReport}
+            className="flex-1"
+          />
         </div>
 
-        <div className="flex justify-between mt-6">
-          <button
-            className="w-14 h-14 rounded-full bg-[#242424] flex items-center justify-center shadow-lg hover:bg-[#2a2a2a] transition-colors"
-            onClick={() => handleButtonClick("left")}
-          >
-            <X className="w-7 h-7 text-[#f93030]" />
-          </button>
+        <div className="mt-6 flex justify-between">
+          <SwipeButton
+            onClick={handleLeftSwipe}
+            icon={X}
+            iconColor="text-[#f93030]"
+          />
 
-          <button
-            className="w-14 h-14 rounded-full bg-[#242424] flex items-center justify-center shadow-lg hover:bg-[#2a2a2a] transition-colors"
-            onClick={() => handleButtonClick("right")}
-          >
-            <Check className="w-7 h-7 text-[#6efa73]" />
-          </button>
+          <SwipeButton
+            onClick={handleRightSwipe}
+            icon={Check}
+            iconColor="text-[#6efa73]"
+          />
         </div>
       </div>
     </AppShell>
-  )
-}
+  );
+};
+
+export default memo(ProductScreen);

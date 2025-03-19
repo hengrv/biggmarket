@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { Camera } from "lucide-react";
 import AppShell from "@/components/app-shell";
+
 
 function EditProfileScreen({
   setActiveSubScreen,
