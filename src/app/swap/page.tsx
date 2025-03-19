@@ -189,7 +189,7 @@ function WishlistItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
     }
   }
 
-  // Get button styles based on status
+  
   const getButtonStyles = () => {
     switch (swapStatus) {
       case "ready":
@@ -360,7 +360,7 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
     },
   ]
 
-  // Add a new swap at the top of the list when coming from a completed swap
+  
   useEffect(() => {
     // This would typically check some state or URL parameter
     // to determine if we're coming from a completed swap
@@ -385,7 +385,7 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
               key={swap.id}
               className="flex items-center bg-secondary p-4 rounded-lg shadow-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
               onClick={() => {
-                // In a real app, this would navigate to swap details
+                
                 alert(`Viewing details for ${swap.name} swap with ${swap.with}`)
               }}
             >
@@ -522,11 +522,15 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option>Furniture</option>
-                <option>Clothing</option>
+                <option>Home & Living</option>
+                <option>Fashion & Apparel</option>
                 <option>Electronics</option>
-                <option>Books</option>
-                <option>Other</option>
+                <option>Books & Entertainment</option>
+                <option>Pet Supplies</option>
+                <option>Health & Beauty</option>
+                <option>Sports & Outdoors</option>
+                <option>Kids & Baby</option>
+                <option>Automative & Tools</option>
               </select>
             </div>
 

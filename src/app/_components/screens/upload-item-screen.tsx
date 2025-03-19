@@ -126,12 +126,16 @@ export default function UploadItemScreen({
                 className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary appearance-none"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-              >
-                <option>Furniture</option>
-                <option>Clothing</option>
+              > 
+                <option>Home & Living</option>
+                <option>Fashion & Apparel</option>
                 <option>Electronics</option>
-                <option>Books</option>
-                <option>Other</option>
+                <option>Books & Entertainment</option>
+                <option>Pet Supplies</option>
+                <option>Health & Beauty</option>
+                <option>Sports & Outdoors</option>
+                <option>Kids & Baby</option>
+                <option>Automative & Tools</option>
               </select>
             </div>
 
