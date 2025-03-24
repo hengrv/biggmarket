@@ -39,31 +39,62 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
+    username      String?   @unique
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    bio           String?   @default("up the toon")
     accounts      Account[]
     sessions      Session[]
     items         Item[]
-    review        Float?    @default(0)
+    reviews       Review[]  @relation("reviewedUser")
+    reviewed      Review[]  @relation("reviewerUser")
     role          String    @default("end_user")
-    location      String[]
+    location      Location?
     logs          Log[]
-    swipes        Swipes[]
+    swipes        Swipe[]
+    sender        Message[] @relation("sender")
+    receiver      Message[] @relation("receiver")
+
+    // User can follow other users
+
+    follower  Follow[] @relation("follower")
+    following Follow[] @relation("following")
+}
+
+model Location {
+    id        String  @id @default(cuid())
+    latitude  Decimal
+    longitude Decimal
+    postcode  String
+    userId    String  @unique // 1 - 1 relationship - must be unique
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+    id           String   @id @default(cuid())
+    userId       String
+    reviewer     String
+    rating       Float
+    review       String
+    createdAt    DateTime @default(now())
+    user         User     @relation(name: "reviewedUser", fields: [userId], references: [id], onDelete: Cascade)
+    reviewerUser User     @relation(name: "reviewerUser", fields: [reviewer], references: [id], onDelete: Cascade)
 }
 
 // Item model to keep track of user items
 model Item {
     id          String     @id @default(cuid())
+    title       String     @default("title")
     image       String // URL
     userId      String
     description String?
-    category    String
+    category    String     @default("Other")
     status      ItemStatus @default(AVAILABLE)
     review      Float?     @default(0) @db.DoublePrecision
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
-    swipes      Swipes[]
+    swipes      Swipe[]
 
     matches  Match[] @relation("user1")
     matches2 Match[] @relation("user2")
@@ -81,7 +112,7 @@ enum ItemStatus {
     HIDDEN
 }
 
-// Model to keep track of item matches between users
+// Model to keep track of item matches between user
 model Match {
     id        String       @id @default(cuid())
     item1id   String
@@ -125,7 +156,7 @@ model Log {
 }
 
 // Swipes model to keep track of user swipes
-model Swipes {
+model Swipe {
     id        String         @id @default(cuid())
     userId    String
     itemId    String
@@ -139,6 +170,51 @@ model Swipes {
 enum SwipeDirection {
     LEFT
     RIGHT
+}
+
+enum Category {
+    Electronics
+    Vehicles
+    HomeAndFurniture
+    ClothingAndAccessories
+    SportsAndOutdoors
+    ToysAndGames
+    Leisure
+    HealthAndBeauty
+    BusinessAndIndustrial
+    Other
+}
+
+model Message {
+    id         String   @id @default(cuid())
+    senderId   String
+    receiverId String
+    message1   String? // Sender message
+    message2   String? // Receiver message
+    chatId     String
+    createdAt  DateTime @default(now())
+    sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+    receiver   User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+    chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+// Chat model to keep track of user chats
+model Chat {
+    id        String    @id @default(cuid())
+    messages  Message[]
+    createdAt DateTime  @default(now())
+}
+
+model Follow {
+    id          String   @id @default(cuid())
+    followerId  String
+    followingId String
+    createdAt   DateTime @default(now())
+
+    follower  User @relation(fields: [followerId], references: [id], onDelete: Cascade, name: "follower")
+    following User @relation(fields: [followingId], references: [id], onDelete: Cascade, name: "following")
+
+    @@unique([followerId, followingId])
 }
 
 model VerificationToken {
