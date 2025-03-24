@@ -1,0 +1,11 @@
+
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#242424"/>
+  <!-- Box/package icon -->
+  <rect x="50" y="50" width="100" height="100" fill="#c1ff72" opacity="0.2" rx="4"/>
+  <rect x="60" y="60" width="80" height="80" fill="#c1ff72" rx="2"/>
+  <line x1="70" y1="80" x2="130" y2="80" stroke="#242424" stroke-width="3"/>
+  <line x1="70" y1="100" x2="130" y2="100" stroke="#242424" stroke-width="3"/>
+  <line x1="70" y1="120" x2="110" y2="120" stroke="#242424" stroke-width="3"/>
+</svg>
+

@@ -128,33 +128,41 @@ function SearchResults({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-foreground font-semibold">Results for &quot;{query}&quot;</h3>
-        <button onClick={handleBackToSearch} className="text-primary text-sm">
+        <h3 className="font-semibold text-foreground">
+          Results for &quot;{query}&quot;
+        </h3>
+        <button onClick={handleBackToSearch} className="text-sm text-primary">
           Clear Results
         </button>
       </div>
 
       {filteredItemResults.length > 0 && (
         <div>
-          <div className="text-foreground font-semibold mb-3 flex items-center">
-            <Search className="w-4 h-4 text-primary mr-2" />
+          <div className="mb-3 flex items-center font-semibold text-foreground">
+            <Search className="mr-2 h-4 w-4 text-primary" />
             Items ({filteredItemResults.length})
           </div>
           <div className="grid grid-cols-2 gap-3">
             {filteredItemResults.map((item) => (
-              <div key={item.id} className="bg-secondary rounded-lg overflow-hidden shadow-lg">
+              <div
+                key={item.id}
+                className="overflow-hidden rounded-lg bg-secondary shadow-lg"
+              >
                 <div className="relative">
                   <Image
                     src={item.image || "/placeholder.svg"}
                     alt={item.name}
                     width={100}
                     height={100}
-                    className="w-full h-32 object-cover"
+                    className="h-32 w-full object-cover"
+                    draggable={false}
                   />
                 </div>
                 <div className="p-3">
-                  <div className="text-foreground font-semibold text-sm">{item.name}</div>
-                  <div className="text-muted text-xs flex items-center mt-1">
+                  <div className="text-sm font-semibold text-foreground">
+                    {item.name}
+                  </div>
+                  <div className="mt-1 flex items-center text-xs text-muted">
                     <span>{item.distance}</span>
                   </div>
                 </div>
@@ -166,33 +174,42 @@ function SearchResults({
 
       {filteredAccountResults.length > 0 && (
         <div>
-          <div className="text-foreground font-semibold mb-3 flex items-center">
-            <Search className="w-4 h-4 text-primary mr-2" />
+          <div className="mb-3 flex items-center font-semibold text-foreground">
+            <Search className="mr-2 h-4 w-4 text-primary" />
             Accounts ({filteredAccountResults.length})
           </div>
           <div className="space-y-3">
             {filteredAccountResults.map((account) => (
-              <div key={account.id} className="flex items-center bg-secondary p-3 rounded-lg shadow-lg cursor-pointer">
-                <div className="w-12 h-12 rounded-full overflow-hidden mr-3">
+              <div
+                key={account.id}
+                className="flex cursor-pointer items-center rounded-lg bg-secondary p-3 shadow-lg"
+              >
+                <div className="mr-3 h-12 w-12 overflow-hidden rounded-full">
                   <Image
                     src={account.image || "/placeholder.svg"}
                     alt={account.name}
                     width={40}
                     height={40}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
+                    draggable={false}
                   />
                 </div>
 
                 <div className="flex-1">
-                  <div className="text-foreground font-semibold">{account.name}</div>
-                  <div className="text-muted text-xs">{account.username}</div>
+                  <div className="font-semibold text-foreground">
+                    {account.name}
+                  </div>
+                  <div className="text-xs text-muted">{account.username}</div>
                 </div>
 
                 <div className="flex items-center">
                   {Array(5)
                     .fill(0)
                     .map((_, i) => (
-                      <span key={i} className={`text-xs ${i < account.rating ? "text-primary" : "text-[#3a3a3a]"}`}>
+                      <span
+                        key={i}
+                        className={`text-xs ${i < account.rating ? "text-primary" : "text-[#3a3a3a]"}`}
+                      >
                         ★
                       </span>
                     ))}
@@ -203,13 +220,18 @@ function SearchResults({
         </div>
       )}
 
-      {filteredItemResults.length === 0 && filteredAccountResults.length === 0 && (
-        <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
-          <Search className="w-10 h-10 text-primary mx-auto mb-3" />
-          <h3 className="text-foreground font-semibold mb-2">No results found</h3>
-          <p className="text-muted text-sm">Try different keywords or check your spelling</p>
-        </div>
-      )}
+      {filteredItemResults.length === 0 &&
+        filteredAccountResults.length === 0 && (
+          <div className="rounded-lg bg-secondary p-6 text-center shadow-lg">
+            <Search className="mx-auto mb-3 h-10 w-10 text-primary" />
+            <h3 className="mb-2 font-semibold text-foreground">
+              No results found
+            </h3>
+            <p className="text-sm text-muted">
+              Try different keywords or check your spelling
+            </p>
+          </div>
+        )}
     </div>
-  )
+  );
 }

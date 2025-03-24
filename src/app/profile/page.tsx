@@ -49,7 +49,7 @@ export default function ProfilePage() {
   );
 
   const [profileImage, setProfileImage] = useState(
-    userProfile?.image ?? "/placeholder.svg?height=96&width=96",
+    userProfile?.image ?? "/profile-placeholder.svg?height=96&width=96",
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function ProfilePage() {
       setEmail(userProfile.email ?? "");
       setPostcode(userProfile.location?.postcode ?? "");
       setProfileImage(
-        userProfile.image ?? "/placeholder.svg?height=96&width=96",
+        userProfile.image ?? "/profile-placeholder.svg?height=96&width=96",
       );
     }
   }, [userProfile]);
@@ -107,24 +107,25 @@ export default function ProfilePage() {
   return (
     <AppShell activeScreen="profile" title="Profile">
       <div className="p-4">
-        <div className="bg-secondary mb-6 rounded-lg p-4 shadow-lg">
+        <div className="mb-6 rounded-lg bg-secondary p-4 shadow-lg">
           <div className="flex items-center">
             <div className="mr-4 h-16 w-16 overflow-hidden rounded-full border-2 border-[#c1ff72]">
               <Image
-                src={profileImage || "/placeholder.svg"}
+                src={profileImage || "/profile-placeholder.svg"}
                 alt="Profile"
                 width={64}
                 height={64}
                 className="h-full w-full object-cover"
+                draggable={false}
               />
             </div>
 
             <div className="flex-1">
-              <h3 className="text-foreground text-lg font-bold">{name}</h3>
-              <div className="text-muted text-xs">
+              <h3 className="text-lg font-bold text-foreground">{name}</h3>
+              <div className="text-xs text-muted">
                 {userProfile?.username ? `@${userProfile?.username}` : email}
               </div>
-              <div className="text-muted mt-1 text-xs">The Toon</div>
+              <div className="mt-1 text-xs text-muted">The Toon</div>
             </div>
 
             <button
@@ -136,15 +137,15 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          <div className="border-background mt-4 flex justify-around border-t pt-4">
+          <div className="mt-4 flex justify-around border-t border-background pt-4">
             <button
               className="flex flex-col items-center"
               onClick={() => setActiveSubScreen("swaps")}
             >
-              <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
+              <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-background">
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
+              <span className="text-xs font-medium text-foreground">
                 {totalLikes} Swaps
               </span>
             </button>
@@ -153,10 +154,10 @@ export default function ProfilePage() {
               className="flex flex-col items-center"
               onClick={() => setActiveSubScreen("following")}
             >
-              <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
+              <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-background">
                 <User className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
+              <span className="text-xs font-medium text-foreground">
                 {following} Following
               </span>
             </button>
@@ -165,17 +166,17 @@ export default function ProfilePage() {
               className="flex flex-col items-center"
               onClick={() => setActiveSubScreen("followers")}
             >
-              <div className="bg-background mb-1 flex h-8 w-8 items-center justify-center rounded-full">
+              <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-background">
                 <UserPlus className="h-4 w-4 text-[#c1ff72]" />
               </div>
-              <span className="text-foreground text-xs font-medium">
+              <span className="text-xs font-medium text-foreground">
                 {followers} Followers
               </span>
             </button>
           </div>
         </div>
 
-        <div className="bg-secondary mb-4 flex rounded-lg p-1 shadow-lg">
+        <div className="mb-4 flex rounded-lg bg-secondary p-1 shadow-lg">
           <button
             className={`flex-1 rounded-md py-2 text-sm ${profileTab === "gear" ? "bg-[#c1ff72] font-medium text-black" : "text-muted"}`}
             onClick={() => setProfileTab("gear")}
@@ -193,7 +194,7 @@ export default function ProfilePage() {
         {profileTab === "gear" ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-foreground font-semibold">Your Items</h3>
+              <h3 className="font-semibold text-foreground">Your Items</h3>
               <button
                 className="flex items-center text-xs text-[#c1ff72]"
                 onClick={() => router.push("/swap")}
@@ -212,17 +213,19 @@ export default function ProfilePage() {
                 {userItems.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-secondary overflow-hidden rounded-lg shadow-lg"
+                    className="overflow-hidden rounded-lg bg-secondary shadow-lg"
                   >
                     <div className="relative">
                       <Image
                         src={
-                          item.image || "/placeholder.svg?height=150&width=150"
+                          item.image ||
+                          "/item-placeholder.svg?height=150&width=150"
                         }
                         alt={item.title ?? "Item"}
                         width={150}
                         height={150}
                         className="h-32 w-full object-cover"
+                        draggable={false}
                       />
                       <div className="absolute right-2 top-2 flex items-center rounded-full bg-black/50 px-2 py-0.5">
                         <Heart className="mr-1 h-3 w-3 text-[#c1ff72]" />
@@ -232,21 +235,21 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="p-2">
-                      <div className="text-foreground truncate text-sm font-semibold">
+                      <div className="truncate text-sm font-semibold text-foreground">
                         {item.description ?? "No description"}
                       </div>
-                      <div className="text-muted text-xs">{item.category}</div>
+                      <div className="text-xs text-muted">{item.category}</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
+              <div className="rounded-lg bg-secondary p-6 text-center shadow-lg">
                 <Package className="mx-auto mb-3 h-10 w-10 text-[#c1ff72]" />
-                <h3 className="text-foreground mb-2 font-semibold">
+                <h3 className="mb-2 font-semibold text-foreground">
                   No items yet
                 </h3>
-                <p className="text-muted text-sm">
+                <p className="text-sm text-muted">
                   Add some items to start swapping!
                 </p>
                 <button
@@ -261,13 +264,13 @@ export default function ProfilePage() {
         ) : (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-foreground font-semibold">Your Reviews</h3>
+              <h3 className="font-semibold text-foreground">Your Reviews</h3>
               <div className="flex items-center">
                 <Star className="mr-1 h-4 w-4 text-[#c1ff72]" />
-                <span className="text-foreground font-semibold">
+                <span className="font-semibold text-foreground">
                   {averageRating}
                 </span>
-                <span className="text-muted ml-1 text-xs">({reviewCount})</span>
+                <span className="ml-1 text-xs text-muted">({reviewCount})</span>
               </div>
             </div>
 
@@ -275,7 +278,7 @@ export default function ProfilePage() {
               {userReviews?.map((review) => (
                 <div
                   key={review.id}
-                  className="bg-secondary rounded-lg p-4 shadow-lg"
+                  className="rounded-lg bg-secondary p-4 shadow-lg"
                 >
                   <div className="mb-2 flex items-center">
                     <div
@@ -285,16 +288,20 @@ export default function ProfilePage() {
                       }}
                     >
                       <Image
-                        src={review.reviewerUser.image ?? "/placeholder.svg"}
+                        src={
+                          review.reviewerUser.image ??
+                          "/profile-placeholder.svg"
+                        }
                         alt={review.reviewerUser.name ?? "Anonymous"}
                         width={40}
                         height={40}
                         className="h-full w-full object-cover"
+                        draggable={false}
                       />
                     </div>
                     <div className="flex-1">
                       <div
-                        className="text-foreground cursor-pointer font-semibold"
+                        className="cursor-pointer font-semibold text-foreground"
                         onClick={() => {
                           alert(
                             `Viewing ${review.reviewerUser.name}'s profile`,
@@ -317,17 +324,17 @@ export default function ProfilePage() {
                               </span>
                             ))}
                         </div>
-                        <span className="text-foreground text-xs font-medium">
+                        <span className="text-xs font-medium text-foreground">
                           {review.rating}/5
                         </span>
-                        <span className="text-muted mx-2 text-xs">•</span>
-                        <span className="text-muted text-xs">
+                        <span className="mx-2 text-xs text-muted">•</span>
+                        <span className="text-xs text-muted">
                           {review.createdAt.toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-foreground mb-2 text-sm">
+                  <p className="mb-2 text-sm text-foreground">
                     {review.review}
                   </p>
                   {/* //! TODO: Add item box here */}

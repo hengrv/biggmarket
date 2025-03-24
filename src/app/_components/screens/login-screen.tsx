@@ -17,39 +17,50 @@ export default function LoginScreen({
   const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 bg-[#1a1a1a]">
-      <div className="w-16 h-16 rounded-full bg-[#c1ff72] flex items-center justify-center mb-6">
-        <Heart className="w-8 h-8 text-black" />
+    <div className="flex h-full flex-col items-center justify-center bg-[#1a1a1a] p-6">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#c1ff72]">
+        <Heart className="h-8 w-8 text-black" />
       </div>
 
-      <h1 className="text-[#f3f3f3] text-3xl font-bold mb-2">BiggMarket</h1>
-      <p className="text-[#a9a9a9] text-sm mb-8 text-center">Swap, don&apos;t shop. Reduce waste, find treasures.</p>
+      <h1 className="mb-2 text-3xl font-bold text-[#f3f3f3]">BiggMarket</h1>
+      <p className="mb-8 text-center text-sm text-[#a9a9a9]">
+        Swap, don&apos;t shop. Reduce waste, find treasures.
+      </p>
 
-      <div className="relative w-full flex items-center justify-center mb-6">
+      <div className="relative mb-6 flex w-full items-center justify-center">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#3a3a3a]"></div>
         </div>
-        <div className="relative px-4 bg-[#1a1a1a]">
-          <span className="text-[#a9a9a9] text-sm">Continue with</span>
+        <div className="relative bg-[#1a1a1a] px-4">
+          <span className="text-sm text-[#a9a9a9]">Continue with</span>
         </div>
       </div>
 
       {/* Google signin button */}
-        <Link
+      <Link
         href="/api/auth/signin"
-        className="w-full bg-[#242424] text-[#f3f3f3] font-semibold rounded-lg py-3 mb-4 flex items-center justify-center"
-        >
-        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" alt="Google" width={20} height={20} className="w-5 h-5 mr-2" />
+        className="mb-4 flex w-full items-center justify-center rounded-lg bg-[#242424] py-3 font-semibold text-[#f3f3f3]"
+      >
+        <Image
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
+          alt="Google"
+          width={20}
+          height={20}
+          className="mr-2 h-5 w-5"
+          draggable={false}
+        />
         Sign in
-        </Link>
-        
+      </Link>
 
-        <p className="text-[#a9a9a9] text-sm">
-            Don&apos;t have an account?{" "}
-            <button className="text-[#c1ff72] font-semibold" onClick={() => setActiveScreen("signup")}>
-                Sign up
-            </button>
-        </p>
+      <p className="text-sm text-[#a9a9a9]">
+        Don&apos;t have an account?{" "}
+        <button
+          className="font-semibold text-[#c1ff72]"
+          onClick={() => setActiveScreen("signup")}
+        >
+          Sign up
+        </button>
+      </p>
     </div>
-  )
+  );
 }

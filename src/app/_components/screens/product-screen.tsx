@@ -100,7 +100,7 @@ const ProductScreen = function ProductScreen({
     {
       id: 1,
       name: "Men's Button Up",
-      image: "/placeholder.svg?height=400&width=300",
+      image: "/item-placeholder.svg?height=400&width=300",
       distance: "4 miles away",
       category: "Fashion & Apparel",
       description:
@@ -108,13 +108,13 @@ const ProductScreen = function ProductScreen({
       owner: {
         name: "Jacob",
         rating: 4.5,
-        image: "/placeholder.svg?height=40&width=40",
+        image: "/profile-placeholder.svg?height=40&width=40",
       },
     },
     {
       id: 2,
       name: "Vintage Chair",
-      image: "/placeholder.svg?height=400&width=300",
+      image: "/item-placeholder.svg?height=400&width=300",
       distance: "2 miles away",
       category: "Home & Living",
       description:
@@ -122,13 +122,13 @@ const ProductScreen = function ProductScreen({
       owner: {
         name: "Katie",
         rating: 5,
-        image: "/placeholder.svg?height=40&width=40",
+        image: "/profile-placeholder.svg?height=40&width=40",
       },
     },
     {
       id: 3,
       name: "Leather Boots",
-      image: "/placeholder.svg?height=400&width=300",
+      image: "/item-placeholder.svg?height=400&width=300",
       distance: "6 miles away",
       category: "Clothing & Apparel",
       description:
@@ -136,7 +136,7 @@ const ProductScreen = function ProductScreen({
       owner: {
         name: "Sam",
         rating: 4,
-        image: "/placeholder.svg?height=40&width=40",
+        image: "/profile-placeholder.svg?height=40&width=40",
       },
     },
   ]);
@@ -291,14 +291,15 @@ const ProductScreen = function ProductScreen({
           </div>
 
           {showCategoryFilter && (
-            <div className="animate-in fade-in mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200">
+            <div className="mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200 animate-in fade-in">
               <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
-                    ? "bg-[#c1ff72] text-black"
-                    : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                  className={`rounded-full px-3 py-1 text-xs ${
+                    selectedCategory === null
+                      ? "bg-[#c1ff72] text-black"
+                      : "bg-[#1a1a1a] text-[#f3f3f3]"
+                  }`}
                   onClick={() => setSelectedCategory(null)}
                 >
                   All Items
@@ -306,10 +307,11 @@ const ProductScreen = function ProductScreen({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
-                      ? "bg-[#c1ff72] text-black"
-                      : "bg-[#1a1a1a] text-[#f3f3f3]"
-                      }`}
+                    className={`rounded-full px-3 py-1 text-xs ${
+                      selectedCategory === category
+                        ? "bg-[#c1ff72] text-black"
+                        : "bg-[#1a1a1a] text-[#f3f3f3]"
+                    }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
@@ -353,14 +355,15 @@ const ProductScreen = function ProductScreen({
         </div>
 
         {showCategoryFilter && (
-          <div className="animate-in fade-in mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200">
+          <div className="mb-6 rounded-lg bg-[#242424] p-3 shadow-lg duration-200 animate-in fade-in">
             <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
             <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
               <button
-                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
-                  ? "bg-[#c1ff72] text-black"
-                  : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                className={`rounded-full px-3 py-1 text-xs ${
+                  selectedCategory === null
+                    ? "bg-[#c1ff72] text-black"
+                    : "bg-[#1a1a1a] text-[#f3f3f3]"
+                }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 All Items
@@ -368,10 +371,11 @@ const ProductScreen = function ProductScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
-                    ? "bg-[#c1ff72] text-black"
-                    : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                  className={`rounded-full px-3 py-1 text-xs ${
+                    selectedCategory === category
+                      ? "bg-[#c1ff72] text-black"
+                      : "bg-[#1a1a1a] text-[#f3f3f3]"
+                  }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -399,6 +403,7 @@ const ProductScreen = function ProductScreen({
               width={300}
               height={400}
               className="h-[400px] w-full object-cover"
+              draggable={false}
             />
             <div className="absolute bottom-1 left-2 flex items-center rounded-full bg-black/50 px-3 py-1">
               <MapPin className="mr-1 h-3 w-3 text-[#c1ff72]" />
@@ -419,6 +424,7 @@ const ProductScreen = function ProductScreen({
                   width={20}
                   height={20}
                   className="h-full w-full object-cover"
+                  draggable={false}
                 />
               </div>
               <span className="text-xs text-[#a9a9a9]">

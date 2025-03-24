@@ -1,48 +1,52 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Heart, UserPlus, Loader2 } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react";
+import { Heart, UserPlus, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function SignupScreen({
   setActiveScreen,
   handleLogin,
 }: {
-  setActiveScreen: (screen: string) => void
-  handleLogin: () => void
+  setActiveScreen: (screen: string) => void;
+  handleLogin: () => void;
 }) {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     setTimeout(() => {
-      setIsLoading(false)
-      handleLogin()
-    }, 1500)
-  }
+      setIsLoading(false);
+      handleLogin();
+    }, 1500);
+  };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6 bg-background">
-      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-6">
-        <Heart className="w-8 h-8 text-black" />
+    <div className="flex h-full flex-col items-center justify-center bg-background p-6">
+      <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+        <Heart className="h-8 w-8 text-black" />
       </div>
 
-      <h1 className="text-foreground text-3xl font-bold mb-2">Join BiggMarket</h1>
-      <p className="text-muted text-sm mb-8 text-center">Create an account to start swapping</p>
+      <h1 className="mb-2 text-3xl font-bold text-foreground">
+        Join BiggMarket
+      </h1>
+      <p className="mb-8 text-center text-sm text-muted">
+        Create an account to start swapping
+      </p>
 
-      <form onSubmit={handleSubmit} className="w-full space-y-4 mb-6">
+      <form onSubmit={handleSubmit} className="mb-6 w-full space-y-4">
         <div>
-          <label className="text-muted text-xs block mb-1">Full Name</label>
+          <label className="mb-1 block text-xs text-muted">Full Name</label>
           <input
             type="text"
-            className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary"
+            className="w-full rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter your full name"
@@ -50,10 +54,10 @@ export default function SignupScreen({
         </div>
 
         <div>
-          <label className="text-muted text-xs block mb-1">Email</label>
+          <label className="mb-1 block text-xs text-muted">Email</label>
           <input
             type="email"
-            className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary"
+            className="w-full rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
@@ -61,10 +65,10 @@ export default function SignupScreen({
         </div>
 
         <div>
-          <label className="text-muted text-xs block mb-1">Password</label>
+          <label className="mb-1 block text-xs text-muted">Password</label>
           <input
             type="password"
-            className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary"
+            className="w-full rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Create a password"
@@ -73,34 +77,48 @@ export default function SignupScreen({
 
         <button
           type="submit"
-          className="w-full bg-primary text-black font-semibold rounded-lg py-3 flex items-center justify-center"
+          className="flex w-full items-center justify-center rounded-lg bg-primary py-3 font-semibold text-black"
           disabled={isLoading}
         >
-          {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <UserPlus className="w-5 h-5 mr-2" />}
+          {isLoading ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <UserPlus className="mr-2 h-5 w-5" />
+          )}
           {isLoading ? "Creating account..." : "Sign Up"}
         </button>
       </form>
 
-      <div className="relative w-full flex items-center justify-center mb-6">
+      <div className="relative mb-6 flex w-full items-center justify-center">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#3a3a3a]"></div>
         </div>
-        <div className="relative px-4 bg-background">
-          <span className="text-muted text-sm">Or continue with</span>
+        <div className="relative bg-background px-4">
+          <span className="text-sm text-muted">Or continue with</span>
         </div>
       </div>
 
-      <button className="w-full bg-secondary text-foreground font-semibold rounded-lg py-3 mb-4 flex items-center justify-center">
-        <Image src="/placeholder.svg?height=20&width=20" alt="Google" width={20} height={20} className="w-5 h-5 mr-2" />
+      <button className="mb-4 flex w-full items-center justify-center rounded-lg bg-secondary py-3 font-semibold text-foreground">
+        <Image
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
+          alt="Google"
+          width={20}
+          height={20}
+          className="mr-2 h-5 w-5"
+          draggable={false}
+        />
         Google
       </button>
 
-      <p className="text-muted text-sm">
+      <p className="text-sm text-muted">
         Already have an account?{" "}
-        <button className="text-primary font-semibold" onClick={() => setActiveScreen("login")}>
+        <button
+          className="font-semibold text-primary"
+          onClick={() => setActiveScreen("login")}
+        >
           Log in
         </button>
       </p>
     </div>
-  )
+  );
 }

@@ -56,28 +56,28 @@ export default function FeedPage() {
       user: {
         name: "Sarah Johnson",
         username: "@sarahj",
-        image: "/placeholder.svg?height=48&width=48",
+        image: "/profile-placeholder.svg?height=48&width=48",
       },
       content:
         "Just listed a vintage record player! Anyone interested in swapping for some houseplants?",
       time: "2h ago",
       likes: 12,
       comments: 3,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/generic-placeholder.svg?height=300&width=400",
     },
     {
       id: 2,
       user: {
         name: "Mike Peters",
         username: "@mikeswaps",
-        image: "/placeholder.svg?height=48&width=48",
+        image: "/profile-placeholder.svg?height=48&width=48",
       },
       content:
         "Successfully swapped my old camera for this amazing guitar! Love this community!",
       time: "5h ago",
       likes: 24,
       comments: 7,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/generic-placeholder.svg?height=300&width=400",
     },
   ]);
 
@@ -93,7 +93,7 @@ export default function FeedPage() {
 
   const handleAddImage = () => {
     setNewPostImage(
-      `/placeholder.svg?height=${300 + Math.floor(Math.random() * 100)}&width=${400 + Math.floor(Math.random() * 100)}`,
+      `/item-placeholder.svg?height=${300 + Math.floor(Math.random() * 100)}&width=${400 + Math.floor(Math.random() * 100)}`,
     );
   };
 
@@ -108,7 +108,7 @@ export default function FeedPage() {
         user: {
           name: "John",
           username: "@johnswapper",
-          image: "/placeholder.svg?height=48&width=48",
+          image: "/profile-placeholder.svg?height=48&width=48",
         },
         content: newPostText,
         time: "Just now",
@@ -146,7 +146,7 @@ export default function FeedPage() {
           <div className="flex space-x-2">
             {activeTab === "feed" && (
               <button
-                className="bg-secondary rounded-full p-2 transition-colors hover:bg-[#2a2a2a]"
+                className="rounded-full bg-secondary p-2 transition-colors hover:bg-[#2a2a2a]"
                 onClick={handleAddPost}
               >
                 <Plus className="h-5 w-5 text-[#c1ff72]" />
@@ -155,7 +155,7 @@ export default function FeedPage() {
           </div>
         </div>
 
-        <div className="bg-secondary mb-4 flex rounded-lg p-1 shadow-lg">
+        <div className="mb-4 flex rounded-lg bg-secondary p-1 shadow-lg">
           <button
             className={`flex-1 rounded-md py-2 text-sm ${activeTab === "feed" ? "bg-[#c1ff72] font-medium text-black" : "text-muted"}`}
             onClick={() => setActiveTab("feed")}
@@ -171,14 +171,14 @@ export default function FeedPage() {
         </div>
 
         {showPostCreator && (
-          <div className="bg-secondary animate-in fade-in mb-4 overflow-hidden rounded-lg shadow-lg duration-300">
+          <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg duration-300 animate-in fade-in">
             <div className="flex items-center justify-between border-b border-[#3a3a3a] p-3">
-              <h3 className="text-foreground font-semibold">Create Post</h3>
+              <h3 className="font-semibold text-foreground">Create Post</h3>
               <button
                 className="rounded-full p-1 hover:bg-[#3a3a3a]"
                 onClick={handleClosePostCreator}
               >
-                <X className="text-muted h-5 w-5" />
+                <X className="h-5 w-5 text-muted" />
               </button>
             </div>
 
@@ -186,16 +186,17 @@ export default function FeedPage() {
               <div className="mb-3 flex items-start">
                 <div className="mr-3 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
                   <Image
-                    src="/placeholder.svg?height=40&width=40"
+                    src="/profile-placeholder.svg?height=40&width=40"
                     alt="Your profile"
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
+                    draggable={false}
                   />
                 </div>
                 <textarea
                   placeholder="What's on your mind?"
-                  className="bg-background text-foreground h-24 flex-1 resize-none rounded-lg border border-[#3a3a3a] p-3 outline-none focus:border-[#c1ff72]"
+                  className="h-24 flex-1 resize-none rounded-lg border border-[#3a3a3a] bg-background p-3 text-foreground outline-none focus:border-[#c1ff72]"
                   value={newPostText}
                   onChange={(e) => setNewPostText(e.target.value)}
                 ></textarea>
@@ -204,11 +205,12 @@ export default function FeedPage() {
               {newPostImage && (
                 <div className="relative mb-3">
                   <Image
-                    src={newPostImage || "/placeholder.svg"}
+                    src={newPostImage || "/generic-placeholder.svg"}
                     alt="Post image"
                     width={400}
                     height={300}
                     className="h-48 w-full rounded-lg object-cover"
+                    draggable={false}
                   />
                   <button
                     className="absolute right-2 top-2 rounded-full bg-black/50 p-1"
@@ -221,7 +223,7 @@ export default function FeedPage() {
 
               <div className="flex items-center justify-between">
                 <button
-                  className="bg-background rounded-full p-2 text-[#c1ff72]"
+                  className="rounded-full bg-background p-2 text-[#c1ff72]"
                   onClick={handleAddImage}
                 >
                   <Camera className="h-5 w-5" />
@@ -230,7 +232,7 @@ export default function FeedPage() {
                 <button
                   className={`flex items-center rounded-full px-4 py-2 font-medium ${newPostText.trim()
                       ? "bg-[#c1ff72] text-black"
-                      : "text-muted bg-[#3a3a3a]"
+                      : "bg-[#3a3a3a] text-muted"
                     }`}
                   onClick={handleSubmitPost}
                   disabled={!newPostText.trim() || isPosting}
@@ -277,7 +279,7 @@ function FeedContent({
       {feedItems.map((item) => (
         <div
           key={item.id}
-          className="bg-secondary overflow-hidden rounded-lg shadow-lg"
+          className="overflow-hidden rounded-lg bg-secondary shadow-lg"
         >
           <div className="flex items-center p-3">
             <div
@@ -285,21 +287,22 @@ function FeedContent({
               onClick={() => setViewingAccount(item.user)}
             >
               <Image
-                src={item.user.image || "/placeholder.svg"}
+                src={item.user.image || "/profile-placeholder.svg"}
                 alt={item.user.name}
                 width={40}
                 height={40}
                 className="h-full w-full object-cover"
+                draggable={false}
               />
             </div>
             <div className="flex-1">
               <div
-                className="text-foreground cursor-pointer font-semibold"
+                className="cursor-pointer font-semibold text-foreground"
                 onClick={() => setViewingAccount(item.user)}
               >
                 {item.user.name}
               </div>
-              <div className="text-muted flex items-center text-xs">
+              <div className="flex items-center text-xs text-muted">
                 <span>{item.user.username}</span>
                 <span className="mx-1">•</span>
                 <span>{item.time}</span>
@@ -308,28 +311,29 @@ function FeedContent({
           </div>
 
           <div className="px-3 pb-2">
-            <p className="text-foreground mb-3 text-sm">{item.content}</p>
+            <p className="mb-3 text-sm text-foreground">{item.content}</p>
           </div>
 
           {item.image && (
             <Image
-              src={item.image || "/placeholder.svg"}
+              src={item.image || "/item-placeholder.svg"}
               alt="Post image"
               width={400}
               height={300}
               className="h-48 w-full object-cover"
+              draggable={false}
             />
           )}
 
-          <div className="border-background flex items-center justify-between border-t p-3">
-            <button className="text-muted flex items-center text-xs">
+          <div className="flex items-center justify-between border-t border-background p-3">
+            <button className="flex items-center text-xs text-muted">
               ♥ {item.likes} Likes
             </button>
-            <button className="text-muted flex items-center text-xs">
+            <button className="flex items-center text-xs text-muted">
               <MessageSquare className="mr-1 h-3 w-3" /> {item.comments}{" "}
               Comments
             </button>
-            <button className="text-muted flex items-center text-xs">
+            <button className="flex items-center text-xs text-muted">
               Share
             </button>
           </div>
@@ -349,7 +353,7 @@ function MessagesContent({
       id: 1,
       user: {
         name: "Emily Davis",
-        image: "/placeholder.svg?height=48&width=48",
+        image: "/profile-placeholder.svg?height=48&width=48",
         online: true,
       },
       lastMessage: "Is the vintage lamp still available?",
@@ -360,7 +364,7 @@ function MessagesContent({
       id: 2,
       user: {
         name: "David Kim",
-        image: "/placeholder.svg?height=48&width=48",
+        image: "/profile-placeholder.svg?height=48&width=48",
         online: false,
       },
       lastMessage: "Thanks for the swap! The book is perfect.",
@@ -371,7 +375,7 @@ function MessagesContent({
       id: 3,
       user: {
         name: "Sophia Lee",
-        image: "/placeholder.svg?height=48&width=48",
+        image: "/profile-placeholder.svg?height=48&width=48",
         online: true,
       },
       lastMessage: "Would you be interested in trading for a plant?",
@@ -385,38 +389,39 @@ function MessagesContent({
       {chats.map((chat) => (
         <div
           key={chat.id}
-          className="bg-secondary flex cursor-pointer items-center rounded-lg p-3 shadow-lg"
+          className="flex cursor-pointer items-center rounded-lg bg-secondary p-3 shadow-lg"
           onClick={() => setActiveChat(chat)}
         >
           <div className="relative">
             <div className="mr-3 h-12 w-12 overflow-hidden rounded-full">
               <Image
-                src={chat.user.image || "/placeholder.svg"}
+                src={chat.user.image || "/profile-placeholder.svg"}
                 alt={chat.user.name}
                 width={48}
                 height={48}
                 className="h-full w-full object-cover"
+                draggable={false}
               />
             </div>
             {chat.user.online && (
-              <div className="border-secondary absolute bottom-0 right-3 h-3 w-3 rounded-full border-2 bg-green-500"></div>
+              <div className="absolute bottom-0 right-3 h-3 w-3 rounded-full border-2 border-secondary bg-green-500"></div>
             )}
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between">
-              <div className="text-foreground truncate font-semibold">
+              <div className="truncate font-semibold text-foreground">
                 {chat.user.name}
               </div>
-              <div className="text-muted text-xs">{chat.time}</div>
+              <div className="text-xs text-muted">{chat.time}</div>
             </div>
-            <div className="text-muted truncate text-xs">
+            <div className="truncate text-xs text-muted">
               {chat.lastMessage}
             </div>
           </div>
 
           {chat.unread > 0 && (
-            <div className="bg-primary ml-2 flex h-5 w-5 items-center justify-center rounded-full">
+            <div className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
               <span className="text-xs font-bold text-black">
                 {chat.unread}
               </span>
@@ -512,15 +517,16 @@ function ChatScreen({
         <div className="relative">
           <div className="h-8 w-8 overflow-hidden rounded-full">
             <Image
-              src={activeChat.user.image || "/placeholder.svg"}
+              src={activeChat.user.image || "/profile-placeholder.svg"}
               alt={activeChat.user.name}
               width={32}
               height={32}
               className="h-full w-full object-cover"
+              draggable={false}
             />
           </div>
           {activeChat.user.online && (
-            <div className="border-secondary absolute bottom-0 right-0 h-2 w-2 rounded-full border bg-green-500"></div>
+            <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full border border-secondary bg-green-500"></div>
           )}
         </div>
       }
@@ -534,8 +540,8 @@ function ChatScreen({
             >
               <div
                 className={`max-w-[80%] rounded-lg p-3 ${msg.sender === "me"
-                    ? "bg-primary rounded-tr-none text-black"
-                    : "bg-secondary text-foreground rounded-tl-none"
+                    ? "rounded-tr-none bg-primary text-black"
+                    : "rounded-tl-none bg-secondary text-foreground"
                   }`}
               >
                 <p className="text-sm">{msg.text}</p>
@@ -549,12 +555,12 @@ function ChatScreen({
           ))}
         </div>
 
-        <div className="bg-secondary border-background border-t p-3">
+        <div className="border-t border-background bg-secondary p-3">
           <div className="flex items-center">
             <input
               type="text"
               placeholder="Type a message..."
-              className="bg-background text-foreground mx-2 flex-1 rounded-full px-4 py-2 outline-none"
+              className="mx-2 flex-1 rounded-full bg-background px-4 py-2 text-foreground outline-none"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -587,25 +593,25 @@ function ViewAccountScreen({
     {
       id: 1,
       name: "Vintage Camera",
-      image: "/placeholder.svg?height=150&width=150",
+      image: "/item-placeholder.svg?height=150&width=150",
       condition: "Good",
     },
     {
       id: 2,
       name: "Leather Boots",
-      image: "/placeholder.svg?height=150&width=150",
+      image: "/item-placeholder.svg?height=150&width=150",
       condition: "Like New",
     },
     {
       id: 3,
       name: "Retro Lamp",
-      image: "/placeholder.svg?height=150&width=150",
+      image: "/item-placeholder.svg?height=150&width=150",
       condition: "Fair",
     },
     {
       id: 4,
       name: "Vinyl Records",
-      image: "/placeholder.svg?height=150&width=150",
+      image: "/item-placeholder.svg?height=150&width=150",
       condition: "Good",
     },
   ];
@@ -618,28 +624,29 @@ function ViewAccountScreen({
       activeScreen="feed"
     >
       <div className="p-4">
-        <div className="bg-secondary mb-4 overflow-hidden rounded-lg shadow-lg">
-          <div className="from-background h-24 bg-gradient-to-r to-[#2a2a2a]"></div>
+        <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
+          <div className="h-24 bg-gradient-to-r from-background to-[#2a2a2a]"></div>
 
           <div className="relative px-4 pb-4">
-            <div className="border-secondary absolute -top-10 left-4 h-20 w-20 overflow-hidden rounded-full border-4">
+            <div className="absolute -top-10 left-4 h-20 w-20 overflow-hidden rounded-full border-4 border-secondary">
               <Image
-                src={account.image || "/placeholder.svg"}
+                src={account.image || "/profile-placeholder.svg"}
                 alt={account.name}
                 width={80}
                 height={80}
                 className="h-full w-full object-cover"
+                draggable={false}
               />
             </div>
 
             <div className="mb-10 flex justify-end pt-2">
-              <button className="bg-background text-foreground mr-2 flex items-center rounded-full px-3 py-1 text-xs">
+              <button className="mr-2 flex items-center rounded-full bg-background px-3 py-1 text-xs text-foreground">
                 <MessageSquare className="mr-1 h-3 w-3" />
                 Message
               </button>
 
               <button
-                className={`${isFollowing ? "bg-background text-foreground border border-[#3a3a3a]" : "bg-primary text-black"} flex items-center rounded-full px-3 py-1 text-xs`}
+                className={`${isFollowing ? "border border-[#3a3a3a] bg-background text-foreground" : "bg-primary text-black"} flex items-center rounded-full px-3 py-1 text-xs`}
                 onClick={() => setIsFollowing(!isFollowing)}
               >
                 {isFollowing ? (
@@ -652,33 +659,33 @@ function ViewAccountScreen({
               </button>
             </div>
 
-            <h3 className="text-foreground text-lg font-bold">
+            <h3 className="text-lg font-bold text-foreground">
               {account.name}
             </h3>
-            <div className="text-muted mb-2 text-xs">{account.username}</div>
+            <div className="mb-2 text-xs text-muted">{account.username}</div>
 
-            <p className="text-foreground mb-3 text-sm">
+            <p className="mb-3 text-sm text-foreground">
               Passionate about sustainable fashion and reducing waste. Love to
               swap and give items a second life!
             </p>
 
-            <div className="text-muted flex space-x-4 text-xs">
+            <div className="flex space-x-4 text-xs text-muted">
               <div>
-                <span className="text-foreground font-semibold">24</span>{" "}
+                <span className="font-semibold text-foreground">24</span>{" "}
                 Following
               </div>
               <div>
-                <span className="text-foreground font-semibold">118</span>{" "}
+                <span className="font-semibold text-foreground">118</span>{" "}
                 Followers
               </div>
               <div>
-                <span className="text-foreground font-semibold">42</span> Swaps
+                <span className="font-semibold text-foreground">42</span> Swaps
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-secondary mb-4 flex rounded-lg p-1 shadow-lg">
+        <div className="mb-4 flex rounded-lg bg-secondary p-1 shadow-lg">
           <button
             className={`flex-1 rounded-md py-2 text-sm ${activeTab === "items" ? "bg-background text-primary" : "text-muted"}`}
             onClick={() => setActiveTab("items")}
@@ -698,20 +705,21 @@ function ViewAccountScreen({
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-secondary overflow-hidden rounded-lg shadow-lg"
+                className="overflow-hidden rounded-lg bg-secondary shadow-lg"
               >
                 <Image
-                  src={item.image || "/placeholder.svg"}
+                  src={item.image || "/item-placeholder.svg"}
                   alt={item.name}
                   width={150}
                   height={150}
                   className="h-32 w-full object-cover"
+                  draggable={false}
                 />
                 <div className="p-2">
-                  <div className="text-foreground text-sm font-semibold">
+                  <div className="text-sm font-semibold text-foreground">
                     {item.name}
                   </div>
-                  <div className="text-muted text-xs">
+                  <div className="text-xs text-muted">
                     Condition: {item.condition}
                   </div>
                 </div>
@@ -719,34 +727,34 @@ function ViewAccountScreen({
             ))}
           </div>
         ) : (
-          <div className="bg-secondary rounded-lg p-4 shadow-lg">
+          <div className="rounded-lg bg-secondary p-4 shadow-lg">
             <div className="space-y-4">
               <div>
-                <h4 className="text-muted mb-1 text-xs">Bio</h4>
-                <p className="text-foreground text-sm">
+                <h4 className="mb-1 text-xs text-muted">Bio</h4>
+                <p className="text-sm text-foreground">
                   Passionate about sustainable fashion and reducing waste. Love
                   to swap and give items a second life!
                 </p>
               </div>
 
               <div>
-                <h4 className="text-muted mb-1 text-xs">Location</h4>
-                <p className="text-foreground text-sm">London, UK</p>
+                <h4 className="mb-1 text-xs text-muted">Location</h4>
+                <p className="text-sm text-foreground">London, UK</p>
               </div>
 
               <div>
-                <h4 className="text-muted mb-1 text-xs">Member Since</h4>
-                <p className="text-foreground text-sm">March 2022</p>
+                <h4 className="mb-1 text-xs text-muted">Member Since</h4>
+                <p className="text-sm text-foreground">March 2022</p>
               </div>
 
               <div>
-                <h4 className="text-muted mb-1 text-xs">Interests</h4>
+                <h4 className="mb-1 text-xs text-muted">Interests</h4>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {["Vintage", "Books", "Fashion", "Vinyl", "Plants"].map(
                     (tag) => (
                       <span
                         key={tag}
-                        className="bg-background text-muted rounded-full px-3 py-1 text-xs"
+                        className="rounded-full bg-background px-3 py-1 text-xs text-muted"
                       >
                         {tag}
                       </span>

@@ -106,17 +106,18 @@ export function ProfileImageUploader({ imageUrl }: { imageUrl: string }) {
         >
           <div className="h-24 w-24 overflow-hidden rounded-full border-2 border-[#c1ff72]">
             <Image
-              src={imageUrl ?? "/placeholder.svg?height=96&width=96"}
+              src={imageUrl ?? "/profile-placeholder.svg?height=96&width=96"}
               alt="Profile"
               width={96}
               height={96}
               className="h-full w-full object-cover"
+              draggable={false}
             />
             <div className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#c1ff72] shadow-md">
               {isUploading ? (
-                <Loader2 className="text-bm-black h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin text-bm-black" />
               ) : (
-                <Camera className="text-bm-black h-4 w-4" />
+                <Camera className="h-4 w-4 text-bm-black" />
               )}
             </div>
           </div>

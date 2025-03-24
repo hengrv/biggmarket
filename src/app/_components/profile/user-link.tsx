@@ -53,10 +53,11 @@ export default function UserLink({
             width={imageSize}
             height={imageSize}
             className="h-full w-full object-cover"
+            draggable={false}
           />
         </div>
       )}
-      <span className="text-foreground hover:text-primary transition-colors">
+      <span className="text-foreground transition-colors hover:text-primary">
         {user.name ?? user.email ?? "User"}
       </span>
     </Link>
