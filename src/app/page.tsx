@@ -2,24 +2,14 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import { ProfileTester } from "~/app/_components/profiletest";
-import ItemTester from "@components/itemtest";
-import { ReviewTester } from "./_components/reviewtest";
-import { LocationTester } from "./_components/locationtest";
-import { ViewItemsTester } from "./_components/viewitemstest";
 import BottomNavigation from "./_components/bottom-navigation";
 import AppShell from "@components/app-shell";
 import ProductDetailsScreen from "./_components/screens/product-details-screen";
 import HomeScreen from "./_components/screens/home-screen";
+import LoginScreen from "./_components/screens/login-screen";
 export default async function Home() {
   const session = await auth();
-
-  if (session?.user) {
-  }
-
   
-
-
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col items-center justify-center bg-background-1 text-text-1">
@@ -39,13 +29,9 @@ export default async function Home() {
               </Link>
             </div>
           </div> */}
-          {/* {session?.user && <ItemTester />}
-          {session?.user && <ProfileTester />}
-          {session?.user && <ReviewTester />}
-          {session?.user && <LocationTester />}
-          {session?.user && <ViewItemsTester />} */}
+          
+          {session?.user ? <HomeScreen /> : <LoginScreen />}
 
-          {session?.user && <HomeScreen/>}
         </div>
       </main>
     </HydrateClient>
