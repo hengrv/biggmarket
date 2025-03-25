@@ -6,16 +6,7 @@ import { Heart, LogIn, Loader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-export default function LoginScreen({
-  setActiveScreen,
-  handleLogin,
-}: {
-  setActiveScreen: (screen: string) => void
-  handleLogin: () => void
-}) {
-    
-  const [isLoading, setIsLoading] = useState(false)
-
+export default function LoginScreen() {
   return (
     <div className="h-full flex flex-col items-center justify-center p-6 bg-[#1a1a1a]">
       <div className="w-16 h-16 rounded-full bg-[#c1ff72] flex items-center justify-center mb-6">
@@ -46,7 +37,7 @@ export default function LoginScreen({
 
         <p className="text-[#a9a9a9] text-sm">
             Don&apos;t have an account?{" "}
-            <button className="text-[#c1ff72] font-semibold" onClick={() => setActiveScreen("signup")}>
+            <button className="text-[#c1ff72] font-semibold">
                 Sign up
             </button>
         </p>

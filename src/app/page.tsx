@@ -2,14 +2,12 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import BottomNavigation from "./_components/bottom-navigation";
 import AppShell from "@components/app-shell";
-import ProductDetailsScreen from "./_components/screens/product-details-screen";
 import HomeScreen from "./_components/screens/home-screen";
 import LoginScreen from "./_components/screens/login-screen";
 export default async function Home() {
   const session = await auth();
-  
+
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col items-center justify-center bg-background-1 text-text-1">
