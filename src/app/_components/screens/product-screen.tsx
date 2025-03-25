@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, memo, useCallback, useMemo } from "react";
 import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
+import { api } from "~/trpc/react";
 
 interface ProductOwner {
   name: string;
@@ -95,6 +96,9 @@ const ProductScreen = function ProductScreen({
     "Pet Supplies",
     "Cooking Supplies",
   ];
+
+  const test_data_from_api = api.item.getItemsOnLocation.useQuery();
+console.log(test_data_from_api);
 
   const [products] = useState<Product[]>([
     {

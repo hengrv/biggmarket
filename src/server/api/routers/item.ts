@@ -550,8 +550,6 @@ export const itemRouter = createTRPCRouter({
             id: true,
             name: true,
             image: true,
-          },
-          include: {
             location: true,
           },
         },
