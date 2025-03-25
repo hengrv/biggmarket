@@ -117,7 +117,10 @@ function FollowingCard({
   }
 
   return (
-    <div className="bg-secondary flex items-center rounded-lg p-4 shadow-lg cursor-pointer" onClick={navigateToProfile}>
+    <div
+      className="flex cursor-pointer items-center rounded-lg bg-secondary p-4 shadow-lg"
+      onClick={navigateToProfile}
+    >
       <div className="mr-4 h-14 w-14 overflow-hidden rounded-full">
         <Image
           src={followedUser?.image ?? "/placeholder.svg?height=56&width=56"}
@@ -125,13 +128,16 @@ function FollowingCard({
           width={56}
           height={56}
           className="h-full w-full object-cover"
+          draggable={false}
         />
       </div>
 
       <div className="flex-1">
-        <div className="text-foreground font-semibold">{followedUser?.name ?? user.email}</div>
-        <div className="text-muted text-xs">{user.email}</div>
-        <div className="text-muted mt-1 line-clamp-1 text-xs">
+        <div className="font-semibold text-foreground">
+          {followedUser?.name ?? user.email}
+        </div>
+        <div className="text-xs text-muted">{user.email}</div>
+        <div className="mt-1 line-clamp-1 text-xs text-muted">
           Following since {new Date(user.followedAt).toLocaleDateString()}
         </div>
       </div>
@@ -139,15 +145,15 @@ function FollowingCard({
       <button
         className="rounded-full bg-[#c1ff72] px-3 py-1 text-xs font-medium text-black"
         onClick={(e) => {
-          e.stopPropagation() // Prevent navigating when clicking the button
-          toggleFollow()
+          e.stopPropagation(); // Prevent navigating when clicking the button
+          toggleFollow();
         }}
         disabled={isLoading}
       >
         {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Following"}
       </button>
     </div>
-  )
+  );
 }
 
 export default FollowingScreen

@@ -2,11 +2,14 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import AppShell from "@components/app-shell";
-import HomeScreen from "./_components/screens/home-screen";
 import LoginScreen from "./_components/screens/login-screen";
+
+import HomeScreen from "./_components/screens/home-screen";
 export default async function Home() {
   const session = await auth();
+
+  if (session?.user) {
+  }
 
   return (
     <HydrateClient>
@@ -27,9 +30,13 @@ export default async function Home() {
               </Link>
             </div>
           </div> */}
-          
-          {session?.user ? <HomeScreen /> : <LoginScreen />}
+          {/* {session?.user && <ItemTester />}
+          {session?.user && <ProfileTester />}
+          {session?.user && <ReviewTester />}
+          {session?.user && <LocationTester />}
+          {session?.user && <ViewItemsTester />} */}
 
+          {session?.user ? <HomeScreen /> : <LoginScreen />}
         </div>
       </main>
     </HydrateClient>

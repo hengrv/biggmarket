@@ -67,54 +67,65 @@ export default function ProductDetailsScreen({
   }
 
   return (
-    <AppShell title="Item Details" showBackButton={true} onBack={() => setShowProductDetails(false)}>
+    <AppShell
+      title="Item Details"
+      showBackButton={true}
+      onBack={() => setShowProductDetails(false)}
+    >
       <div className="p-4">
-        <div className="bg-secondary rounded-lg overflow-hidden mb-4 shadow-lg">
+        <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
             src={product.image || "/placeholder.svg"}
             alt={product.name}
             width={300}
             height={400}
-            className="w-full h-56 object-cover"
+            className="h-56 w-full object-cover"
+            draggable={false}
           />
 
           <div className="p-4">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="text-foreground text-xl font-bold">{product.name}</h3>
-              <div className="flex items-center bg-background rounded-full px-3 py-1">
-                <MapPin className="w-3 h-3 text-primary mr-1" />
-                <span className="text-foreground text-xs">{product.distance}</span>
+            <div className="mb-3 flex items-start justify-between">
+              <h3 className="text-xl font-bold text-foreground">
+                {product.name}
+              </h3>
+              <div className="flex items-center rounded-full bg-background px-3 py-1">
+                <MapPin className="mr-1 h-3 w-3 text-primary" />
+                <span className="text-xs text-foreground">
+                  {product.distance}
+                </span>
               </div>
             </div>
 
             <div className="mb-4">
-              <h4 className="text-muted text-sm mb-1">Description</h4>
-              <p className="text-foreground text-sm">{product.description}</p>
+              <h4 className="mb-1 text-sm text-muted">Description</h4>
+              <p className="text-sm text-foreground">{product.description}</p>
             </div>
 
             <div
-              className="flex items-center justify-between mb-4 bg-background rounded-lg p-3 cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+              className="mb-4 flex cursor-pointer items-center justify-between rounded-lg bg-background p-3 transition-colors hover:bg-[#2a2a2a]"
               onClick={() => {
-
-                document.body.style.opacity = "0.5"
+                document.body.style.opacity = "0.5";
                 setTimeout(() => {
-                  alert(`Viewing ${product.owner.name}'s profile`)
-                  document.body.style.opacity = "1"
-                }, 300)
+                  alert(`Viewing ${product.owner.name}'s profile`);
+                  document.body.style.opacity = "1";
+                }, 300);
               }}
             >
               <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+                <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
                     src={product.owner.image || "/placeholder.svg"}
                     alt={product.owner.name}
                     width={40}
                     height={40}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
+                    draggable={false}
                   />
                 </div>
                 <div>
-                  <div className="text-[#f3f3f3] font-semibold">{product.owner.name}</div>
+                  <div className="font-semibold text-[#f3f3f3]">
+                    {product.owner.name}
+                  </div>
                   <div className="flex items-center">
                     {Array(5)
                       .fill(0)
@@ -126,14 +137,24 @@ export default function ProductDetailsScreen({
                           ★
                         </span>
                       ))}
-                    <span className="text-[#a9a9a9] text-xs ml-1">{product.owner.rating}</span>
+                    <span className="ml-1 text-xs text-[#a9a9a9]">
+                      {product.owner.rating}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center">
-                <span className="text-[#a9a9a9] text-xs mr-1">View profile</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <span className="mr-1 text-xs text-[#a9a9a9]">
+                  View profile
+                </span>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M9 18L15 12L9 6"
                     stroke="#c1ff72"
@@ -147,34 +168,38 @@ export default function ProductDetailsScreen({
 
             {showMessageInput ? (
               <div className="mb-4">
-                <div className="flex items-center bg-background rounded-lg p-2">
+                <div className="flex items-center rounded-lg bg-background p-2">
                   <input
                     type="text"
                     placeholder={`Message to ${product.owner.name}...`}
-                    className="flex-1 bg-transparent border-none outline-none text-[#f3f3f3] text-sm"
+                    className="flex-1 border-none bg-transparent text-sm text-[#f3f3f3] outline-none"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                     autoFocus
                   />
                   <button
-                    className={`p-2 rounded-full ${message.trim() ? "bg-[#c1ff72]" : "bg-[#3a3a3a]"}`}
+                    className={`rounded-full p-2 ${message.trim() ? "bg-[#c1ff72]" : "bg-[#3a3a3a]"}`}
                     onClick={handleSendMessage}
                     disabled={!message.trim() || isSending}
                   >
-                    <Send className={`w-4 h-4 ${message.trim() ? "text-black" : "text-[#a9a9a9]"}`} />
+                    <Send
+                      className={`h-4 w-4 ${message.trim() ? "text-black" : "text-[#a9a9a9]"}`}
+                    />
                   </button>
                 </div>
                 {sentMessage && (
-                  <div className="text-[#c1ff72] text-xs mt-2 text-center">Message sent to {product.owner.name}!</div>
+                  <div className="mt-2 text-center text-xs text-[#c1ff72]">
+                    Message sent to {product.owner.name}!
+                  </div>
                 )}
               </div>
             ) : (
               <button
-                className="w-full bg-[#c1ff72] text-black font-semibold rounded-lg py-3 flex items-center justify-center"
+                className="flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black"
                 onClick={() => setShowMessageInput(true)}
               >
-                <MessageSquare className="w-5 h-5 mr-2" />
+                <MessageSquare className="mr-2 h-5 w-5" />
                 Message {product.owner.name}
               </button>
             )}
@@ -182,5 +207,5 @@ export default function ProductDetailsScreen({
         </div>
       </div>
     </AppShell>
-  )
+  );
 }

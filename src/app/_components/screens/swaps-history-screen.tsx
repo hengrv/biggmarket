@@ -55,7 +55,10 @@ function SwapsHistoryScreen({
               with: "Emily",
             },
           ].map((order) => (
-            <div key={order.id} className="bg-secondary flex items-center rounded-lg p-4 shadow-lg">
+            <div
+              key={order.id}
+              className="flex items-center rounded-lg bg-secondary p-4 shadow-lg"
+            >
               <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                 <Image
                   src={order.image || "/placeholder.svg"}
@@ -63,13 +66,18 @@ function SwapsHistoryScreen({
                   width={64}
                   height={64}
                   className="h-full w-full object-cover"
+                  draggable={false}
                 />
               </div>
 
               <div className="flex-1">
-                <div className="text-foreground font-semibold">{order.name}</div>
-                <div className="text-muted text-xs">Swapped with {order.with}</div>
-                <div className="text-muted text-xs">{order.date}</div>
+                <div className="font-semibold text-foreground">
+                  {order.name}
+                </div>
+                <div className="text-xs text-muted">
+                  Swapped with {order.with}
+                </div>
+                <div className="text-xs text-muted">{order.date}</div>
                 <div
                   className={`mt-1 text-xs ${order.status === "Completed" ? "text-[#c1ff72]" : "text-red-400"} font-medium`}
                 >
@@ -77,7 +85,7 @@ function SwapsHistoryScreen({
                 </div>
               </div>
 
-              <button className="bg-background rounded-full p-2">
+              <button className="rounded-full bg-background p-2">
                 <ChevronRight className="h-5 w-5 text-[#c1ff72]" />
               </button>
             </div>
@@ -85,7 +93,7 @@ function SwapsHistoryScreen({
         </div>
       </div>
     </AppShell>
-  )
+  );
 }
 
 export default SwapsHistoryScreen
