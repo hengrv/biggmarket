@@ -21,7 +21,7 @@ export function ProfileImageUpload() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <UploadButton<OurFileRouter, "profileImage">
+      <UploadButton<"profileImage">
         endpoint="profileImage"
         onClientUploadComplete={(res) => {
           // Do something with the response
@@ -58,7 +58,7 @@ export function ProfileImageUpload() {
           console.error("Upload error:", error);
           setUploadError(error.message);
         }}
-        className="ut-button:bg-blue-500 ut-button:hover:bg-blue-600 ut-button:text-white ut-button:rounded ut-button:px-4 ut-button:py-2 ut-button:flex ut-button:items-center ut-button:gap-2"
+        className="ut-button:flex ut-button:items-center ut-button:gap-2 ut-button:rounded ut-button:bg-blue-500 ut-button:px-4 ut-button:py-2 ut-button:text-white ut-button:hover:bg-blue-600"
         content={{
           button({ ready }) {
             if (isUploading) {

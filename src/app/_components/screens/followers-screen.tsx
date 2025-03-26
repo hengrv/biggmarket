@@ -38,9 +38,9 @@ function FollowersScreen({
     isFetchingNextPage,
   } = useFollowers(userId ?? userProfile?.id ?? "", 10);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = async () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      await fetchNextPage();
     }
   };
 
@@ -154,9 +154,9 @@ function FollowerCard({
 
       <button
         className={`${isFollowing ? "border border-[#3a3a3a] bg-secondary text-foreground" : "bg-[#c1ff72] text-black"} flex items-center rounded-full px-3 py-1 text-xs font-medium`}
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation(); // Prevent navigating when clicking the button
-          toggleFollow();
+          await toggleFollow();
         }}
         disabled={isLoading}
       >

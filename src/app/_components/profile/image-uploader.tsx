@@ -78,10 +78,10 @@ export function ProfileImageUploader({ imageUrl }: { imageUrl: string }) {
   const { isUploading, uploadError, handleUpload } = useProfileImageUpload();
 
   const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        handleUpload(file);
+        await handleUpload(file);
       }
     },
     [handleUpload],

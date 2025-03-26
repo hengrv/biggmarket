@@ -38,9 +38,9 @@ function FollowingScreen({
     isFetchingNextPage,
   } = useFollowing(userId ?? userProfile?.id ?? "", 10);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = async () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      await fetchNextPage();
     }
   };
 
@@ -156,9 +156,9 @@ function FollowingCard({
 
       <button
         className="rounded-full bg-[#c1ff72] px-3 py-1 text-xs font-medium text-black"
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation(); // Prevent navigating when clicking the button
-          toggleFollow();
+          await toggleFollow();
         }}
         disabled={isLoading}
       >

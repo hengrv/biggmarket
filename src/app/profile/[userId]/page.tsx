@@ -45,10 +45,6 @@ export default function ProfilePage({
       },
       {
         retry: false,
-        onError: () => {
-          // Redirect to 404 or home page if user not found
-          router.push("/");
-        },
       },
     );
 
@@ -93,9 +89,10 @@ export default function ProfilePage({
       ?.filter((stat) => stat.direction === "RIGHT")
       .reduce((acc, stat) => acc + stat._count, 0) ?? 0;
 
+  // const { data: userReviews } = api.user.getProfileReviews.useQuery({userId: userProfile?.id})
   const { data: userReviews } = api.user.getProfileReviews.useQuery(
     {
-      userId: userProfile?.id,
+      userId: userProfile?.id ?? "",
     },
     {
       enabled: !!userProfile?.id,
@@ -104,7 +101,7 @@ export default function ProfilePage({
 
   const { data: ratingData } = api.user.getAverageRating.useQuery(
     {
-      userId: userProfile?.id,
+      userId: userProfile?.id ?? "",
     },
     {
       enabled: !!userProfile?.id,
@@ -196,9 +193,7 @@ export default function ProfilePage({
                   : userProfile.email}
               </div>
               <div className="mt-1 text-xs text-muted">
-                {userProfile.location?.postcode
-                  ? userProfile.location.postcode
-                  : "Location not set"}
+                {userProfile.location?.postcode ?? "Location not set"}
               </div>
             </div>
 
