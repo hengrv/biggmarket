@@ -2,9 +2,10 @@ import Link from "next/link";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
-import LoginScreen from "./_components/screens/login-screen";
 
+import LoginScreen from "./_components/screens/login-screen";
 import HomeScreen from "./_components/screens/home-screen";
+
 export default async function Home() {
   const session = await auth();
 

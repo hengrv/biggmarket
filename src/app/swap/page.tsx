@@ -1,25 +1,36 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Clock, Heart, ChevronRight, Plus, X, Camera, Loader2, Upload, Check, Send } from "lucide-react"
-import Image from "next/image"
-import AppShell from "@/components/app-shell"
+import { useState, useEffect } from "react";
+import {
+  Clock,
+  Heart,
+  ChevronRight,
+  Plus,
+  X,
+  Camera,
+  Loader2,
+  Upload,
+  Check,
+  Send,
+} from "lucide-react";
+import Image from "next/image";
+import AppShell from "@/components/app-shell";
 
 export default function SwapPage() {
-  const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null)
+  const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
   if (activeSubScreen === "wishlist-item") {
-    return <WishlistItemScreen setActiveSubScreen={setActiveSubScreen} />
+    return <WishlistItemScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
   if (activeSubScreen === "past-orders") {
-    return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />
+    return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
   if (activeSubScreen === "sell") {
-    return <SellItemScreen setActiveSubScreen={setActiveSubScreen} />
+    return <SellItemScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
   return (
@@ -60,7 +71,7 @@ export default function SwapPage() {
                 className="w-32 flex-shrink-0 overflow-hidden rounded-lg bg-background shadow-md"
               >
                 <Image
-                  src={`/placeholder.svg?height=100&width=80`}
+                  src={`/item-placeholder.svg?height=100&width=80`}
                   alt={`Past swap ${item}`}
                   width={80}
                   height={100}
@@ -98,7 +109,7 @@ export default function SwapPage() {
               >
                 <div className="relative">
                   <Image
-                    src={`/placeholder.svg?height=120&width=160`}
+                    src={`/item-placeholder.svg?height=120&width=160`}
                     alt={`Wishlist item ${item}`}
                     width={160}
                     height={120}
@@ -116,7 +127,7 @@ export default function SwapPage() {
                   <div className="mt-1 flex items-center">
                     <div className="mr-1 h-4 w-4 overflow-hidden rounded-full">
                       <Image
-                        src="/placeholder.svg?height=16&width=16"
+                        src="/profile-placeholder.svg?height=16&width=16"
                         alt="Owner"
                         width={16}
                         height={16}
@@ -136,108 +147,113 @@ export default function SwapPage() {
   );
 }
 
-function WishlistItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: string | null) => void }) {
+function WishlistItemScreen({
+  setActiveSubScreen,
+}: {
+  setActiveSubScreen: (screen: string | null) => void;
+}) {
   const item = {
     id: 1,
     name: "Vintage Leather Jacket",
-    image: "/placeholder.svg?height=300&width=400",
+    image: "/item-placeholder.svg?height=300&width=400",
     distance: "3 miles away",
     description:
       "Genuine leather jacket from the 1980s. Some wear but in great condition overall. Size M, dark brown color.",
     owner: {
       name: "Alex",
       rating: 4.8,
-      image: "/placeholder.svg?height=48&width=48",
+      image: "/item-placeholder.svg?height=48&width=48",
     },
-  }
+  };
 
   // Add state to track swap status
-  const [swapStatus, setSwapStatus] = useState<"ready" | "pending" | "completed">("ready")
-  const [isLoading, setIsLoading] = useState(false)
-  const [showMessageInput, setShowMessageInput] = useState(false)
-  const [message, setMessage] = useState("")
-  const [isSending, setIsSending] = useState(false)
-  const [sentMessage, setSentMessage] = useState(false)
+  const [swapStatus, setSwapStatus] = useState<
+    "ready" | "pending" | "completed"
+  >("ready");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMessageInput, setShowMessageInput] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [sentMessage, setSentMessage] = useState(false);
 
   const handleSendMessage = () => {
-    if (!message.trim()) return
+    if (!message.trim()) return;
 
-    setIsSending(true)
+    setIsSending(true);
 
     // Simulate sending a message
     setTimeout(() => {
-      setIsSending(false)
-      setSentMessage(true)
-      setMessage("")
+      setIsSending(false);
+      setSentMessage(true);
+      setMessage("");
 
       // Reset the success message after a delay
       setTimeout(() => {
-        setSentMessage(false)
-        setShowMessageInput(false)
-      }, 3000)
-    }, 1000)
-  }
+        setSentMessage(false);
+        setShowMessageInput(false);
+      }, 3000);
+    }, 1000);
+  };
 
   // Handle swap button click
   const handleSwapClick = () => {
     if (swapStatus === "ready") {
-      setIsLoading(true)
+      setIsLoading(true);
 
       // Simulate network request
       setTimeout(() => {
-        setIsLoading(false)
-        setSwapStatus("pending")
+        setIsLoading(false);
+        setSwapStatus("pending");
 
         // Simulate other user accepting after some time
         setTimeout(() => {
-          setSwapStatus("completed")
+          setSwapStatus("completed");
 
           // Navigate to past swaps after completion
           setTimeout(() => {
-            setActiveSubScreen("past-orders")
-          }, 1500)
-        }, 3000)
-      }, 1000)
+            setActiveSubScreen("past-orders");
+          }, 1500);
+        }, 3000);
+      }, 1000);
     }
-  }
+  };
 
-  
   const getButtonStyles = () => {
     switch (swapStatus) {
       case "ready":
-        return "bg-[#c1ff72] text-black"
+        return "bg-[#c1ff72] text-black";
       case "pending":
-        return "bg-[#3a3a3a] text-[#a9a9a9]"
+        return "bg-[#3a3a3a] text-[#a9a9a9]";
       case "completed":
-        return "bg-[#4c9bb0] text-white"
+        return "bg-[#4c9bb0] text-white";
     }
-  }
+  };
 
   // Get button text based on status
   const getButtonText = () => {
-    if (isLoading) return "Processing..."
+    if (isLoading) return "Processing...";
 
     switch (swapStatus) {
       case "ready":
-        return "Swap Now"
+        return "Swap Now";
       case "pending":
-        return "Swap Pending"
+        return "Swap Pending";
       case "completed":
-        return "Swapped!"
+        return "Swapped!";
     }
-  }
+  };
 
   // Get button icon based on status
   const getButtonIcon = () => {
-    if (isLoading) return <Loader2 className="w-5 h-5 animate-spin mr-2" />
+    if (isLoading) return <Loader2 className="mr-2 h-5 w-5 animate-spin" />;
 
     switch (swapStatus) {
       case "completed":
-        return <Check className="w-5 h-5 mr-2" />
+        return <Check className="mr-2 h-5 w-5" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <AppShell
@@ -249,7 +265,7 @@ function WishlistItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
       <div className="p-4">
         <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
-            src={item.image || "/placeholder.svg"}
+            src={item.image || "/item-placeholder.svg"}
             alt={item.name}
             width={400}
             height={300}
@@ -270,7 +286,7 @@ function WishlistItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
               <div className="flex items-center">
                 <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
-                    src={item.owner.image || "/placeholder.svg"}
+                    src={item.owner.image || "/profle-placeholder.svg"}
                     alt={item.owner.name}
                     width={40}
                     height={40}
@@ -355,14 +371,18 @@ function WishlistItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
   );
 }
 
-function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: string | null) => void }) {
+function SwapsHistoryScreen({
+  setActiveSubScreen,
+}: {
+  setActiveSubScreen: (screen: string | null) => void;
+}) {
   const swaps = [
     {
       id: 1,
       name: "Vintage Chair",
       status: "Completed",
       date: "May 15, 2023",
-      image: "/placeholder.svg?height=60&width=60",
+      image: "/item-placeholder.svg?height=60&width=60",
       with: "Katie",
     },
     {
@@ -370,7 +390,7 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
       name: "Blue T-Shirt",
       status: "Completed",
       date: "Apr 22, 2023",
-      image: "/placeholder.svg?height=60&width=60",
+      image: "/item-placeholder.svg?height=60&width=60",
       with: "Jacob",
     },
     {
@@ -378,7 +398,7 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
       name: "Leather Boots",
       status: "Cancelled",
       date: "Mar 10, 2023",
-      image: "/placeholder.svg?height=60&width=60",
+      image: "/item-placeholder.svg?height=60&width=60",
       with: "Sam",
     },
     {
@@ -386,19 +406,23 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
       name: "Desk Lamp",
       status: "Completed",
       date: "Feb 5, 2023",
-      image: "/placeholder.svg?height=60&width=60",
+      image: "/item-placeholder.svg?height=60&width=60",
       with: "Emily",
     },
-  ]
+  ];
 
-  
   useEffect(() => {
     // This would typically check some state or URL parameter
     // to determine if we're coming from a completed swap
-  }, [])
+  }, []);
 
   return (
-    <AppShell title="Swaps History" showBackButton={true} onBack={() => setActiveSubScreen(null)} activeScreen="swap">
+    <AppShell
+      title="Swaps History"
+      showBackButton={true}
+      onBack={() => setActiveSubScreen(null)}
+      activeScreen="swap"
+    >
       <div className="p-4">
         <div className="space-y-4">
           {[
@@ -407,104 +431,121 @@ function SwapsHistoryScreen({ setActiveSubScreen }: { setActiveSubScreen: (scree
               name: "Vintage Leather Jacket",
               status: "Completed",
               date: "Just now",
-              image: "/placeholder.svg?height=300&width=400",
+              image: "/item-placeholder.svg?height=300&width=400",
               with: "Alex",
             },
             ...swaps,
           ].map((swap) => (
             <div
               key={swap.id}
-              className="flex items-center bg-secondary p-4 rounded-lg shadow-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+              className="flex cursor-pointer items-center rounded-lg bg-secondary p-4 shadow-lg transition-colors hover:bg-[#2a2a2a]"
               onClick={() => {
-                
-                alert(`Viewing details for ${swap.name} swap with ${swap.with}`)
+                alert(
+                  `Viewing details for ${swap.name} swap with ${swap.with}`,
+                );
               }}
             >
-              <div className="w-16 h-16 rounded-lg overflow-hidden mr-4">
+              <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                 <Image
-                  src={swap.image || "/placeholder.svg"}
+                  src={swap.image || "/item-placeholder.svg"}
                   alt={swap.name}
                   width={64}
                   height={64}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               </div>
 
               <div className="flex-1">
-                <div className="text-foreground font-semibold">{swap.name}</div>
-                <div className="text-muted text-xs">Swapped with {swap.with}</div>
-                <div className="text-muted text-xs">{swap.date}</div>
+                <div className="font-semibold text-foreground">{swap.name}</div>
+                <div className="text-xs text-muted">
+                  Swapped with {swap.with}
+                </div>
+                <div className="text-xs text-muted">{swap.date}</div>
                 <div
-                  className={`text-xs mt-1 ${swap.status === "Completed" ? "text-primary" : "text-red-400"} font-medium`}
+                  className={`mt-1 text-xs ${swap.status === "Completed" ? "text-primary" : "text-red-400"} font-medium`}
                 >
                   {swap.status}
                 </div>
               </div>
 
-              <button className="bg-background rounded-full p-2">
-                <ChevronRight className="w-5 h-5 text-primary" />
+              <button className="rounded-full bg-background p-2">
+                <ChevronRight className="h-5 w-5 text-primary" />
               </button>
             </div>
           ))}
         </div>
       </div>
     </AppShell>
-  )
+  );
 }
 
-function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: string | null) => void }) {
-  const [itemName, setItemName] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("Furniture")
-  const [condition, setCondition] = useState("New")
-  const [images, setImages] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+function SellItemScreen({
+  setActiveSubScreen,
+}: {
+  setActiveSubScreen: (screen: string | null) => void;
+}) {
+  const [itemName, setItemName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Furniture");
+  const [condition, setCondition] = useState("New");
+  const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAddImage = () => {
     // Simulate adding an image
-    const newImage = `/placeholder.svg?height=${200 + Math.floor(Math.random() * 100)}&width=${200 + Math.floor(Math.random() * 100)}`
-    setImages([...images, newImage])
-  }
+    const newImage = `/item-placeholder.svg?height=${200 + Math.floor(Math.random() * 100)}&width=${200 + Math.floor(Math.random() * 100)}`;
+    setImages([...images, newImage]);
+  };
 
   const handleRemoveImage = (index: number) => {
-    const newImages = [...images]
-    newImages.splice(index, 1)
-    setImages(newImages)
-  }
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     // Simulate upload process
     setTimeout(() => {
-      setIsLoading(false)
-      setActiveSubScreen(null)
-    }, 1500)
-  }
+      setIsLoading(false);
+      setActiveSubScreen(null);
+    }, 1500);
+  };
 
   return (
-    <AppShell title="Sell an Item" showBackButton={true} onBack={() => setActiveSubScreen(null)} activeScreen="swap">
+    <AppShell
+      title="Sell an Item"
+      showBackButton={true}
+      onBack={() => setActiveSubScreen(null)}
+      activeScreen="swap"
+    >
       <div className="p-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-muted text-xs block mb-1">Item Photos (required)</label>
+            <label className="mb-1 block text-xs text-muted">
+              Item Photos (required)
+            </label>
             <div className="grid grid-cols-3 gap-2">
               {images.map((image, index) => (
-                <div key={index} className="relative aspect-square bg-secondary rounded-lg overflow-hidden">
+                <div
+                  key={index}
+                  className="relative aspect-square overflow-hidden rounded-lg bg-secondary"
+                >
                   <Image
-                    src={image || "/placeholder.svg"}
+                    src={image || "/item-placeholder.svg"}
                     alt={`Item photo ${index + 1}`}
                     width={100}
                     height={100}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                   <button
                     type="button"
-                    className="absolute top-1 right-1 bg-black/50 rounded-full p-1"
+                    className="absolute right-1 top-1 rounded-full bg-black/50 p-1"
                     onClick={() => handleRemoveImage(index)}
                   >
-                    <X className="w-3 h-3 text-white" />
+                    <X className="h-3 w-3 text-white" />
                   </button>
                 </div>
               ))}
@@ -512,23 +553,29 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
               {images.length < 5 && (
                 <button
                   type="button"
-                  className="aspect-square bg-secondary border-2 border-dashed border-[#3a3a3a] rounded-lg flex flex-col items-center justify-center"
+                  className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#3a3a3a] bg-secondary"
                   onClick={handleAddImage}
                 >
-                  <Camera className="w-6 h-6 text-primary mb-1" />
-                  <span className="text-muted text-xs">Add Photo</span>
+                  <Camera className="mb-1 h-6 w-6 text-primary" />
+                  <span className="text-xs text-muted">Add Photo</span>
                 </button>
               )}
             </div>
-            {images.length === 0 && <p className="text-red-400 text-xs">At least one photo is required</p>}
+            {images.length === 0 && (
+              <p className="text-xs text-red-400">
+                At least one photo is required
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="text-muted text-xs block mb-1">Item Name (required)</label>
+            <label className="mb-1 block text-xs text-muted">
+              Item Name (required)
+            </label>
             <input
               type="text"
               placeholder="e.g. Vintage Chair"
-              className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary"
+              className="w-full rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               required
@@ -536,10 +583,10 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
           </div>
 
           <div>
-            <label className="text-muted text-xs block mb-1">Description</label>
+            <label className="mb-1 block text-xs text-muted">Description</label>
             <textarea
               placeholder="Describe your item..."
-              className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary h-24 resize-none"
+              className="h-24 w-full resize-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
@@ -547,9 +594,9 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-muted text-xs block mb-1">Category</label>
+              <label className="mb-1 block text-xs text-muted">Category</label>
               <select
-                className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary appearance-none"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -566,9 +613,9 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
             </div>
 
             <div>
-              <label className="text-muted text-xs block mb-1">Condition</label>
+              <label className="mb-1 block text-xs text-muted">Condition</label>
               <select
-                className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary appearance-none"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
               >
@@ -583,17 +630,18 @@ function SellItemScreen({ setActiveSubScreen }: { setActiveSubScreen: (screen: s
 
           <button
             type="submit"
-            className="w-full bg-primary text-black font-semibold rounded-lg py-3 mt-4 flex items-center justify-center"
+            className="mt-4 flex w-full items-center justify-center rounded-lg bg-primary py-3 font-semibold text-black"
             disabled={isLoading || images.length === 0 || !itemName}
           >
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Upload className="w-5 h-5 mr-2" />}
+            {isLoading ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-5 w-5" />
+            )}
             {isLoading ? "Listing..." : "List Item"}
           </button>
         </form>
       </div>
     </AppShell>
-  )
+  );
 }
-
-
-

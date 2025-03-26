@@ -1,40 +1,48 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import AppShell from "@components/app-shell"
-import Image from "next/image"
-import { Loader2 } from "lucide-react"
-import { useFollow } from "~/hooks/useFollow"
-import { api } from "~/trpc/react"
-import { useRouter } from "next/navigation"
+import AppShell from "@components/app-shell";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
+import { useFollow } from "~/hooks/useFollow";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 function FollowingScreen({
   setActiveSubScreen,
   userId,
 }: {
-  setActiveSubScreen: (screen: string | null) => void
-  userId?: string
+  setActiveSubScreen: (screen: string | null) => void;
+  userId?: string;
 }) {
-  const [userProfile] = api.user.getProfile.useSuspenseQuery(userId ? { userId } : undefined)
-  const { data: currentUserId } = api.user.getCurrentlyAuthenticatedUser.useQuery()
-  const { useFollowing, useFollowActions } = useFollow()
+  const [userProfile] = api.user.getProfile.useSuspenseQuery(
+    userId ? { userId } : undefined,
+  );
+  const { data: currentUserId } =
+    api.user.getCurrentlyAuthenticatedUser.useQuery();
+  const { useFollowing, useFollowActions } = useFollow();
 
-  const isOwnProfile = !userId || userId === currentUserId
+  const isOwnProfile = !userId || userId === currentUserId;
 
   // Get the name of the user whose following list we're viewing
-  const titlePrefix = isOwnProfile ? "People You're" : `${userProfile?.name ?? "User"}'s`
+  const titlePrefix = isOwnProfile
+    ? "People You're"
+    : `${userProfile?.name ?? "User"}'s`;
 
-  const { following, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFollowing(
-    userId ?? userProfile?.id ?? "",
-    10,
-  )
+  const {
+    following,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFollowing(userId ?? userProfile?.id ?? "", 10);
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage()
+      fetchNextPage();
     }
-  }
+  };
 
   return (
     <AppShell
@@ -49,13 +57,13 @@ function FollowingScreen({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : following.length === 0 ? (
-          <div className="bg-secondary rounded-lg p-6 text-center shadow-lg">
-            <h3 className="text-foreground font-semibold mb-2">
+          <div className="rounded-lg bg-secondary p-6 text-center shadow-lg">
+            <h3 className="mb-2 font-semibold text-foreground">
               {isOwnProfile
                 ? "You're not following anyone yet"
                 : `${userProfile?.name ?? "This user"} isn't following anyone yet`}
             </h3>
-            <p className="text-muted text-sm">
+            <p className="text-sm text-muted">
               {isOwnProfile
                 ? "When you follow people, they'll appear here."
                 : "When they follow people, they'll appear here."}
@@ -71,7 +79,7 @@ function FollowingScreen({
               <div className="flex justify-center pt-4">
                 <button
                   onClick={handleLoadMore}
-                  className="bg-secondary text-foreground rounded-lg px-4 py-2 text-sm flex items-center"
+                  className="flex items-center rounded-lg bg-secondary px-4 py-2 text-sm text-foreground"
                   disabled={isFetchingNextPage}
                 >
                   {isFetchingNextPage ? (
@@ -89,32 +97,34 @@ function FollowingScreen({
         )}
       </div>
     </AppShell>
-  )
+  );
 }
 
 function FollowingCard({
   user,
 }: {
   user: {
-    followedAt: Date
-    id: string
-    email: string | null
-  }
+    followedAt: Date;
+    id: string;
+    email: string | null;
+  };
 }) {
-  const router = useRouter()
-  const { data: followedUser } = api.user.getProfile.useQuery({ userId: user.id })
+  const router = useRouter();
+  const { data: followedUser } = api.user.getProfile.useQuery({
+    userId: user.id,
+  });
 
-  const { useFollowActions } = useFollow()
-  const { isLoading, toggleFollow } = useFollowActions(user.id)
+  const { useFollowActions } = useFollow();
+  const { isLoading, toggleFollow } = useFollowActions(user.id);
 
   const navigateToProfile = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent triggering when clicking the follow button
+    e.stopPropagation(); // Prevent triggering when clicking the follow button
     if (followedUser?.username) {
-      router.push(`/profile/@${followedUser.username}`)
+      router.push(`/profile/@${followedUser.username}`);
     } else {
-      router.push(`/profile/${user.id}`)
+      router.push(`/profile/${user.id}`);
     }
-  }
+  };
 
   return (
     <div
@@ -123,7 +133,9 @@ function FollowingCard({
     >
       <div className="mr-4 h-14 w-14 overflow-hidden rounded-full">
         <Image
-          src={followedUser?.image ?? "/placeholder.svg?height=56&width=56"}
+          src={
+            followedUser?.image ?? "/profile-placeholder.svg?height=56&width=56"
+          }
           alt={followedUser?.name ?? followedUser?.email ?? "User"}
           width={56}
           height={56}
@@ -156,5 +168,4 @@ function FollowingCard({
   );
 }
 
-export default FollowingScreen
-
+export default FollowingScreen;

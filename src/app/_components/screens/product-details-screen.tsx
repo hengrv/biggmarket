@@ -1,70 +1,73 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MapPin, MessageSquare, Send } from "lucide-react"
-import Image from "next/image"
-import AppShell from "@/components/app-shell"
+import { useState } from "react";
+import { MapPin, MessageSquare, Send } from "lucide-react";
+import Image from "next/image";
+import AppShell from "@/components/app-shell";
 
 interface ProductOwner {
-  name: string
-  image: string
-  rating: number
+  name: string;
+  image: string;
+  rating: number;
 }
 
 interface Product {
-  id?: number
-  name: string
-  image: string
-  distance: string
-  description: string
-  owner: ProductOwner
+  id?: number;
+  name: string;
+  image: string;
+  distance: string;
+  description: string;
+  owner: ProductOwner;
 }
 
 export default function ProductDetailsScreen({
   product,
   setShowProductDetails,
 }: {
-  product: Product | null | undefined
-  setShowProductDetails: (show: boolean) => void
+  product: Product | null | undefined;
+  setShowProductDetails: (show: boolean) => void;
 }) {
-  const [showMessageInput, setShowMessageInput] = useState(false)
-  const [message, setMessage] = useState("")
-  const [isSending, setIsSending] = useState(false)
-  const [sentMessage, setSentMessage] = useState(false)
+  const [showMessageInput, setShowMessageInput] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [sentMessage, setSentMessage] = useState(false);
 
-  
   if (!product) {
     return (
-      <AppShell title="Item Details" showBackButton={true} onBack={() => setShowProductDetails(false)}>
+      <AppShell
+        title="Item Details"
+        showBackButton={true}
+        onBack={() => setShowProductDetails(false)}
+      >
         <div className="p-4 text-center">
           <p className="text-muted">Product information not available</p>
           <button
-            className="mt-4 bg-primary text-black px-4 py-2 rounded-lg"
+            className="mt-4 rounded-lg bg-primary px-4 py-2 text-black"
             onClick={() => setShowProductDetails(false)}
           >
             Go Back
           </button>
         </div>
       </AppShell>
-    )
+    );
   }
 
   const handleSendMessage = () => {
-    if (!message.trim()) return
+    if (!message.trim()) return;
 
-    setIsSending(true)
+    setIsSending(true);
 
     setTimeout(() => {
-      setIsSending(false)
-      setSentMessage(true)
-      setMessage("")
+      setIsSending(false);
+      setSentMessage(true);
+      setMessage("");
 
       setTimeout(() => {
-        setSentMessage(false)
-        setShowMessageInput(false)
-      }, 3000)
-    }, 1000)
-  }
+        setSentMessage(false);
+        setShowMessageInput(false);
+      }, 3000);
+    }, 1000);
+  };
 
   return (
     <AppShell
@@ -75,7 +78,7 @@ export default function ProductDetailsScreen({
       <div className="p-4">
         <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={product.image || "/item-placeholder.svg"}
             alt={product.name}
             width={300}
             height={400}
@@ -114,7 +117,7 @@ export default function ProductDetailsScreen({
               <div className="flex items-center">
                 <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
-                    src={product.owner.image || "/placeholder.svg"}
+                    src={product.owner.image || "/profile-placeholder.svg"}
                     alt={product.owner.name}
                     width={40}
                     height={40}

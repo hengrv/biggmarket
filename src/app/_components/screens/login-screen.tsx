@@ -1,12 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Heart, LogIn, Loader2 } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import type React from "react";
+import { useState } from "react";
+import { Heart, LogIn, Loader2 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function LoginScreen() {
+export default function LoginScreen({
+  setActiveScreen,
+  handleLogin,
+}: {
+  setActiveScreen: (screen: string) => void;
+  handleLogin: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <div className="flex h-full flex-col items-center justify-center bg-[#1a1a1a] p-6">
       <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#c1ff72]">
@@ -43,12 +51,12 @@ export default function LoginScreen() {
         Sign in
       </Link>
 
-        <p className="text-[#a9a9a9] text-sm">
-            Don&apos;t have an account?{" "}
-            <button className="text-[#c1ff72] font-semibold">
-                Sign up
-            </button>
-        </p>
+      <p className="text-sm text-[#a9a9a9]">
+        Don&apos;t have an account?{" "}
+        <link className="font-semibold text-[#c1ff72]" href="s">
+          Sign up
+        </link>
+      </p>
     </div>
   );
 }

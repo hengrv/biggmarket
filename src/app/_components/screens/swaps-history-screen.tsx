@@ -1,13 +1,13 @@
-import AppShell from "../app-shell"
-import Image from "next/image"
-import { ChevronRight } from "lucide-react"
+import AppShell from "../app-shell";
+import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 
 function SwapsHistoryScreen({
   setActiveSubScreen,
   userId,
 }: {
-  setActiveSubScreen: (screen: string | null) => void
-  userId?: string
+  setActiveSubScreen: (screen: string | null) => void;
+  userId?: string;
 }) {
   // You can use the userId to fetch swaps specific to that user
   // For now, we'll keep the existing mock data
@@ -27,7 +27,7 @@ function SwapsHistoryScreen({
               name: "Vintage Chair",
               status: "Completed",
               date: "May 15, 2023",
-              image: "/placeholder.svg?height=60&width=60",
+              image: "/item-placeholder.svg?height=60&width=60",
               with: "Katie",
             },
             {
@@ -35,7 +35,7 @@ function SwapsHistoryScreen({
               name: "Blue T-Shirt",
               status: "Completed",
               date: "Apr 22, 2023",
-              image: "/placeholder.svg?height=60&width=60",
+              image: "/item-placeholder.svg?height=60&width=60",
               with: "Jacob",
             },
             {
@@ -43,7 +43,7 @@ function SwapsHistoryScreen({
               name: "Leather Boots",
               status: "Cancelled",
               date: "Mar 10, 2023",
-              image: "/placeholder.svg?height=60&width=60",
+              image: "/item-placeholder.svg?height=60&width=60",
               with: "Sam",
             },
             {
@@ -51,7 +51,7 @@ function SwapsHistoryScreen({
               name: "Desk Lamp",
               status: "Completed",
               date: "Feb 5, 2023",
-              image: "/placeholder.svg?height=60&width=60",
+              image: "/item-placeholder.svg?height=60&width=60",
               with: "Emily",
             },
           ].map((order) => (
@@ -61,7 +61,7 @@ function SwapsHistoryScreen({
             >
               <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                 <Image
-                  src={order.image || "/placeholder.svg"}
+                  src={order.image || "/item-placeholder.svg"}
                   alt={order.name}
                   width={64}
                   height={64}
@@ -96,5 +96,4 @@ function SwapsHistoryScreen({
   );
 }
 
-export default SwapsHistoryScreen
-
+export default SwapsHistoryScreen;
