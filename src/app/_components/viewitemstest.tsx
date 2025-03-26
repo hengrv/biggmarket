@@ -8,13 +8,9 @@ export function ViewItemsTester() {
     // State
     const [userProfile] = api.user.getProfile.useSuspenseQuery();
 
-    const longitude = userProfile?.location?.longitude
-        ? userProfile.location.longitude
-        : 0;
+    const longitude = userProfile?.location?.longitude ?? 0;
 
-    const latitude = userProfile?.location?.latitude
-        ? userProfile.location.latitude
-        : 0;
+    const latitude = userProfile?.location?.latitude ?? 0;
 
     const [items, { refetch: refetchItems }] =
         api.algorithm.getItemsByDistance.useSuspenseQuery({
