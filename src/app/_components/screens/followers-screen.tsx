@@ -5,10 +5,9 @@ import type React from "react";
 import AppShell from "@components/app-shell";
 import Image from "next/image";
 import { UserPlus, Loader2 } from "lucide-react";
-import { useFollow } from "~/hooks/useFollow";
+import { useFollow } from "@hooks/useFollow";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
-import { useFollowers } from "~/hooks/useFollowers";
 
 function FollowersScreen({
   setActiveSubScreen,
