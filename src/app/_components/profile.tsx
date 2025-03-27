@@ -6,7 +6,7 @@ import { api } from "~/trpc/react";
 
 export function UserProfile() {
   const [userProfile] = api.user.getProfile.useSuspenseQuery();
-  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "");
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "NE1 1AA");
   return (
     <div className="w-full max-w-xs">
       {userProfile ? (

@@ -34,6 +34,14 @@ interface PostcodeResponse {
     }
 }
 
+interface CityResponse {
+    status: number
+    result: {
+        admin_district: string
+        region: string
+    }
+}
+
 export const userRouter = createTRPCRouter({
     getCurrentlyAuthenticatedUser: protectedProcedure.query(async ({ ctx }) => {
         return ctx.session.user.id
@@ -545,7 +553,7 @@ export const userRouter = createTRPCRouter({
             if (data.status === 200 && data.result) {
                 return data.result.admin_district || data.result.region || null
             }
-            
+
         } catch (error) {
             console.error("❌ Error fetching city:", error)
         }
@@ -553,11 +561,3 @@ export const userRouter = createTRPCRouter({
         return null
     })
 })
-
-interface CityResponse {
-    status: number
-    result: {
-        admin_district: string
-        region: string
-    }
-}
