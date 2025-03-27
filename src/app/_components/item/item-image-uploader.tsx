@@ -33,7 +33,7 @@ function useItemImageUpload() {
             {
               onSuccess: () => {
                 console.log(
-                  "Profile updated successfully with new image:",
+                  "Item image uploaded successfully with new image:",
                   res[0]?.ufsUrl,
                 );
                 setIsUploading(false);
@@ -90,7 +90,7 @@ export function ItemImageUploader({ imageUrl }: { imageUrl: string }) {
   const handleClick = useCallback(() => {
     // Find and click the hidden file input
     const fileInput = document.getElementById(
-      "profile-image-input",
+      "item-image-input",
     ) as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
@@ -126,7 +126,7 @@ export function ItemImageUploader({ imageUrl }: { imageUrl: string }) {
 
       {/* Hidden file input */}
       <input
-        id="profile-image-input"
+        id="item-image-input"
         type="file"
         accept="image/*"
         onChange={handleFileChange}
