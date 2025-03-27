@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod";
+import { set, z } from "zod";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import AppShell from "@/components/app-shell";
@@ -28,17 +28,18 @@ function EditProfileScreen({
   setActiveSubScreen: (screen: string | null) => void;
 }) {
   // Fetch user profile data
-  const [userProfile, { refetch: refetchProfile }] =
-    api.user.getProfile.useSuspenseQuery();
+  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery();
 
-  // State for form fields
-  const [name, setName] = useState(userProfile?.name ?? "");
+  // Profile State
   const [email, setEmail] = useState(userProfile?.email ?? "");
+  const [name, setName] = useState(userProfile?.name ?? "");
   const [username, setUsername] = useState(userProfile?.username ?? "");
-  const [bio, setBio] = useState(""); // Bio isn't in the current schema
-  const [postcode, setPostcode] = useState(
-    userProfile?.location?.postcode ?? "",
-  );
+  const [bio, setBio] = useState(userProfile?.bio ?? "");
+
+  // Postcode
+  const [postcode, setPostcode] = useState(userProfile?.location?.postcode ?? "");
+
+  // Profile image
   const [profileImage, setProfileImage] = useState(
     userProfile?.image ?? "/profile-placeholder.svg?height=96&width=96",
   );
@@ -46,6 +47,7 @@ function EditProfileScreen({
   const [postcodeError, setPostcodeError] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [usernameError, setUsernameError] = useState<string>("");
+  const [bioError, setBioError] = useState<string>("");
 
   const { error: errorPostcode, refetch: refetchPostcode } =
     api.user.postcodeToLongLat.useQuery(postcode, {
@@ -56,9 +58,10 @@ function EditProfileScreen({
   // Update state when profile data changes
   useEffect(() => {
     if (userProfile) {
-      setName(userProfile.name ?? "");
       setEmail(userProfile.email ?? "");
+      setName(userProfile.name ?? "");
       setUsername(userProfile.username ?? "");
+      setBio(userProfile.bio ?? "");
       setPostcode(userProfile.location?.postcode ?? "");
       setProfileImage(
         userProfile.image ?? "/profile-placeholder.svg?height=96&width=96",
@@ -85,8 +88,14 @@ function EditProfileScreen({
     setEmailError("");
     setPostcodeError("");
     setUsernameError("");
+    setBioError("");
 
-    const parseInput = inputParser.safeParse({ email, postcode, username });
+    const parseInput = inputParser.safeParse({ 
+      email, 
+      postcode, 
+      username, 
+      bio 
+    });
 
     if (!parseInput.success) {
       parseInput.error.errors.forEach((error) => {
@@ -99,6 +108,9 @@ function EditProfileScreen({
         if (error.path[0] === "username") {
           setUsernameError(error.message);
         }
+        if (error.path[0] === "bio") {
+          setBioError(error.message);
+        }
       });
 
       return;
@@ -106,6 +118,7 @@ function EditProfileScreen({
 
     try {
       const result = await refetchPostcode();
+
       if (result.isSuccess) {
         longitude = result.data.longitude;
         latitude = result.data.latitude;
