@@ -27,8 +27,6 @@ export default function ProfilePage() {
   const [userProfile, { refetch: refetchProfile }] =
     api.user.getProfile.useSuspenseQuery();
 
-
-
   const { useFollowerCount, useFollowingCount } = useFollow();
 
   const { count: followers, isLoading: loadingFollowers } = useFollowerCount(
@@ -39,7 +37,7 @@ export default function ProfilePage() {
     userProfile?.id ?? "",
   );
 
-  const { data: swipeStats } = api.item.getSwipeStats.useQuery({
+  const [swipeStats] = api.item.getSwipeStats.useSuspenseQuery({
     userId: userProfile?.id,
   });
 
@@ -50,8 +48,9 @@ export default function ProfilePage() {
     userProfile?.location?.postcode ?? "",
   );
 
-  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "NE1 1AA");
-
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(
+    userProfile?.location?.postcode ?? "NE1 1AA",
+  );
 
   const [profileImage, setProfileImage] = useState(
     userProfile?.image ?? "/profile-placeholder.svg?height=96&width=96",
@@ -73,23 +72,17 @@ export default function ProfilePage() {
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
   // Fetch user's items
-  const { data: userItems, isLoading: loadingItems } =
-    api.item.getUserItems.useQuery(
-      {
-        userId: userProfile?.id,
-        status: "AVAILABLE", // Only show available items by default
-      },
-      {
-        enabled: !!userProfile?.id,
-      },
-    );
+  const [userItems, itemQuery] = api.item.getUserItems.useSuspenseQuery({
+    userId: userProfile?.id,
+    status: "AVAILABLE", // Only show available items by default
+  });
 
   const totalLikes =
     swipeStats
       ?.filter((stat) => stat.direction === "RIGHT")
       .reduce((acc, stat) => acc + stat._count, 0) ?? 0;
 
-  const { data: userReviews } = api.user.getProfileReviews.useQuery();
+  const [userReviews] = api.user.getProfileReviews.useSuspenseQuery();
   const [{ averageRating, reviewCount }] =
     api.user.getAverageRating.useSuspenseQuery();
 
@@ -130,8 +123,7 @@ export default function ProfilePage() {
               {userProfile?.username ? `@${userProfile?.username}` : email}
             </div>
             <div className="mt-1 text-xs text-muted">
-            {city ?? "Unknown city"}
-
+              {city ?? "Unknown city"}
             </div>
           </div>
 
@@ -211,7 +203,7 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {loadingItems ? (
+          {itemQuery.isLoading ? (
             <div className="flex justify-center py-8">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
             </div>
@@ -225,7 +217,7 @@ export default function ProfilePage() {
                   <div className="relative">
                     <Image
                       src={
-                        item.image ||
+                        item.images[0] ??
                         "/item-placeholder.svg?height=150&width=150"
                       }
                       alt={item.title ?? "Item"}

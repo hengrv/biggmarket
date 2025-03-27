@@ -86,7 +86,7 @@ model Review {
 model Item {
     id          String     @id @default(cuid())
     title       String     @default("title")
-    images       String[] // URLs
+    images      String[] // URLs
     userId      String
     description String?
     category    String     @default("Other")
