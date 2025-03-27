@@ -69,7 +69,9 @@ export default function ProfilePage({
     },
   );
 
-  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "NE1 1AA");
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(
+    userProfile?.location?.postcode ?? "NE1 1AA",
+  );
 
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
@@ -297,7 +299,7 @@ export default function ProfilePage({
                     <div className="relative">
                       <Image
                         src={
-                          item.image ||
+                          item.images[0] ??
                           "/item-placeholder.svg?height=150&width=150"
                         }
                         alt={item.title ?? "Item"}
