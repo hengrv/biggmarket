@@ -27,6 +27,8 @@ export default function ProfilePage() {
   const [userProfile, { refetch: refetchProfile }] =
     api.user.getProfile.useSuspenseQuery();
 
+
+
   const { useFollowerCount, useFollowingCount } = useFollow();
 
   const { count: followers, isLoading: loadingFollowers } = useFollowerCount(
@@ -47,6 +49,9 @@ export default function ProfilePage() {
   const [postcode, setPostcode] = useState(
     userProfile?.location?.postcode ?? "",
   );
+
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(postcode);
+
 
   const [profileImage, setProfileImage] = useState(
     userProfile?.image ?? "/profile-placeholder.svg?height=96&width=96",
@@ -124,7 +129,10 @@ export default function ProfilePage() {
             <div className="text-xs text-muted">
               {userProfile?.username ? `@${userProfile?.username}` : email}
             </div>
-            <div className="mt-1 text-xs text-muted">The Toon</div>
+            <div className="mt-1 text-xs text-muted">
+            {city ?? "Unknown city"}
+
+            </div>
           </div>
 
           <button

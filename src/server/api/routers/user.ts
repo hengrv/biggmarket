@@ -34,6 +34,14 @@ interface PostcodeResponse {
     }
 }
 
+interface CityResponse {
+    status: number
+    result: {
+        admin_district: string
+        region: string
+    }
+}
+
 export const userRouter = createTRPCRouter({
     getCurrentlyAuthenticatedUser: protectedProcedure.query(async ({ ctx }) => {
         return ctx.session.user.id
@@ -529,5 +537,27 @@ export const userRouter = createTRPCRouter({
                 })
             }
         }),
-})
+    getCityFromPostcode: protectedProcedure.input(postcodeInput).query(async ({ input }) => {
+        try {
+            const response = await fetch(`https://api.postcodes.io/postcodes/${input}`)
 
+            if (!response.ok) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: `Invalid postcode or API error: ${response.statusText}`,
+                })
+            }
+
+            const data = (await response.json()) as CityResponse
+
+            if (data.status === 200 && data.result) {
+                return data.result.admin_district || data.result.region || null
+            }
+
+        } catch (error) {
+            console.error("❌ Error fetching city:", error)
+        }
+
+        return null
+    })
+})

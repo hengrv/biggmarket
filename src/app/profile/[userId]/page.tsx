@@ -69,6 +69,8 @@ export default function ProfilePage({
     },
   );
 
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "NE1 1AA");
+
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
@@ -193,7 +195,7 @@ export default function ProfilePage({
                   : userProfile.email}
               </div>
               <div className="mt-1 text-xs text-muted">
-                {userProfile.location?.postcode ?? "Location not set"}
+                {city ?? "Unknown City"}
               </div>
             </div>
 
