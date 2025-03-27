@@ -22,7 +22,6 @@ import FollowersScreen from "@screens/followers-screen";
 import SwapsHistoryScreen from "@screens/swaps-history-screen";
 import { useFollow } from "~/hooks/useFollow";
 import FollowButton from "../_components/profile/follow-button";
-import { getCityFromPostcode } from "~/utils/getCityFromPostcode";
 
 export default function ProfilePage() {
   const [userProfile, { refetch: refetchProfile }] =
