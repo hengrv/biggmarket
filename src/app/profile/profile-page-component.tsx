@@ -50,7 +50,7 @@ export default function ProfilePage() {
     userProfile?.location?.postcode ?? "",
   );
 
-  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(postcode);
+  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(userProfile?.location?.postcode ?? "NE1 1AA");
 
 
   const [profileImage, setProfileImage] = useState(

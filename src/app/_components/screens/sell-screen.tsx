@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { api } from "~/trpc/react";
 import { useState, useEffect } from "react";
 import {
   X,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
+import { ItemImageUploader } from "@/components/item/item-image-uploader";
 
 export default function SellItemScreen({
   setActiveSubScreen,
@@ -25,10 +26,9 @@ export default function SellItemScreen({
   const [condition, setCondition] = useState("New");
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleAddImage = () => {
-    const newImage = `/item-placeholder.svg?height=${200 + Math.floor(Math.random() * 100)}&width=${200 + Math.floor(Math.random() * 100)}`;
-    setImages([...images, newImage]);
+  
+  const handleAddImage = (urls: string[]) => {
+    setImages((prevImages) => [...prevImages, ...urls]);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -37,15 +37,33 @@ export default function SellItemScreen({
     setImages(newImages);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // API Hooks
+  const createItem = api.item.createItem.useMutation({
+    onSuccess: () => {
+      console.log("Item created successfully");
+    },
+  });
 
-    // Simulate upload process
-    setTimeout(() => {
+  const handleCreateItem = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      await createItem.mutateAsync({
+          images: images,
+          description,
+          category,
+      });
+
+      setItemName("");
+      setImages([]);
+      setDescription("");
+      setCategory("");
+      setCondition("");
       setIsLoading(false);
       setActiveSubScreen(null);
-    }, 1500);
+    } catch (error) {
+      console.error("Create error:", error);
+    }
   };
 
   return (
@@ -56,11 +74,14 @@ export default function SellItemScreen({
       activeScreen="swap"
     >
       <div className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleCreateItem} className="space-y-4">
           <div className="space-y-2">
             <label className="mb-1 block text-xs text-muted">
               Item Photos (required)
             </label>
+
+            <ItemImageUploader onImagesUploaded={handleAddImage}/>
+
             <div className="grid grid-cols-3 gap-2">
               {images.map((image, index) => (
                 <div
@@ -83,17 +104,6 @@ export default function SellItemScreen({
                   </button>
                 </div>
               ))}
-
-              {images.length < 5 && (
-                <button
-                  type="button"
-                  className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#3a3a3a] bg-secondary"
-                  onClick={handleAddImage}
-                >
-                  <Camera className="mb-1 h-6 w-6 text-primary" />
-                  <span className="text-xs text-muted">Add Photo</span>
-                </button>
-              )}
             </div>
             {images.length === 0 && (
               <p className="text-xs text-red-400">
