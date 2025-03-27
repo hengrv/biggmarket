@@ -479,5 +479,3 @@ function SwapsHistoryScreen({
     </AppShell>
   );
 }
-
-
