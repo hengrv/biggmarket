@@ -7,21 +7,27 @@ import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
+import { set } from 'zod';
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface ProductOwner {
+  id: string;
   name: string;
-  rating: number;
+  rating: number | null;
   image: string;
 }
 
 interface Product {
-  id: number;
-  name: string;
-  image: string;
-  distance: string;
+  id: string;
+  title: string;
+  images: string[];
+  distance: number; // meters
   description: string;
   category: string; // added category
-  owner: ProductOwner;
+  status: string;
+  user: ProductOwner;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface ActionButtonProps {
@@ -83,6 +89,7 @@ const ProductScreen = function ProductScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+
   // Categories list
   const categories = [
     "Electronics & Tech",
@@ -97,55 +104,11 @@ const ProductScreen = function ProductScreen({
     "Cooking Supplies",
   ];
 
-  const test_data_from_api = api.item.getItemsOnLocation.useQuery();
-console.log(test_data_from_api);
-
-  const [products] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Men's Button Up",
-      image: "/item-placeholder.svg?height=400&width=300",
-      distance: "4 miles away",
-      category: "Fashion & Apparel",
-      description:
-        "Stylish men's button-up shirt in excellent condition. Size M, blue color with subtle pattern. Perfect for casual or semi-formal occasions.",
-      owner: {
-        name: "Jacob",
-        rating: 4.5,
-        image: "/profile-placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 2,
-      name: "Vintage Chair",
-      image: "/item-placeholder.svg?height=400&width=300",
-      distance: "2 miles away",
-      category: "Home & Living",
-      description:
-        "Beautiful vintage wooden chair from the 1970s. Some minor wear but structurally sound. Would look great in any living room or study.",
-      owner: {
-        name: "Katie",
-        rating: 5,
-        image: "/profile-placeholder.svg?height=40&width=40",
-      },
-    },
-    {
-      id: 3,
-      name: "Leather Boots",
-      image: "/item-placeholder.svg?height=400&width=300",
-      distance: "6 miles away",
-      category: "Clothing & Apparel",
-      description:
-        "Genuine leather boots, size UK 9. Worn only a few times, in great condition. Water-resistant and perfect for autumn/winter.",
-      owner: {
-        name: "Sam",
-        rating: 4,
-        image: "/profile-placeholder.svg?height=40&width=40",
-      },
-    },
-  ]);
-  // filter products based on category
-  const filteredProducts = selectedCategory
+  const productsData = api.item.getItemsOnLocation.useQuery();
+  const productsList = productsData.data;
+  const [products] = useState<Product[]>(productsList || []);
+  
+  const filteredProducts = selectedCategory !== null
     ? products.filter((product) => product.category === selectedCategory)
     : products;
 
@@ -160,19 +123,23 @@ console.log(test_data_from_api);
   const swipeThreshold = 100;
 
   // Get the current product safely
-  const product = useMemo(() => {
+  const product = useMemo<Product>(() => {
     return filteredProducts.length > 0
       ? filteredProducts[currentIndex % filteredProducts.length]!
       : {
-        id: 0,
-        name: "",
-        image: "",
-        distance: "",
-        category: "",
-        description: "",
-        owner: { name: "", rating: 0, image: "" },
-      };
+          id: "0",
+          title: "",
+          images: [],
+          distance: 0,
+          description: "",
+          category: "",
+          status: "",
+          user: { id: "0", name: "", rating: null, image: "" },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
   }, [filteredProducts, currentIndex]);
+
 
   // Define all hooks before any conditional returns
   const handleViewDetails = useCallback(() => {
@@ -196,9 +163,9 @@ console.log(test_data_from_api);
 
     if (reason) {
       alert("Thank you for your report. Our team will review this item.");
-      console.log("Item reported:", product.name, "Reason:", reason);
+      console.log("Item reported:", product.title, "Reason:", reason);
     }
-  }, [product.name, filteredProducts.length]);
+  }, [product.title, filteredProducts.length]);
 
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     // @ts-expect-error this code doesn't care if e is undefined
@@ -279,7 +246,7 @@ console.log(test_data_from_api);
     }
   }, [cardRef, currentIndex]);
 
-  // Now we can safely have a conditional return
+
   if (filteredProducts.length === 0) {
     return (
       <AppShell activeScreen="home" title="Hiya John!">
@@ -402,7 +369,7 @@ console.log(test_data_from_api);
         >
           <div className="relative">
             <Image
-              src={product.image || "/placeholder.svg"}
+              src={product.images[0] ?? "/placeholder.svg"}
               alt=""
               width={300}
               height={400}
@@ -411,7 +378,7 @@ console.log(test_data_from_api);
             />
             <div className="absolute bottom-1 left-2 flex items-center rounded-full bg-black/50 px-3 py-1">
               <MapPin className="mr-1 h-3 w-3 text-[#c1ff72]" />
-              <span className="text-xs text-white">{product.distance}</span>
+              <span className="text-xs text-white">{(product.distance / 1000).toFixed(1)} km</span>
             </div>
             <div className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-1">
               <span className="text-xs text-white">{product.category}</span>
@@ -419,12 +386,12 @@ console.log(test_data_from_api);
           </div>
 
           <div className="p-3">
-            <h2 className="text-lg font-bold text-[#f3f3f3]">{product.name}</h2>
+            <h2 className="text-lg font-bold text-[#f3f3f3]">{product.title}</h2>
             <div className="mt-1 flex items-center">
               <div className="mr-1 h-5 w-5 overflow-hidden rounded-full">
                 <Image
-                  src={product.owner.image || "/placeholder.svg"}
-                  alt={product.owner.name}
+                  src={product.user.image || "/placeholder.svg"}
+                  alt={product.user.name}
                   width={20}
                   height={20}
                   className="h-full w-full object-cover"
@@ -432,7 +399,7 @@ console.log(test_data_from_api);
                 />
               </div>
               <span className="text-xs text-[#a9a9a9]">
-                {product.owner.name} • {product.owner.rating} ★
+                {product.user.name} • {product.user.rating} ★
               </span>
             </div>
           </div>

@@ -6,18 +6,23 @@ import Image from "next/image";
 import AppShell from "@/components/app-shell";
 
 interface ProductOwner {
+  id: string;
   name: string;
+  rating: number | null;
   image: string;
-  rating: number;
 }
 
 interface Product {
-  id?: number;
-  name: string;
-  image: string;
-  distance: string;
+  id: string;
+  title: string;
+  images: string[];
+  distance: number; // meters
   description: string;
-  owner: ProductOwner;
+  category: string; // added category
+  status: string;
+  user: ProductOwner;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export default function ProductDetailsScreen({
@@ -78,8 +83,8 @@ export default function ProductDetailsScreen({
       <div className="p-4">
         <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
-            src={product.image || "/item-placeholder.svg"}
-            alt={product.name}
+            src={product.images[0] ?? "/item-placeholder.svg"}
+            alt={product.title}
             width={300}
             height={400}
             className="h-56 w-full object-cover"
@@ -89,12 +94,12 @@ export default function ProductDetailsScreen({
           <div className="p-4">
             <div className="mb-3 flex items-start justify-between">
               <h3 className="text-xl font-bold text-foreground">
-                {product.name}
+                {product.title}
               </h3>
               <div className="flex items-center rounded-full bg-background px-3 py-1">
                 <MapPin className="mr-1 h-3 w-3 text-primary" />
                 <span className="text-xs text-foreground">
-                  {product.distance}
+                  {(product.distance / 1000).toFixed(1)} km
                 </span>
               </div>
             </div>
@@ -109,7 +114,7 @@ export default function ProductDetailsScreen({
               onClick={() => {
                 document.body.style.opacity = "0.5";
                 setTimeout(() => {
-                  alert(`Viewing ${product.owner.name}'s profile`);
+                  alert(`Viewing ${product.user.name}'s profile`);
                   document.body.style.opacity = "1";
                 }, 300);
               }}
@@ -117,8 +122,8 @@ export default function ProductDetailsScreen({
               <div className="flex items-center">
                 <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
-                    src={product.owner.image || "/profile-placeholder.svg"}
-                    alt={product.owner.name}
+                    src={product.user.image || "/profile-placeholder.svg"}
+                    alt={product.user.name}
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
@@ -127,7 +132,7 @@ export default function ProductDetailsScreen({
                 </div>
                 <div>
                   <div className="font-semibold text-[#f3f3f3]">
-                    {product.owner.name}
+                    {product.user.name}
                   </div>
                   <div className="flex items-center">
                     {Array(5)
@@ -135,13 +140,13 @@ export default function ProductDetailsScreen({
                       .map((_, i) => (
                         <span
                           key={i}
-                          className={`text-xs ${i < Math.floor(product.owner.rating) ? "text-[#c1ff72]" : "text-[#3a3a3a]"}`}
+                          className={`text-xs ${i < Math.floor(product.user.rating ?? 0) ? "text-[#c1ff72]" : "text-[#3a3a3a]"}`}
                         >
                           ★
                         </span>
                       ))}
                     <span className="ml-1 text-xs text-[#a9a9a9]">
-                      {product.owner.rating}
+                      {product.user.rating}
                     </span>
                   </div>
                 </div>
@@ -174,7 +179,7 @@ export default function ProductDetailsScreen({
                 <div className="flex items-center rounded-lg bg-background p-2">
                   <input
                     type="text"
-                    placeholder={`Message to ${product.owner.name}...`}
+                    placeholder={`Message to ${product.user.name}...`}
                     className="flex-1 border-none bg-transparent text-sm text-[#f3f3f3] outline-none"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -193,7 +198,7 @@ export default function ProductDetailsScreen({
                 </div>
                 {sentMessage && (
                   <div className="mt-2 text-center text-xs text-[#c1ff72]">
-                    Message sent to {product.owner.name}!
+                    Message sent to {product.user.name}!
                   </div>
                 )}
               </div>
@@ -203,7 +208,7 @@ export default function ProductDetailsScreen({
                 onClick={() => setShowMessageInput(true)}
               >
                 <MessageSquare className="mr-2 h-5 w-5" />
-                Message {product.owner.name}
+                Message {product.user.name}
               </button>
             )}
           </div>

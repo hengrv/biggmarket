@@ -58,6 +58,7 @@ export function ItemImageUploader({
   const handleFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files ?? []);
+      
       if (files.length > 0) {
         await handleUpload(files);
       }

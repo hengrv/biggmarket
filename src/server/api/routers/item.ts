@@ -551,9 +551,54 @@ export const itemRouter = createTRPCRouter({
             name: true,
             image: true,
             location: true,
+            reviews: true,
           },
         },
       },
     });
+
+    // Filter items based on distance from user location
+    const filteredItems =items.map((item) => {
+        if (!item.user.location || !userLocation?.location) {
+          return null;
+        }
+
+        const distance = geolib.getDistance(
+          {
+            latitude: Number(userLocation.location.latitude),
+            longitude: Number(userLocation.location.longitude),
+          },
+          {
+            latitude: Number(item.user.location.latitude),
+            longitude: Number(item.user.location.longitude),
+          },
+        );
+
+        return {
+          ...item,
+          distance,
+        };
+      })
+      .filter((item) => item !== null)
+      .sort((a, b) => {
+        if (!a || !b) return 0;
+          return a.distance - b.distance;
+        }
+    );
+
+    // For each item, remove the 'reviews' field after calculating average rating
+    filteredItems.forEach((item) => {
+      if (item && item.user && item.user.reviews.length > 0) {
+        const totalRating = item.user.reviews.reduce((acc, review) => acc + review.rating, 0);
+        const averageRating = totalRating / item.user.reviews.length;
+        item.user.rating = averageRating;
+      }
+      else {
+        item.user.rating = 0; // Default rating if no reviews
+      }
+      delete item.user.reviews; // Remove reviews field 
+    });
+
+    return filteredItems;
   }),
 });

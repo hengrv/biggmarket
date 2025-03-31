@@ -88,7 +88,7 @@ model Item {
     title       String     @default("title")
     images      String[] // URLs
     userId      String
-    description String?
+    description String
     category    String     @default("Other")
     status      ItemStatus @default(AVAILABLE)
     review      Float?     @default(0) @db.DoublePrecision
