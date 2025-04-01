@@ -20,8 +20,10 @@ import EditProfileScreen from "@screens/edit-profile";
 import FollowingScreen from "@screens/following-screen";
 import FollowersScreen from "@screens/followers-screen";
 import SwapsHistoryScreen from "@screens/swaps-history-screen";
-import { useFollow } from "~/hooks/useFollow";
 import FollowButton from "../../_components/profile/follow-button";
+import ReviewsSkeleton from "@/components/profile/reviews-skeleton";
+import ItemsSkeleton from "@/components/profile/items-skeleton";
+import ProfileSkeleton from "@/components/profile/profile-skeleton";
 
 export default function ProfilePage({
   params,
@@ -36,7 +38,7 @@ export default function ProfilePage({
   const { data: currentUserId } =
     api.user.getCurrentlyAuthenticatedUser.useQuery();
 
-  // Fetch the profile based on userId or username
+  // Critical data - needed for initial render
   const { data: userProfile, isLoading: loadingProfile } =
     api.user.getProfile.useQuery(
       {
@@ -45,38 +47,44 @@ export default function ProfilePage({
       },
       {
         retry: false,
+        refetchOnWindowFocus: false,
       },
     );
 
   const isOwnProfile = currentUserId === userProfile?.id;
 
-  const { useFollowerCount, useFollowingCount } = useFollow();
+  // Non-critical data - can be loaded after initial render
+  const { data: followers, isLoading: loadingFollowers } =
+    api.user.getFollowerCount.useQuery(
+      { userId: userProfile?.id ?? "" },
+      { enabled: !!userProfile?.id, refetchOnWindowFocus: false },
+    );
 
-  const { count: followers, isLoading: loadingFollowers } = useFollowerCount(
-    userProfile?.id ?? "",
-  );
+  const { data: following, isLoading: loadingFollowing } =
+    api.user.getFollowingCount.useQuery(
+      { userId: userProfile?.id ?? "" },
+      { enabled: !!userProfile?.id, refetchOnWindowFocus: false },
+    );
 
-  const { count: following, isLoading: loadingFollowing } = useFollowingCount(
-    userProfile?.id ?? "",
-  );
+  const { data: swipeStats, isLoading: loadingSwipeStats } =
+    api.item.getSwipeStats.useQuery(
+      { userId: userProfile?.id },
+      { enabled: !!userProfile?.id, refetchOnWindowFocus: false },
+    );
 
-  const { data: swipeStats } = api.item.getSwipeStats.useQuery(
-    {
-      userId: userProfile?.id,
-    },
-    {
-      enabled: !!userProfile?.id,
-    },
-  );
-
-  const [city] = api.user.getCityFromPostcode.useSuspenseQuery(
-    userProfile?.location?.postcode ?? "NE1 1AA",
-  );
+  const { data: city, isLoading: loadingCity } =
+    api.user.getCityFromPostcode.useQuery(
+      userProfile?.location?.postcode ?? "NE1 1AA",
+      {
+        enabled: !!userProfile?.location?.postcode,
+        refetchOnWindowFocus: false,
+      },
+    );
 
   const [profileTab, setProfileTab] = useState("gear");
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
 
-  // Fetch user's items
+  // Only fetch items when the "gear" tab is active
   const { data: userItems, isLoading: loadingItems } =
     api.item.getUserItems.useQuery(
       {
@@ -84,7 +92,27 @@ export default function ProfilePage({
         status: "AVAILABLE", // Only show available items by default
       },
       {
-        enabled: !!userProfile?.id,
+        enabled: !!userProfile?.id && profileTab === "gear",
+        refetchOnWindowFocus: false,
+      },
+    );
+
+  // Only fetch reviews when the "reviews" tab is active
+  const { data: userReviews, isLoading: loadingReviews } =
+    api.user.getProfileReviews.useQuery(
+      { userId: userProfile?.id ?? "" },
+      {
+        enabled: !!userProfile?.id && profileTab === "reviews",
+        refetchOnWindowFocus: false,
+      },
+    );
+
+  const { data: ratingData, isLoading: loadingRating } =
+    api.user.getAverageRating.useQuery(
+      { userId: userProfile?.id ?? "" },
+      {
+        enabled: !!userProfile?.id && profileTab === "reviews",
+        refetchOnWindowFocus: false,
       },
     );
 
@@ -93,37 +121,8 @@ export default function ProfilePage({
       ?.filter((stat) => stat.direction === "RIGHT")
       .reduce((acc, stat) => acc + stat._count, 0) ?? 0;
 
-  // const { data: userReviews } = api.user.getProfileReviews.useQuery({userId: userProfile?.id})
-  const { data: userReviews } = api.user.getProfileReviews.useQuery(
-    {
-      userId: userProfile?.id ?? "",
-    },
-    {
-      enabled: !!userProfile?.id,
-    },
-  );
-
-  const { data: ratingData } = api.user.getAverageRating.useQuery(
-    {
-      userId: userProfile?.id ?? "",
-    },
-    {
-      enabled: !!userProfile?.id,
-    },
-  );
-
   const averageRating = ratingData?.averageRating ?? 0;
   const reviewCount = ratingData?.reviewCount ?? 0;
-
-  if (loadingProfile) {
-    return (
-      <AppShell activeScreen="profile" title="Profile">
-        <div className="flex h-full items-center justify-center p-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
-        </div>
-      </AppShell>
-    );
-  }
 
   if (activeSubScreen === "edit-profile" && isOwnProfile) {
     return <EditProfileScreen setActiveSubScreen={setActiveSubScreen} />;
@@ -154,6 +153,11 @@ export default function ProfilePage({
         userId={userProfile?.id}
       />
     );
+  }
+
+  // Show skeleton UI while loading critical data
+  if (loadingProfile) {
+    return <ProfileSkeleton />;
   }
 
   if (!userProfile) {
@@ -193,11 +197,11 @@ export default function ProfilePage({
               </h3>
               <div className="text-xs text-muted">
                 {userProfile.username
-                  ? `${userProfile.username}`
+                  ? `@${userProfile.username}`
                   : userProfile.email}
               </div>
               <div className="mt-1 text-xs text-muted">
-                {city ?? "Unknown City"}
+                {loadingCity ? "Loading location..." : (city ?? "Unknown City")}
               </div>
             </div>
 
@@ -223,7 +227,7 @@ export default function ProfilePage({
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {totalLikes} Swaps
+                {loadingSwipeStats ? "..." : totalLikes} Swaps
               </span>
             </button>
 
@@ -235,7 +239,7 @@ export default function ProfilePage({
                 <User className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {following} Following
+                {loadingFollowing ? "..." : following} Following
               </span>
             </button>
 
@@ -247,7 +251,7 @@ export default function ProfilePage({
                 <UserPlus className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {followers} Followers
+                {loadingFollowers ? "..." : followers} Followers
               </span>
             </button>
           </div>
@@ -286,9 +290,7 @@ export default function ProfilePage({
             </div>
 
             {loadingItems ? (
-              <div className="flex justify-center py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
-              </div>
+              <ItemsSkeleton />
             ) : userItems && userItems.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {userItems.map((item) => (
@@ -356,15 +358,19 @@ export default function ProfilePage({
               <div className="flex items-center">
                 <Star className="mr-1 h-4 w-4 text-[#c1ff72]" />
                 <span className="font-semibold text-foreground">
-                  {averageRating}
+                  {loadingRating ? "..." : averageRating}
                 </span>
-                <span className="ml-1 text-xs text-muted">({reviewCount})</span>
+                <span className="ml-1 text-xs text-muted">
+                  ({loadingRating ? "..." : reviewCount})
+                </span>
               </div>
             </div>
 
-            <div className="space-y-3">
-              {userReviews && userReviews.length > 0 ? (
-                userReviews.map((review) => (
+            {loadingReviews ? (
+              <ReviewsSkeleton />
+            ) : userReviews && userReviews.length > 0 ? (
+              <div className="space-y-3">
+                {userReviews.map((review) => (
                   <div
                     key={review.id}
                     className="rounded-lg bg-secondary p-4 shadow-lg"
@@ -379,7 +385,7 @@ export default function ProfilePage({
                         <Image
                           src={
                             review.reviewerUser.image ??
-                            "/profile-placeholder.svg"
+                            ("/profile-placeholder.svg" || "/placeholder.svg")
                           }
                           alt={review.reviewerUser.name ?? "Anonymous"}
                           width={40}
@@ -424,24 +430,26 @@ export default function ProfilePage({
                       {review.review}
                     </p>
                   </div>
-                ))
-              ) : (
-                <div className="rounded-lg bg-secondary p-6 text-center shadow-lg">
-                  <Star className="mx-auto mb-3 h-10 w-10 text-[#c1ff72]" />
-                  <h3 className="mb-2 font-semibold text-foreground">
-                    No reviews yet
-                  </h3>
-                  <p className="text-sm text-muted">
-                    {isOwnProfile
-                      ? "You haven't received any reviews yet."
-                      : `${userProfile.name} hasn't received any reviews yet.`}
-                  </p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg bg-secondary p-6 text-center shadow-lg">
+                <Star className="mx-auto mb-3 h-10 w-10 text-[#c1ff72]" />
+                <h3 className="mb-2 font-semibold text-foreground">
+                  No reviews yet
+                </h3>
+                <p className="text-sm text-muted">
+                  {isOwnProfile
+                    ? "You haven't received any reviews yet."
+                    : `${userProfile.name} hasn't received any reviews yet.`}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
     </AppShell>
   );
 }
+
+// Skeleton loaders for different parts of the UI

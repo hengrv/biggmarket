@@ -14,7 +14,7 @@ function FollowersScreen({
   userId,
 }: {
   setActiveSubScreen: (screen: string | null) => void;
-  userId?: string;
+  userId?: string; 
 }) {
   const [userProfile] = api.user.getProfile.useSuspenseQuery(
     userId ? { userId } : undefined,

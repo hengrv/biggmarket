@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
+import { Rubik_Distressed } from "next/font/google";
 import type { Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -10,22 +11,26 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const rubik = Rubik_Distressed({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-rubik",
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`font-sans`}>
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link href="https://fonts.googleapis.com/css2?family=Rubik+Distressed&display=swap" rel="stylesheet" />
-        </head>
+    <html lang="en" className={`${rubik.variable}`}>
+      <head>
+      </head>
       <body>
-          <TRPCReactProvider>
-        <div className="max-w-md mx-auto min-h-screen bg-background-1 relative overflow-hidden">
+        <TRPCReactProvider>
+          <div className="relative mx-auto min-h-screen max-w-md overflow-hidden bg-background-1">
             {children}
-        </div>
-          </TRPCReactProvider>
+          </div>
+        </TRPCReactProvider>
       </body>
     </html>
   );
