@@ -24,6 +24,27 @@ import FollowButton from "../../_components/profile/follow-button";
 import ReviewsSkeleton from "@/components/profile/reviews-skeleton";
 import ItemsSkeleton from "@/components/profile/items-skeleton";
 import ProfileSkeleton from "@/components/profile/profile-skeleton";
+import ProductDetailsScreen from "@screens/product-details-screen";
+
+interface ProductOwner {
+  id: string;
+  name: string;
+  rating: number | null;
+  image: string;
+}
+
+interface Product {
+  id: string;
+  title: string;
+  images: string[];
+  distance: number | null; // meters
+  description: string;
+  category: string; // added category
+  status: string;
+  user: ProductOwner;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function ProfilePage({
   params,
@@ -318,10 +339,11 @@ export default function ProfilePage({
                     </div>
                     <div className="p-2">
                       <div className="truncate text-sm font-semibold text-foreground">
-                        {item.description ?? "No description"}
+                        {item.title ?? "No title"}
                       </div>
                       <div className="text-xs text-muted">{item.category}</div>
                     </div>
+                    
                   </div>
                 ))}
               </div>

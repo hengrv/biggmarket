@@ -17,12 +17,33 @@ import ReviewsSkeleton from "@/components/profile/reviews-skeleton";
 import ItemsSkeleton from "@/components/profile/items-skeleton";
 import ProfileSkeleton from "@/components/profile/profile-skeleton";
 
+import ProductDetailsScreen from "@screens/product-details-screen";
 
+interface ProductOwner {
+  id: string;
+  name: string;
+  rating: number | null;
+  image: string;
+}
+
+interface Product {
+  id: string;
+  title: string;
+  images: string[];
+  distance: number | null; // meters
+  description: string;
+  category: string; // added category
+  status: string;
+  user: ProductOwner;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function ProfilePage() {
   const router = useRouter()
   const [profileTab, setProfileTab] = useState("gear")
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null)
+  const [product, setProduct] = useState<Product | null>(null);
 
   // Split data fetching into critical and non-critical
 
@@ -101,6 +122,15 @@ export default function ProfilePage() {
 
   if (activeSubScreen === "swaps") {
     return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />
+  }
+
+  if(activeSubScreen === "product-details") {
+    return (
+      <ProductDetailsScreen
+          product={product}
+          setShowProductDetails={(show: boolean) => setActiveSubScreen(show ? "product-details" : null)}
+      />
+    );
   }
 
   // Show skeleton UI while loading critical data
@@ -217,7 +247,10 @@ export default function ProfilePage() {
             ) : userItems && userItems.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {userItems.map((item) => (
-                  <div key={item.id} className="overflow-hidden rounded-lg bg-secondary shadow-lg">
+                  <div onClick={() => {
+                    setProduct(item)
+                    setActiveSubScreen("product-details")
+                  }} key={item.id} className="overflow-hidden rounded-lg bg-secondary shadow-lg">
                     <div className="relative">
                       <Image
                         src={item.images[0] ?? "/item-placeholder.svg?height=150&width=150"}
@@ -234,7 +267,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="p-2">
                       <div className="truncate text-sm font-semibold text-foreground">
-                        {item.description ?? "No description"}
+                        {item.title ?? "No Title"}
                       </div>
                       <div className="text-xs text-muted">{item.category}</div>
                     </div>

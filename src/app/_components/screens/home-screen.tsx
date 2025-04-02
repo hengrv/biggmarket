@@ -5,18 +5,23 @@ import ProductDetailsScreen from "./product-details-screen"
 import ProductScreen from "./product-screen"
 
 interface ProductOwner {
-    name: string
-    rating: number
-    image: string
+  id: string;
+  name: string;
+  rating: number | null;
+  image: string;
 }
 
 interface Product {
-    id: number
-    name: string
-    image: string
-    distance: string
-    description: string
-    owner: ProductOwner
+  id: string;
+  title: string;
+  images: string[];
+  distance: number; // meters
+  description: string;
+  category: string; // added category
+  status: string;
+  user: ProductOwner;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export default function HomeScreen() {

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { MapPin, MessageSquare, Send } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 interface ProductOwner {
   id: string;
@@ -16,7 +18,7 @@ interface Product {
   id: string;
   title: string;
   images: string[];
-  distance: number; // meters
+  distance: number | null; // meters
   description: string;
   category: string; // added category
   status: string;
@@ -32,6 +34,8 @@ export default function ProductDetailsScreen({
   product: Product | null | undefined;
   setShowProductDetails: (show: boolean) => void;
 }) {
+  const router = useRouter();
+    
   const [showMessageInput, setShowMessageInput] = useState(false);
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -96,12 +100,15 @@ export default function ProductDetailsScreen({
               <h3 className="text-xl font-bold text-foreground">
                 {product.title}
               </h3>
-              <div className="flex items-center rounded-full bg-background px-3 py-1">
-                <MapPin className="mr-1 h-3 w-3 text-primary" />
-                <span className="text-xs text-foreground">
-                  {(product.distance / 1000).toFixed(1)} km
-                </span>
-              </div>
+              {(product.distance ? (
+                <div className="flex items-center rounded-full bg-background px-3 py-1">
+                    <MapPin className="mr-1 h-3 w-3 text-primary" />
+                    <span className="text-xs text-foreground">
+                        {(product.distance / 1000).toFixed(1)} km
+                    </span>
+                </div>
+              ) : null)}
+              
             </div>
 
             <div className="mb-4">
@@ -111,12 +118,7 @@ export default function ProductDetailsScreen({
 
             <div
               className="mb-4 flex cursor-pointer items-center justify-between rounded-lg bg-background p-3 transition-colors hover:bg-[#2a2a2a]"
-              onClick={() => {
-                document.body.style.opacity = "0.5";
-                setTimeout(() => {
-                  alert(`Viewing ${product.user.name}'s profile`);
-                  document.body.style.opacity = "1";
-                }, 300);
+              onClick={() => {router.push(`/profile/${product.user.id}`)
               }}
             >
               <div className="flex items-center">

@@ -7,8 +7,6 @@ import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
-import { set } from 'zod';
-import { Decimal } from "@prisma/client/runtime/library";
 
 interface ProductOwner {
   id: string;

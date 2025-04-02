@@ -171,6 +171,7 @@ export const itemRouter = createTRPCRouter({
               id: true,
               name: true,
               image: true,
+              reviews: true
             },
           },
           _count: {
