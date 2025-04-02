@@ -54,6 +54,7 @@ export default function ProfilePage({
   const router = useRouter();
   const { userId } = use(params);
   const isUsername = userId.startsWith("%40");
+  const [product, setProduct] = useState<Product | null>(null);
 
   // Get the current user's ID for comparison
   const { data: currentUserId } =
@@ -172,6 +173,15 @@ export default function ProfilePage({
       <SwapsHistoryScreen
         setActiveSubScreen={setActiveSubScreen}
         userId={userProfile?.id}
+      />
+    );
+  }
+
+  if(activeSubScreen === "product-details") {
+    return (
+      <ProductDetailsScreen
+          product={product}
+          setShowProductDetails={(show: boolean) => setActiveSubScreen(show ? "product-details" : null)}
       />
     );
   }
@@ -315,7 +325,10 @@ export default function ProfilePage({
             ) : userItems && userItems.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {userItems.map((item) => (
-                  <div
+                  <div onClick={() => {
+                      setProduct(item)
+                      setActiveSubScreen("product-details")
+                    }}
                     key={item.id}
                     className="overflow-hidden rounded-lg bg-secondary shadow-lg"
                   >
