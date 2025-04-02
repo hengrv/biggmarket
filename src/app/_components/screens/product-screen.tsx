@@ -102,10 +102,12 @@ const ProductScreen = function ProductScreen({
     "Cooking Supplies",
   ];
 
+  // get products
   const productsData = api.item.getItemsOnLocation.useQuery();
   const productsList = productsData.data;
   const [products] = useState<Product[]>(productsList || []);
   
+
   const filteredProducts = selectedCategory !== null
     ? products.filter((product) => product.category === selectedCategory)
     : products;
