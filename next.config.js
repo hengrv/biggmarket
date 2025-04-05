@@ -7,7 +7,16 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
     images: {
-        unoptimized: true, //! REMEMBER TO CHANGE THIS TO FALSE IN PRODUCTION
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "*.ufs.sh",
+            },
+            {
+                protocol: "https",
+                hostname: "*.googleusercontent.com",
+            }
+        ]
     },
 };
 
