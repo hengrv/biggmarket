@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { auth } from "~/server/auth"
 
 import { api } from "~/trpc/react";
 
@@ -25,11 +26,19 @@ import ReviewsSkeleton from "@/components/profile/reviews-skeleton";
 import ItemsSkeleton from "@/components/profile/items-skeleton";
 import ProfileSkeleton from "@/components/profile/profile-skeleton";
 
-export default function ProfilePage({
+export default async function ProfilePage({
   params,
 }: {
   params: Promise<{ userId: string }>;
 }) {
+
+  const session = await auth()
+
+  // If user is not authenticated, redirect to login page
+  if (!session?.user) {
+    redirect("/login")
+  }
+
   const router = useRouter();
   const { userId } = use(params);
   const isUsername = userId.startsWith("%40");
