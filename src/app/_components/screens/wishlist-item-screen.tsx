@@ -193,7 +193,7 @@ export default function WishlistItemScreen({
                     <button
                       className={`rounded-full p-2 ${message.trim() ? "bg-primary" : "bg-[#3a3a3a]"}`}
                       onClick={handleSendMessage}
-                      disabled={!message.trim() || isSending}
+                      disabled={!message.trim()}
                     >
                       <Send
                         className={`h-3 w-3 ${message.trim() ? "text-black" : "text-muted"}`}
@@ -219,7 +219,7 @@ export default function WishlistItemScreen({
             <button
               className={`w-full ${getButtonStyles()} flex items-center justify-center rounded-lg py-2 font-semibold transition-all duration-300`}
               onClick={handleSwapClick}
-              disabled={swapStatus !== "ready" || isLoading}
+              disabled={swapStatus !== "ready"}
             >
               {getButtonIcon()}
               {getButtonText()}

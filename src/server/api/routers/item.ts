@@ -1,8 +1,14 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import type { SwipeDirection, machedStatus } from "@prisma/client";
+import type { SwipeDirection, machedStatus, Item, User } from "@prisma/client";
 import geolib from "geolib";
+
+type ItemWithUserRating = (Item & { distance: number }) & {
+  user: Omit<User, "username" | "email" | "emailVerified" | "bio" | "role"> & {
+    rating: number;
+  };
+};
 
 const itemInputSchema = z.object({
   images: z
@@ -483,51 +489,50 @@ export const itemRouter = createTRPCRouter({
       },
     });
 
-    // Filter items based on distance from user location
-    const filteredItems = items
-      .map((item) => {
-        if (!item.user.location || !userLocation?.location) {
-          return null;
-        }
+    // Filter items based on distance from user location and calculate ratings
+    const result: ItemWithUserRating[] = [];
 
-        const distance = geolib.getDistance(
-          {
-            latitude: Number(userLocation.location.latitude),
-            longitude: Number(userLocation.location.longitude),
-          },
-          {
-            latitude: Number(item.user.location.latitude),
-            longitude: Number(item.user.location.longitude),
-          },
-        );
+    for (const item of items) {
+      if (!item.user.location || !userLocation?.location) {
+        continue;
+      }
 
-        return {
-          ...item,
-          distance,
-        };
-      })
-      .filter((item) => item !== null)
-      .sort((a, b) => {
-        if (!a || !b) return 0;
-        return a.distance - b.distance;
-      });
+      const distance = geolib.getDistance(
+        {
+          latitude: Number(userLocation.location.latitude),
+          longitude: Number(userLocation.location.longitude),
+        },
+        {
+          latitude: Number(item.user.location.latitude),
+          longitude: Number(item.user.location.longitude),
+        },
+      );
 
-    // For each item, remove the 'reviews' field after calculating average rating
-    filteredItems.forEach((item) => {
-      if (item && item.user && item.user.reviews.length > 0) {
+      // Calculate average rating
+      let rating = 0;
+      if (item.user.reviews.length > 0) {
         const totalRating = item.user.reviews.reduce(
           (acc, review) => acc + review.rating,
           0,
         );
-        const averageRating = totalRating / item.user.reviews.length;
-        item.user.rating = averageRating;
-      } else {
-        item.user.rating = 0; // Default rating if no reviews
+        rating = totalRating / item.user.reviews.length;
       }
-      delete item.user.reviews; // Remove reviews field
-    });
 
-    return filteredItems;
+      // Create a new object with the correct structure
+      result.push({
+        ...item,
+        distance,
+        user: {
+          ...item.user,
+          rating,
+        },
+      });
+    }
+
+    // Sort by distance
+    result.sort((a, b) => a.distance - b.distance);
+
+    return result;
   }),
 
   getUserLikedItems: protectedProcedure.query(async ({ ctx }) => {
@@ -591,4 +596,48 @@ export const itemRouter = createTRPCRouter({
 
     return likedItems;
   }),
+  // Add a new function to get an item's distance from the user
+  getItemDistance: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // Get user's location
+      const userLocation = await ctx.db.user.findUnique({
+        where: { id: userId },
+        include: { location: true },
+      });
+
+      if (!userLocation?.location) {
+        return null; // User has no location set
+      }
+
+      // Get the item and its owner's location
+      const item = await ctx.db.item.findUnique({
+        where: { id: input.itemId },
+        include: {
+          user: {
+            include: { location: true },
+          },
+        },
+      });
+
+      if (!item || !item.user.location) {
+        return null; // Item not found or owner has no location
+      }
+
+      // Calculate distance using geolib
+      const distance = geolib.getDistance(
+        {
+          latitude: Number(userLocation.location.latitude),
+          longitude: Number(userLocation.location.longitude),
+        },
+        {
+          latitude: Number(item.user.location.latitude),
+          longitude: Number(item.user.location.longitude),
+        },
+      );
+
+      return distance; // Distance in meters
+    }),
 });

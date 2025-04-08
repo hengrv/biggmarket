@@ -4,22 +4,33 @@ import { useState } from "react";
 import { MapPin, MessageSquare, Send } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
-import { api, RouterOutputs } from "~/trpc/react";
+import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 
-import { ProductOwner, Product } from "@components/screens/product-screen";
-
-export default function ProductDetailsScreen({
-  product,
-  setShowProductDetails,
-}: {
-  product: Product | null;
-  setShowProductDetails: (show: boolean) => void;
-}) {
+export default function ItemDetailPage({ itemId }: { itemId: string }) {
   const router = useRouter();
+
+  // Fetch the item details
+  const { data: item, isLoading } = api.item.getItemById.useQuery(
+    { id: itemId },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  // Fetch the item distance
+  const { data: distance } = api.item.getItemDistance.useQuery(
+    { itemId },
+    {
+      enabled: !!itemId,
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  // Fetch user rating
   const { data: userRating } = api.user.getAverageRating.useQuery(
-    { userId: product?.user.id ?? "" },
-    { enabled: !!product?.user.id },
+    { userId: item?.user.id ?? "" },
+    { enabled: !!item?.user.id },
   );
 
   const [showMessageInput, setShowMessageInput] = useState(false);
@@ -27,18 +38,32 @@ export default function ProductDetailsScreen({
   const [isSending, setIsSending] = useState(false);
   const [sentMessage, setSentMessage] = useState(false);
 
-  if (!product) {
+  if (isLoading) {
     return (
       <AppShell
         title="Item Details"
         showBackButton={true}
-        onBack={() => setShowProductDetails(false)}
+        onBack={() => router.back()}
+      >
+        <div className="flex h-full items-center justify-center p-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!item) {
+    return (
+      <AppShell
+        title="Item Details"
+        showBackButton={true}
+        onBack={() => router.back()}
       >
         <div className="p-4 text-center">
-          <p className="text-muted">Product information not available</p>
+          <p className="text-muted">Item not found</p>
           <button
             className="mt-4 rounded-lg bg-primary px-4 py-2 text-black"
-            onClick={() => setShowProductDetails(false)}
+            onClick={() => router.back()}
           >
             Go Back
           </button>
@@ -68,13 +93,13 @@ export default function ProductDetailsScreen({
     <AppShell
       title="Item Details"
       showBackButton={true}
-      onBack={() => setShowProductDetails(false)}
+      onBack={() => router.back()}
     >
       <div className="p-4">
         <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
-            src={product.images[0] ?? "/item-placeholder.svg"}
-            alt={product.title}
+            src={item.images[0] ?? "/item-placeholder.svg"}
+            alt={item.title}
             width={300}
             height={400}
             className="h-56 w-full object-cover"
@@ -84,13 +109,13 @@ export default function ProductDetailsScreen({
           <div className="p-4">
             <div className="mb-3 flex items-start justify-between">
               <h3 className="text-xl font-bold text-foreground">
-                {product.title}
+                {item.title}
               </h3>
-              {product.distance ? (
+              {distance ? (
                 <div className="flex items-center rounded-full bg-background px-3 py-1">
                   <MapPin className="mr-1 h-3 w-3 text-primary" />
                   <span className="text-xs text-foreground">
-                    {(product.distance / 1000).toFixed(1)} km
+                    {(distance / 1000).toFixed(1)} km
                   </span>
                 </div>
               ) : null}
@@ -98,20 +123,20 @@ export default function ProductDetailsScreen({
 
             <div className="mb-4">
               <h4 className="mb-1 text-sm text-muted">Description</h4>
-              <p className="text-sm text-foreground">{product.description}</p>
+              <p className="text-sm text-foreground">{item.description}</p>
             </div>
 
             <div
               className="mb-4 flex cursor-pointer items-center justify-between rounded-lg bg-background p-3 transition-colors hover:bg-[#2a2a2a]"
               onClick={() => {
-                router.push(`/profile/${product.user.id}`);
+                router.push(`/profile/${item.user.id}`);
               }}
             >
               <div className="flex items-center">
                 <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
-                    src={product.user.image ?? "/profile-placeholder.svg"}
-                    alt={product.user.name ?? ""}
+                    src={item.user.image ?? "/profile-placeholder.svg"}
+                    alt={item.user.name ?? ""}
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
@@ -120,7 +145,7 @@ export default function ProductDetailsScreen({
                 </div>
                 <div>
                   <div className="font-semibold text-[#f3f3f3]">
-                    {product.user.name}
+                    {item.user.name}
                   </div>
                   <div className="flex items-center">
                     {Array(5)
@@ -170,7 +195,7 @@ export default function ProductDetailsScreen({
                 <div className="flex items-center rounded-lg bg-background p-2">
                   <input
                     type="text"
-                    placeholder={`Message to ${product.user.name}...`}
+                    placeholder={`Message to ${item.user.name}...`}
                     className="flex-1 border-none bg-transparent text-sm text-[#f3f3f3] outline-none"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -189,7 +214,7 @@ export default function ProductDetailsScreen({
                 </div>
                 {sentMessage && (
                   <div className="mt-2 text-center text-xs text-[#c1ff72]">
-                    Message sent to {product.user.name}!
+                    Message sent to {item.user.name}!
                   </div>
                 )}
               </div>
@@ -199,7 +224,7 @@ export default function ProductDetailsScreen({
                 onClick={() => setShowMessageInput(true)}
               >
                 <MessageSquare className="mr-2 h-5 w-5" />
-                Message {product.user.name}
+                Message {item.user.name}
               </button>
             )}
           </div>

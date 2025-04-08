@@ -8,14 +8,14 @@ import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
 
-interface ProductOwner {
+export interface ProductOwner {
   id: string;
-  name: string;
+  name: string | null;
   rating: number | null;
-  image: string;
+  image: string | null;
 }
 
-interface Product {
+export interface Product {
   id: string;
   title: string;
   images: string[];
@@ -105,12 +105,12 @@ const ProductScreen = function ProductScreen({
   // get products
   const productsData = api.item.getItemsOnLocation.useQuery();
   const productsList = productsData.data;
-  const [products] = useState<Product[]>(productsList || []);
-  
+  const [products] = useState<Product[]>(productsList ?? []);
 
-  const filteredProducts = selectedCategory !== null
-    ? products.filter((product) => product.category === selectedCategory)
-    : products;
+  const filteredProducts =
+    selectedCategory !== null
+      ? products.filter((product) => product.category === selectedCategory)
+      : products;
 
   // reset index
   useEffect(() => {
@@ -127,19 +127,18 @@ const ProductScreen = function ProductScreen({
     return filteredProducts.length > 0
       ? filteredProducts[currentIndex % filteredProducts.length]!
       : {
-          id: "0",
-          title: "",
-          images: [],
-          distance: 0,
-          description: "",
-          category: "",
-          status: "",
-          user: { id: "0", name: "", rating: null, image: "" },
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        id: "0",
+        title: "",
+        images: [],
+        distance: 0,
+        description: "",
+        category: "",
+        status: "",
+        user: { id: "0", name: "", rating: null, image: "" },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
   }, [filteredProducts, currentIndex]);
-
 
   // Define all hooks before any conditional returns
   const handleViewDetails = useCallback(() => {
@@ -246,7 +245,6 @@ const ProductScreen = function ProductScreen({
     }
   }, [cardRef, currentIndex]);
 
-
   if (filteredProducts.length === 0) {
     return (
       <AppShell activeScreen="home" title="Hiya John!">
@@ -266,11 +264,10 @@ const ProductScreen = function ProductScreen({
               <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`rounded-full px-3 py-1 text-xs ${
-                    selectedCategory === null
+                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                    }`}
                   onClick={() => setSelectedCategory(null)}
                 >
                   All Items
@@ -278,11 +275,10 @@ const ProductScreen = function ProductScreen({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`rounded-full px-3 py-1 text-xs ${
-                      selectedCategory === category
+                    className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
                         ? "bg-[#c1ff72] text-black"
                         : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                      }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
@@ -330,11 +326,10 @@ const ProductScreen = function ProductScreen({
             <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
             <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
               <button
-                className={`rounded-full px-3 py-1 text-xs ${
-                  selectedCategory === null
+                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
                     ? "bg-[#c1ff72] text-black"
                     : "bg-[#1a1a1a] text-[#f3f3f3]"
-                }`}
+                  }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 All Items
@@ -342,11 +337,10 @@ const ProductScreen = function ProductScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`rounded-full px-3 py-1 text-xs ${
-                    selectedCategory === category
+                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                    }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -378,7 +372,9 @@ const ProductScreen = function ProductScreen({
             />
             <div className="absolute bottom-1 left-2 flex items-center rounded-full bg-black/50 px-3 py-1">
               <MapPin className="mr-1 h-3 w-3 text-[#c1ff72]" />
-              <span className="text-xs text-white">{(product.distance / 1000).toFixed(1)} km</span>
+              <span className="text-xs text-white">
+                {(product.distance / 1000).toFixed(1)} km
+              </span>
             </div>
             <div className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-1">
               <span className="text-xs text-white">{product.category}</span>
@@ -386,12 +382,14 @@ const ProductScreen = function ProductScreen({
           </div>
 
           <div className="p-3">
-            <h2 className="text-lg font-bold text-[#f3f3f3]">{product.title}</h2>
+            <h2 className="text-lg font-bold text-[#f3f3f3]">
+              {product.title}
+            </h2>
             <div className="mt-1 flex items-center">
               <div className="mr-1 h-5 w-5 overflow-hidden rounded-full">
                 <Image
-                  src={product.user.image || "/placeholder.svg"}
-                  alt={product.user.name}
+                  src={product.user.image ?? "/profile-placeholder.svg"}
+                  alt={product.user.name ?? ""}
                   width={20}
                   height={20}
                   className="h-full w-full object-cover"

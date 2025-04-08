@@ -36,7 +36,7 @@ export default function SwapPage() {
 
   // Get the count of right swipes
   const rightSwipes =
-    swipeStats?.find((stat) => stat.direction === "RIGHT")?._count || 0;
+    swipeStats?.find((stat) => stat.direction === "RIGHT")?._count ?? 0;
 
   // Fetch items the user has swiped right on (liked items)
   const { data: likedItems, isLoading: loadingLiked } =
@@ -106,10 +106,10 @@ export default function SwapPage() {
                 >
                   <Image
                     src={
-                      item.images[0] ||
+                      item.images[0] ??
                       "/item-placeholder.svg?height=100&width=80"
                     }
-                    alt={item.title || "Swapped item"}
+                    alt={item.title ?? "Swapped item"}
                     width={80}
                     height={100}
                     className="h-24 w-full object-cover"
@@ -117,8 +117,8 @@ export default function SwapPage() {
                   />
                   <div className="p-2">
                     <div className="truncate text-xs font-semibold text-foreground">
-                      {item.title ||
-                        item.description?.substring(0, 20) ||
+                      {item.title ??
+                        item.description?.substring(0, 20) ??
                         "Item"}
                     </div>
                     <div className="text-xs text-muted">
@@ -132,7 +132,7 @@ export default function SwapPage() {
             <div className="flex h-24 flex-col items-center justify-center text-center">
               <p className="text-sm text-muted">No past swaps yet</p>
               <p className="text-xs text-muted">
-                Items you've swapped will appear here
+                {"Items you've swapped will appear here"}
               </p>
             </div>
           )}
@@ -170,10 +170,10 @@ export default function SwapPage() {
                   <div className="relative">
                     <Image
                       src={
-                        item.images[0] ||
+                        item.images[0] ??
                         "/item-placeholder.svg?height=120&width=160"
                       }
-                      alt={item.title || "Item"}
+                      alt={item.title ?? "Item"}
                       width={160}
                       height={120}
                       className="h-32 w-full object-cover"
@@ -182,18 +182,18 @@ export default function SwapPage() {
                   </div>
                   <div className="p-2">
                     <div className="truncate text-sm font-semibold text-foreground">
-                      {item.title ||
-                        item.description?.substring(0, 20) ||
+                      {item.title ??
+                        item.description?.substring(0, 20) ??
                         "Item"}
                     </div>
                     <div className="mt-1 flex items-center">
                       <div className="mr-1 h-4 w-4 overflow-hidden rounded-full">
                         <Image
                           src={
-                            item.user.image ||
+                            item.user.image ??
                             "/profile-placeholder.svg?height=16&width=16"
                           }
-                          alt={item.user.name || "Owner"}
+                          alt={item.user.name ?? "Owner"}
                           width={16}
                           height={16}
                           className="h-full w-full object-cover"
@@ -201,7 +201,7 @@ export default function SwapPage() {
                         />
                       </div>
                       <span className="text-xs text-muted">
-                        {item.user.name || "User"}
+                        {item.user.name ?? "User"}
                       </span>
                     </div>
                   </div>
@@ -248,7 +248,7 @@ function WishlistItemScreen({
 
   // Add a rating query at the top of the WishlistItemScreen component:
   const { data: ratingData } = api.user.getAverageRating.useQuery(
-    { userId: item?.user.id || "" },
+    { userId: item?.user.id ?? "" },
     {
       enabled: !!item?.user.id,
       refetchOnWindowFocus: false,
@@ -396,8 +396,8 @@ function WishlistItemScreen({
       <div className="p-4">
         <div className="mb-4 overflow-hidden rounded-lg bg-secondary shadow-lg">
           <Image
-            src={item.images[0] || "/item-placeholder.svg?height=300&width=400"}
-            alt={item.title || "Item"}
+            src={item.images[0] ?? "/item-placeholder.svg?height=300&width=400"}
+            alt={item.title ?? "Item"}
             width={400}
             height={300}
             className="h-56 w-full object-cover"
@@ -406,12 +406,12 @@ function WishlistItemScreen({
 
           <div className="p-4">
             <h3 className="mb-2 text-xl font-bold text-foreground">
-              {item.title || "Item"}
+              {item.title ?? "Item"}
             </h3>
 
             <div className="mb-4">
               <p className="text-sm text-foreground">
-                {item.description || "No description available"}
+                {item.description ?? "No description available"}
               </p>
             </div>
 
@@ -420,10 +420,10 @@ function WishlistItemScreen({
                 <div className="mr-3 h-10 w-10 overflow-hidden rounded-full">
                   <Image
                     src={
-                      item.user.image ||
+                      item.user.image ??
                       "/profile-placeholder.svg?height=40&width=40"
                     }
-                    alt={item.user.name || "User"}
+                    alt={item.user.name ?? "User"}
                     width={40}
                     height={40}
                     className="h-full w-full object-cover"
@@ -432,7 +432,7 @@ function WishlistItemScreen({
                 </div>
                 <div>
                   <div className="font-semibold text-foreground">
-                    {item.user.name || "User"}
+                    {item.user.name ?? "User"}
                   </div>
                   {/* Then update the rating display to use the fetched rating data: */}
                   <div className="flex items-center">
@@ -441,7 +441,7 @@ function WishlistItemScreen({
                       .map((_, i) => (
                         <span
                           key={i}
-                          className={`text-xs ${i < Math.floor(ratingData?.averageRating || 0) ? "text-primary" : "text-[#3a3a3a]"}`}
+                          className={`text-xs ${i < Math.floor(ratingData?.averageRating ?? 0) ? "text-primary" : "text-[#3a3a3a]"}`}
                         >
                           ★
                         </span>
@@ -460,7 +460,7 @@ function WishlistItemScreen({
                   <div className="flex items-center rounded-lg bg-background p-2">
                     <input
                       type="text"
-                      placeholder={`Message to ${item.user.name || "user"}...`}
+                      placeholder={`Message to ${item.user.name ?? "user"}...`}
                       className="flex-1 border-none bg-transparent text-xs text-foreground outline-none"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
@@ -472,7 +472,7 @@ function WishlistItemScreen({
                     <button
                       className={`rounded-full p-2 ${message.trim() ? "bg-primary" : "bg-[#3a3a3a]"}`}
                       onClick={handleSendMessage}
-                      disabled={!message.trim() || isSending}
+                      disabled={!message.trim()}
                     >
                       <Send
                         className={`h-3 w-3 ${message.trim() ? "text-black" : "text-muted"}`}
@@ -481,7 +481,7 @@ function WishlistItemScreen({
                   </div>
                   {sentMessage && (
                     <div className="mt-2 text-center text-xs text-primary">
-                      Message sent to {item.user.name || "user"}!
+                      Message sent to {item.user.name ?? "user"}!
                     </div>
                   )}
                 </div>
@@ -498,7 +498,7 @@ function WishlistItemScreen({
             <button
               className={`w-full ${getButtonStyles()} flex items-center justify-center rounded-lg py-2 font-semibold transition-all duration-300`}
               onClick={handleSwapClick}
-              disabled={swapStatus !== "ready" || isSwapping}
+              disabled={swapStatus !== "ready"}
             >
               {getButtonIcon()}
               {getButtonText()}
@@ -545,10 +545,10 @@ function SwapsHistoryScreen({
                 <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                   <Image
                     src={
-                      match.useritem1.images[0] ||
+                      match.useritem1.images[0] ??
                       "/item-placeholder.svg?height=64&width=64"
                     }
-                    alt={match.useritem1.title || "Item"}
+                    alt={match.useritem1.title ?? "Item"}
                     width={64}
                     height={64}
                     className="h-full w-full object-cover"
@@ -557,12 +557,12 @@ function SwapsHistoryScreen({
 
                 <div className="flex-1">
                   <div className="font-semibold text-foreground">
-                    {match.useritem1.title ||
-                      match.useritem1.description?.substring(0, 20) ||
+                    {match.useritem1.title ??
+                      match.useritem1.description?.substring(0, 20) ??
                       "Item"}
                   </div>
                   <div className="text-xs text-muted">
-                    Swapped with {match.useritem2.user.name || "User"}
+                    Swapped with {match.useritem2.user.name ?? "User"}
                   </div>
                   <div className="text-xs text-muted">
                     {new Date(match.createdAt).toLocaleDateString()}
@@ -585,7 +585,7 @@ function SwapsHistoryScreen({
             <AlertTriangle className="mb-2 h-10 w-10 text-primary" />
             <h3 className="mb-2 font-semibold text-foreground">No Swaps Yet</h3>
             <p className="text-sm text-muted">
-              You haven't made any swaps yet. Start browsing items to find
+              You haven&apos;t made any swaps yet. Start browsing items to find
               something you like!
             </p>
           </div>

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Heart } from "lucide-react"
-import Link from "next/link"
+import { Heart } from "lucide-react";
+import Link from "next/link";
 
 export default function ForbiddenPage() {
   return (
@@ -11,7 +11,9 @@ export default function ForbiddenPage() {
       </div>
 
       <h1 className="mb-2 text-3xl font-bold text-foreground">Forbidden</h1>
-      <p className="mb-8 text-center text-sm text-muted">You don't have permission to access this resource</p>
+      <p className="mb-8 text-center text-sm text-muted">
+        {"You don't have permission to access this resource"}
+      </p>
 
       <Link
         href="/"
@@ -20,6 +22,5 @@ export default function ForbiddenPage() {
         Return Home
       </Link>
     </div>
-  )
+  );
 }
-
