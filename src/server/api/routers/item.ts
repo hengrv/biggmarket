@@ -5,8 +5,12 @@ import type { SwipeDirection, machedStatus } from "@prisma/client";
 import geolib from "geolib";
 
 const itemInputSchema = z.object({
-  images: z.string().url("Must be a valid URL").array().min(1, "At least one image is required"),
-  description: z.string().optional(),
+  images: z
+    .string()
+    .url("Must be a valid URL")
+    .array()
+    .min(1, "At least one image is required"),
+  description: z.string(),
   category: z.string().min(1, "Category is required"), // ! Change to enum
   status: z.enum(["AVAILABLE", "SWAPPED", "HIDDEN"]).optional(),
 });
@@ -171,7 +175,6 @@ export const itemRouter = createTRPCRouter({
               id: true,
               name: true,
               image: true,
-              reviews: true
             },
           },
           _count: {
@@ -266,74 +269,6 @@ export const itemRouter = createTRPCRouter({
 
       return updatedItem;
     }),
-  //   getNextItem: protectedProcedure
-  //     .input(
-  //       z.object({
-  //         // Optional last seen item id to ensure we don't show the same item
-  //         lastSeenItemId: z.string().optional(),
-  //       }),
-  //     )
-  //     .query(async ({ ctx, input }) => {
-  //       const userId = ctx.session.user.id;
-
-  //       // Get an item that:
-  //       // 1. User hasn't swiped on
-  //       // 2. Isn't their own item
-  //       // 3. Is still available
-  //       // 4. Isn't the last seen item
-  //       const nextItem = await ctx.db.item.findFirst({
-  //         where: {
-  //           AND: [
-  //             // Exclude items user has already swiped on
-  //             {
-  //               NOT: {
-  //                 swipes: {
-  //                   some: {
-  //                     userId,
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //             // Exclude user's own items
-  //             {
-  //               NOT: {
-  //                 userId,
-  //               },
-  //             },
-  //             // Only available items
-  //             {
-  //               status: "AVAILABLE",
-  //             },
-  //             // Exclude last seen item if provided
-  //             input.lastSeenItemId
-  //               ? {
-  //                 NOT: {
-  //                   id: input.lastSeenItemId,
-  //                 },
-  //               }
-  //               : {},
-  //           ],
-  //         },
-  //         include: {
-  //           user: {
-  //             select: {
-  //               id: true,
-  //               name: true,
-  //               image: true,
-  //             },
-  //           },
-  //         },
-  //       });
-
-  //       if (!nextItem) {
-  //         throw new TRPCError({
-  //           code: "NOT_FOUND",
-  //           message: "No more items available",
-  //         });
-  //       }
-
-  //       return nextItem;
-  //     }),
 
   swipeItem: protectedProcedure
     .input(
@@ -446,13 +381,6 @@ export const itemRouter = createTRPCRouter({
     return matches;
   }),
 
-  /**
-   * updateMatchStatus - take in a matchId and set the status
-   *
-   * @param matchId
-   * @param status
-   *
-   * */
   updateMatchStatus: protectedProcedure
     .input(
       z.object({
@@ -501,9 +429,6 @@ export const itemRouter = createTRPCRouter({
       return updatedMatch;
     }),
 
-  /**
-   *  getSwipeStats - returns the statitics about how many swipes a user has made
-   * */
   getSwipeStats: protectedProcedure
     .input(
       z
@@ -513,7 +438,7 @@ export const itemRouter = createTRPCRouter({
         .optional(),
     )
     .query(async ({ ctx, input }) => {
-      const userId = input?.userId ?? ctx.session.user.id
+      const userId = input?.userId ?? ctx.session.user.id;
 
       const stats = await ctx.db.swipe.groupBy({
         by: ["direction"],
@@ -521,9 +446,9 @@ export const itemRouter = createTRPCRouter({
           userId,
         },
         _count: true,
-      })
+      });
 
-      return stats
+      return stats;
     }),
 
   getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
@@ -559,7 +484,8 @@ export const itemRouter = createTRPCRouter({
     });
 
     // Filter items based on distance from user location
-    const filteredItems =items.map((item) => {
+    const filteredItems = items
+      .map((item) => {
         if (!item.user.location || !userLocation?.location) {
           return null;
         }
@@ -583,23 +509,86 @@ export const itemRouter = createTRPCRouter({
       .filter((item) => item !== null)
       .sort((a, b) => {
         if (!a || !b) return 0;
-          return a.distance - b.distance;
-        }
-    );
+        return a.distance - b.distance;
+      });
 
     // For each item, remove the 'reviews' field after calculating average rating
     filteredItems.forEach((item) => {
       if (item && item.user && item.user.reviews.length > 0) {
-        const totalRating = item.user.reviews.reduce((acc, review) => acc + review.rating, 0);
+        const totalRating = item.user.reviews.reduce(
+          (acc, review) => acc + review.rating,
+          0,
+        );
         const averageRating = totalRating / item.user.reviews.length;
         item.user.rating = averageRating;
-      }
-      else {
+      } else {
         item.user.rating = 0; // Default rating if no reviews
       }
-      delete item.user.reviews; // Remove reviews field 
+      delete item.user.reviews; // Remove reviews field
     });
 
     return filteredItems;
+  }),
+
+  getUserLikedItems: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+
+    // Get items the user has swiped right on
+    const rightSwipes = await ctx.db.swipe.findMany({
+      where: {
+        userId,
+        direction: "RIGHT",
+      },
+      include: {
+        item: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Filter out items that are already in a match
+    const matches = await ctx.db.match.findMany({
+      where: {
+        OR: [{ useritem1: { userId } }, { useritem2: { userId } }],
+        status: { not: "REJECTED" },
+      },
+      select: {
+        item1id: true,
+        item2id: true,
+      },
+    });
+
+    // Create a set of matched item IDs
+    const matchedItemIds = new Set([
+      ...matches.map((m) => m.item1id),
+      ...matches.map((m) => m.item2id),
+    ]);
+
+    // Filter out items that are already matched
+    const likedItems = rightSwipes
+      .filter((swipe) => !matchedItemIds.has(swipe.itemId))
+      .map((swipe) => {
+        const { item } = swipe;
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          images: item.images,
+          user: item.user,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          status: item.status,
+        };
+      });
+
+    return likedItems;
   }),
 });
