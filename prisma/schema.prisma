@@ -39,9 +39,11 @@ model Session {
 model User {
     id            String    @id @default(cuid())
     name          String?
+    username      String?   @unique
     email         String?   @unique
     emailVerified DateTime?
     image         String?
+    bio           String?   @default("up the toon")
     accounts      Account[]
     sessions      Session[]
     items         Item[]
@@ -53,6 +55,11 @@ model User {
     swipes        Swipe[]
     sender        Message[] @relation("sender")
     receiver      Message[] @relation("receiver")
+
+    // User can follow other users
+
+    follower  Follow[] @relation("follower")
+    following Follow[] @relation("following")
 }
 
 model Location {
@@ -78,6 +85,7 @@ model Review {
 // Item model to keep track of user items
 model Item {
     id          String     @id @default(cuid())
+    title       String     @default("title")
     image       String // URL
     userId      String
     description String?
@@ -166,35 +174,47 @@ enum SwipeDirection {
 
 enum Category {
     Electronics
-	Vehicles
-	HomeAndFurniture
-	ClothingAndAccessories
-	SportsAndOutdoors
-	ToysAndGames
-	Leisure
-	HealthAndBeauty
-	BusinessAndIndustrial
+    Vehicles
+    HomeAndFurniture
+    ClothingAndAccessories
+    SportsAndOutdoors
+    ToysAndGames
+    Leisure
+    HealthAndBeauty
+    BusinessAndIndustrial
     Other
 }
 
 model Message {
-    id        String   @id @default(cuid())
-    senderId  String
+    id         String   @id @default(cuid())
+    senderId   String
     receiverId String
     message1   String? // Sender message
     message2   String? // Receiver message
-    chatId    String
-    createdAt DateTime @default(now())
-    sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
-    receiver  User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
-    chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+    chatId     String
+    createdAt  DateTime @default(now())
+    sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+    receiver   User     @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+    chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 // Chat model to keep track of user chats
 model Chat {
     id        String    @id @default(cuid())
-    messages Message[]
+    messages  Message[]
     createdAt DateTime  @default(now())
+}
+
+model Follow {
+    id          String   @id @default(cuid())
+    followerId  String
+    followingId String
+    createdAt   DateTime @default(now())
+
+    follower  User @relation(fields: [followerId], references: [id], onDelete: Cascade, name: "follower")
+    following User @relation(fields: [followingId], references: [id], onDelete: Cascade, name: "following")
+
+    @@unique([followerId, followingId])
 }
 
 model VerificationToken {
