@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background: #1a1a1a;
+}
+
+@layer base {
+  html {
+    @apply h-full w-full overflow-auto;
+  }
+
+  body {
+    @apply h-full w-full overflow-auto bg-background-1;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
