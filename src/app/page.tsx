@@ -17,9 +17,6 @@ export default async function Home() {
   if (session?.user) {
   }
 
-  
-
-
   return (
     <HydrateClient>
       <main className="flex min-h-screen flex-col items-center justify-center bg-background-1 text-text-1">
@@ -45,7 +42,7 @@ export default async function Home() {
           {session?.user && <LocationTester />}
           {session?.user && <ViewItemsTester />} */}
 
-          {session?.user && <HomeScreen/>}
+          {session?.user && <HomeScreen />}
         </div>
       </main>
     </HydrateClient>
