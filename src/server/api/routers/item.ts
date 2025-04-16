@@ -589,7 +589,7 @@ export const itemRouter = createTRPCRouter({
 
     // For each item, remove the 'reviews' field after calculating average rating
     filteredItems.forEach((item) => {
-      if (item && item.user && item.user.reviews.length > 0) {
+      if (item?.user && item.user.reviews.length > 0) {
         const totalRating = item.user.reviews.reduce((acc, review) => acc + review.rating, 0);
         const averageRating = totalRating / item.user.reviews.length;
         item.user.rating = averageRating;
