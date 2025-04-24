@@ -88,6 +88,9 @@ const ProductScreen = function ProductScreen({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
+  // Add swipe mutation
+  const swipeMutation = api.item.swipeItem.useMutation();
+
   // Categories list
   const categories = [
     "Electronics & Tech",
@@ -216,6 +219,14 @@ const ProductScreen = function ProductScreen({
 
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
+      
+      // Call the swipe API
+      swipeMutation.mutate({
+        itemId: product.id,
+        direction: "LEFT",
+      });
+      console.log("Swiped left");
+
       setTimeout(() => {
         setCurrentIndex(
           (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
@@ -223,13 +234,21 @@ const ProductScreen = function ProductScreen({
         setOffsetX(0);
       }, 300);
     }
-  }, [filteredProducts.length]);
+  }, [filteredProducts.length, product.id, swipeMutation]);
 
   const handleRightSwipe = useCallback(() => {
     if (filteredProducts.length === 0) return;
 
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
+      
+      // Call the swipe API
+      swipeMutation.mutate({
+        itemId: product.id,
+        direction: "RIGHT",
+      });
+      console.log("Swiped right");
+
       setTimeout(() => {
         setCurrentIndex(
           (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
@@ -237,7 +256,7 @@ const ProductScreen = function ProductScreen({
         setOffsetX(0);
       }, 300);
     }
-  }, [filteredProducts.length]);
+  }, [filteredProducts.length, product.id, swipeMutation]);
 
   useEffect(() => {
     if (cardRef.current) {
