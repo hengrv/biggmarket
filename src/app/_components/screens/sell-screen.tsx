@@ -50,6 +50,7 @@ export default function SellItemScreen({
       setIsLoading(true);
       await createItem.mutateAsync({
           images: images,
+          title: itemName,
           description,
           category,
       });

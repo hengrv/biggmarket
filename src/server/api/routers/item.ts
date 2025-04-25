@@ -11,6 +11,7 @@ type ItemWithUserRating = (Item & { distance: number }) & {
 };
 
 const itemInputSchema = z.object({
+  title: z.string().min(1, "Title is required"),
   images: z
     .string()
     .url("Must be a valid URL")

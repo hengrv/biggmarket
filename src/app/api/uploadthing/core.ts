@@ -27,7 +27,7 @@ export const ourFileRouter = {
       return { uploadedBy: metadata.userId, fileUrl: file.ufsUrl };
     }),
 
-  itemImage: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })
+  itemImage: f({ image: { maxFileSize: "8MB", maxFileCount: 10 } })
     // Set permissions and file types for this FileRoute
     .middleware(async () => {
       // This code runs on your server before upload
