@@ -107,8 +107,14 @@ const ProductScreen = function ProductScreen({
 
   // get products
   const productsData = api.item.getItemsOnLocation.useQuery();
-  const productsList = productsData.data;
-  const [products] = useState<Product[]>(productsList ?? []);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  // Update products when query data changes
+  useEffect(() => {
+    if (productsData.data) {
+      setProducts(productsData.data);
+    }
+  }, [productsData.data]);
 
   const filteredProducts =
     selectedCategory !== null
@@ -190,20 +196,36 @@ const ProductScreen = function ProductScreen({
   const handleTouchEnd = () => {
     if (cardRef.current) {
       if (offsetX > swipeThreshold) {
+        // right swipe
         cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
         setTimeout(() => {
           setCurrentIndex(
             (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
           );
           setOffsetX(0);
+
+          // Call the swipe API
+          swipeMutation.mutate({
+            itemId: product.id,
+            direction: "RIGHT",
+          });
+          console.log("Swiped right");
         }, 300);
       } else if (offsetX < -swipeThreshold) {
+        // left swipe
         cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
         setTimeout(() => {
           setCurrentIndex(
             (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
           );
           setOffsetX(0);
+          
+          // Call the swipe API
+          swipeMutation.mutate({
+            itemId: product.id,
+            direction: "LEFT",
+          });
+          console.log("Swiped left");
         }, 300);
       } else {
         cardRef.current.style.transform = `translateX(0) rotate(0)`;

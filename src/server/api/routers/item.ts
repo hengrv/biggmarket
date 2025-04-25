@@ -298,6 +298,21 @@ export const itemRouter = createTRPCRouter({
         });
       }
 
+      // Check if the user has already swiped this item
+      const existingSwipe = await ctx.db.swipe.findFirst({
+        where: {
+          userId,
+          itemId: input.itemId,
+        },
+      });
+
+      if (existingSwipe) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `You have already swiped this item`,
+        });
+      }
+
       // Create swipe record
       const swipe = await ctx.db.swipe.create({
         data: {
@@ -488,11 +503,24 @@ export const itemRouter = createTRPCRouter({
         },
       },
     });
+    
+    // Filter out items that the user has already swiped
+    const swipedItems = await ctx.db.swipe.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    // Create a set of swiped item IDs
+    const swipedItemIds = new Set(swipedItems.map((swipe) => swipe.itemId));
+
+    // Filter out items that the user has already swiped
+    const filteredItems = items.filter((item) => !swipedItemIds.has(item.id));
 
     // Filter items based on distance from user location and calculate ratings
     const result: ItemWithUserRating[] = [];
 
-    for (const item of items) {
+    for (const item of filteredItems) {
       if (!item.user.location || !userLocation?.location) {
         continue;
       }

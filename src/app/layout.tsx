@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${rubik.variable}`}>
       <head>
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <TRPCReactProvider>
           <div className="relative mx-auto min-h-screen max-w-md overflow-hidden bg-background-1">
             {children}
