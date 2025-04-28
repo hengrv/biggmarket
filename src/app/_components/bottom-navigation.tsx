@@ -45,14 +45,14 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
       </Link>
 
       <Link
-        href="/feed"
+        href="/messages"
         className={`flex h-full w-1/4 flex-col items-center justify-center transition-colors duration-200 ${activeScreen === "feed"
             ? "relative text-[#c1ff72] after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-[#c1ff72]"
             : "text-[#a9a9a9]"
           }`}
       >
         <MessageSquare className="mb-0.5 h-6 w-6" />
-        <span className="text-[10px]">Feed</span>
+        <span className="text-[10px]">Messages</span>
       </Link>
 
       <Link

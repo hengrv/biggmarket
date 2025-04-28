@@ -18,6 +18,10 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
     },
   );
 
+  // Get current user ID for sending messages
+  const { data: currentUserId } =
+    api.user.getCurrentlyAuthenticatedUser.useQuery();
+
   // Fetch the item distance
   const { data: distance } = api.item.getItemDistance.useQuery(
     { itemId },
@@ -35,8 +39,25 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
 
   const [showMessageInput, setShowMessageInput] = useState(false);
   const [message, setMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [sentMessage, setSentMessage] = useState(false);
+
+  // Set up the send message mutation
+  const sendMessageMutation = api.message.sendMessage.useMutation({
+    onSuccess: () => {
+      setSentMessage(true);
+      setMessage("");
+
+      // Reset the success message after a delay
+      setTimeout(() => {
+        setSentMessage(false);
+        setShowMessageInput(false);
+      }, 3000);
+    },
+    onError: (error) => {
+      console.error("Failed to send message:", error);
+      alert("Failed to send message. Please try again.");
+    },
+  });
 
   if (isLoading) {
     return (
@@ -73,20 +94,14 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
   }
 
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !currentUserId || !item.user.id) return;
 
-    setIsSending(true);
-
-    setTimeout(() => {
-      setIsSending(false);
-      setSentMessage(true);
-      setMessage("");
-
-      setTimeout(() => {
-        setSentMessage(false);
-        setShowMessageInput(false);
-      }, 3000);
-    }, 1000);
+    // Call the sendMessage mutation
+    sendMessageMutation.mutate({
+      senderId: currentUserId,
+      receiverId: item.user.id,
+      message: message,
+    });
   };
 
   return (
@@ -205,7 +220,7 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
                   <button
                     className={`rounded-full p-2 ${message.trim() ? "bg-[#c1ff72]" : "bg-[#3a3a3a]"}`}
                     onClick={handleSendMessage}
-                    disabled={!message.trim()}
+                    disabled={!message.trim() || sendMessageMutation.isPending}
                   >
                     <Send
                       className={`h-4 w-4 ${message.trim() ? "text-black" : "text-[#a9a9a9]"}`}

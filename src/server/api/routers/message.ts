@@ -28,12 +28,24 @@ export const messageRouter = createTRPCRouter({
 
       let chat = await ctx.db.chat.findFirst({
         where: {
-          messages: {
-            some: {
-              senderId: input.senderId,
-              receiverId: input.receiverId,
+          OR: [
+            {
+              messages: {
+                some: {
+                  senderId: input.senderId,
+                  receiverId: input.receiverId,
+                },
+              },
             },
-          },
+            {
+              messages: {
+                some: {
+                  receiverId: input.senderId,
+                  senderId: input.receiverId,
+                },
+              },
+            },
+          ],
         },
       });
 
