@@ -1,22 +1,23 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { db } from "~/server/db";
 
 export const messageRouter = createTRPCRouter({
-  
   sendMessage: protectedProcedure
     .input(
       z.object({
         senderId: z.string(),
         receiverId: z.string(),
         message: z.string().min(1, "Message cannot be empty"),
-      })
+      }),
     )
-    .mutation(async ({ input }) => {
-     
-      const sender = await db.user.findUnique({ where: { id: input.senderId } });
-      const receiver = await db.user.findUnique({ where: { id: input.receiverId } });
+    .mutation(async ({ ctx, input }) => {
+      const sender = await ctx.db.user.findUnique({
+        where: { id: input.senderId },
+      });
+      const receiver = await ctx.db.user.findUnique({
+        where: { id: input.receiverId },
+      });
 
       if (!sender || !receiver) {
         throw new TRPCError({
@@ -25,8 +26,7 @@ export const messageRouter = createTRPCRouter({
         });
       }
 
-     
-      let chat = await db.chat.findFirst({
+      let chat = await ctx.db.chat.findFirst({
         where: {
           messages: {
             some: {
@@ -37,17 +37,15 @@ export const messageRouter = createTRPCRouter({
         },
       });
 
-      
       if (!chat) {
-        chat = await db.chat.create({
+        chat = await ctx.db.chat.create({
           data: {
             createdAt: new Date(),
           },
         });
       }
 
-     
-      const newMessage = await db.message.create({
+      const newMessage = await ctx.db.message.create({
         data: {
           senderId: input.senderId,
           receiverId: input.receiverId,
@@ -60,11 +58,10 @@ export const messageRouter = createTRPCRouter({
       return newMessage;
     }),
 
-  
   getChatMessages: protectedProcedure
     .input(z.object({ chatId: z.string() }))
-    .query(async ({ input }) => {
-      const messages = await db.message.findMany({
+    .query(async ({ ctx, input }) => {
+      const messages = await ctx.db.message.findMany({
         where: { chatId: input.chatId },
         orderBy: { createdAt: "asc" },
       });
@@ -79,11 +76,10 @@ export const messageRouter = createTRPCRouter({
       return messages;
     }),
 
-  
   getUserChats: protectedProcedure
     .input(z.object({ userId: z.string() }))
-    .query(async ({ input }) => {
-      const chats = await db.chat.findMany({
+    .query(async ({ ctx, input }) => {
+      const chats = await ctx.db.chat.findMany({
         where: {
           messages: {
             some: {
@@ -109,11 +105,12 @@ export const messageRouter = createTRPCRouter({
       return chats;
     }),
 
-  
   deleteMessage: protectedProcedure
     .input(z.object({ messageId: z.string() }))
-    .mutation(async ({ input }) => {
-      const message = await db.message.findUnique({ where: { id: input.messageId } });
+    .mutation(async ({ ctx, input }) => {
+      const message = await ctx.db.message.findUnique({
+        where: { id: input.messageId },
+      });
 
       if (!message) {
         throw new TRPCError({
@@ -122,7 +119,7 @@ export const messageRouter = createTRPCRouter({
         });
       }
 
-      await db.message.delete({ where: { id: input.messageId } });
+      await ctx.db.message.delete({ where: { id: input.messageId } });
 
       return { message: "Message deleted successfully" };
     }),
