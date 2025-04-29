@@ -504,7 +504,7 @@ export const itemRouter = createTRPCRouter({
         },
       },
     });
-    
+
     // Filter out items that the user has already swiped
     const swipedItems = await ctx.db.swipe.findMany({
       where: {

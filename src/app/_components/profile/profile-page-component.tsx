@@ -110,10 +110,13 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
       },
     );
 
-  const totalLikes =
-    swipeStats
-      ?.filter((stat) => stat.direction === "RIGHT")
-      .reduce((acc, stat) => acc + stat._count, 0) ?? 0;
+  const { data: matches } = api.item.getMatches.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+
+  const totalSwaps = matches?.filter(
+    (swipe) => swipe.status === "ACCEPTED",
+  ).length;
 
   const averageRating = ratingData?.averageRating ?? 0;
   const reviewCount = ratingData?.reviewCount ?? 0;
@@ -225,7 +228,7 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {loadingSwipeStats ? "..." : totalLikes} Swaps
+                {loadingSwipeStats ? "..." : totalSwaps} Swaps
               </span>
             </button>
 
