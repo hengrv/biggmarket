@@ -116,6 +116,7 @@ BiggMarket/
 - Branch naming conventions
 - Commit message format
 - Pull request process
+- Pre commit hooks
 
 ### Documentation Standards
 - All public methods and interfaces must be documented
@@ -126,9 +127,9 @@ BiggMarket/
 
 | **Criteria** | **Where to Find It** |
 |--------------|----------------------|
-| **Team Standards: Cohesion** | [COHESION_DOCUMENTATION_PLACEHOLDER] |
+| **Team Standards: Cohesion** | [COHESION_STANDARDS_PLACEHOLDER]|
 | **Team Standards: Documentation** | `docs/` directory, inline code comments |
-| **Team Standards: Version Control Workflow** | [VERSION_CONTROL_DOCUMENTATION_PLACEHOLDER] |
+| **Team Standards: Version Control Workflow** | See local script in `docs/hooks/pre-commits.git` |
 | **Design & Structure** | Project structure above, `src/` directory organization |
 | **GUI: Clever and Interesting Design** | `docs/screenshots/` directory |
 | **Testing Documentation** | [TESTING_DOCUMENTATION_PLACEHOLDER] |
@@ -161,7 +162,7 @@ BiggMarket/
 
 ## Team Members
 * Lama Mohammed A AlMulla (230361933)
-* William Forkes ()
+* William Forkes (230333572)
 * Henry Groves (230054149)
 * Robin Husbands (230458358)
 * Teodora Ilic (230497195)
