@@ -28,7 +28,8 @@ function EditProfileScreen({
   setActiveSubScreen: (screen: string | null) => void;
 }) {
   // Fetch user profile data
-  const [userProfile, { refetch: refetchProfile }] = api.user.getProfile.useSuspenseQuery();
+  const [userProfile, { refetch: refetchProfile }] =
+    api.user.getProfile.useSuspenseQuery();
 
   // Profile State
   const [email, setEmail] = useState(userProfile?.email ?? "");
@@ -37,7 +38,9 @@ function EditProfileScreen({
   const [bio, setBio] = useState(userProfile?.bio ?? "");
 
   // Postcode
-  const [postcode, setPostcode] = useState(userProfile?.location?.postcode ?? "");
+  const [postcode, setPostcode] = useState(
+    userProfile?.location?.postcode ?? "",
+  );
 
   // Profile image
   const [profileImage, setProfileImage] = useState(
@@ -90,11 +93,11 @@ function EditProfileScreen({
     setUsernameError("");
     setBioError("");
 
-    const parseInput = inputParser.safeParse({ 
-      email, 
-      postcode, 
-      username, 
-      bio 
+    const parseInput = inputParser.safeParse({
+      email,
+      postcode,
+      username,
+      bio,
     });
 
     if (!parseInput.success) {
@@ -132,6 +135,7 @@ function EditProfileScreen({
         name,
         email,
         username,
+        bio,
         ...(postcode
           ? {
             location: {
