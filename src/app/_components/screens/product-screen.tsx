@@ -131,6 +131,8 @@ const ProductScreen = function ProductScreen({
   const [offsetX, setOffsetX] = useState(0);
   const swipeThreshold = 100;
 
+  const { data: user } = api.user.getProfile.useQuery();
+
   // Get the current product safely
   const product = useMemo<Product>(() => {
     return filteredProducts.length > 0
@@ -219,7 +221,7 @@ const ProductScreen = function ProductScreen({
             (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
           );
           setOffsetX(0);
-          
+
           // Call the swipe API
           swipeMutation.mutate({
             itemId: product.id,
@@ -241,7 +243,7 @@ const ProductScreen = function ProductScreen({
 
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
-      
+
       // Call the swipe API
       swipeMutation.mutate({
         itemId: product.id,
@@ -263,7 +265,7 @@ const ProductScreen = function ProductScreen({
 
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
-      
+
       // Call the swipe API
       swipeMutation.mutate({
         itemId: product.id,
@@ -288,7 +290,7 @@ const ProductScreen = function ProductScreen({
 
   if (filteredProducts.length === 0) {
     return (
-      <AppShell activeScreen="home" title="Hiya John!">
+      <AppShell activeScreen="home" title={"Hiya " + user?.name}>
         <div className="p-4">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Find Items</h2>
@@ -350,7 +352,7 @@ const ProductScreen = function ProductScreen({
   }
 
   return (
-    <AppShell activeScreen="home" title="Hiya John!">
+    <AppShell activeScreen="home" title={"Hiya " + user.name}>
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Find Items</h2>
