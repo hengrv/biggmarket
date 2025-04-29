@@ -114,6 +114,12 @@ export const messageRouter = createTRPCRouter({
         });
       }
 
+      chats.sort((a, b) => {
+        const aDate = a.messages[0]?.createdAt.getTime() ?? 0;
+        const bDate = b.messages[0]?.createdAt.getTime() ?? 0;
+        return bDate - aDate;
+      });
+
       return chats;
     }),
 
