@@ -2,6 +2,8 @@
 
 BiggMarket is a modern web application that allows users to swap items with others in their local area. The platform features a Tinder-like interface for item discovery, real-time messaging, and location-based matching.
 
+Repository URL: https://github.com/hengrv/biggmarket
+
 ## Group Documents
 - [Planning Document](https://docs.google.com/document/d/1fKAm-ThGSWcT_wdQAW1xUyvlBsldpEAbiKgfMQTacuw/edit?tab=t.0)
 - [Github Commit Conventions](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
@@ -28,7 +30,7 @@ BiggMarket is a modern web application that allows users to swap items with othe
 ### Setup
 1. Clone the repository:
 ```bash
-git clone [REPOSITORY_URL]
+git clone [https://github.com/hengrv/biggmarket.git]
 cd BiggMarket
 ```
 
@@ -158,5 +160,10 @@ BiggMarket/
 [LICENSE_INFORMATION_PLACEHOLDER]
 
 ## Team Members
-
-[TEAM_MEMBERS_PLACEHOLDER]
+* Lama Mohammed A AlMulla (230361933)
+* William Forkes ()
+* Henry Groves (230054149)
+* Robin Husbands (230458358)
+* Teodora Ilic (230497195)
+* Dario Labrador Alonso (23041691)
+* Guoxin Zhu (23067186)
