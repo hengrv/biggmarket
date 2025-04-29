@@ -352,7 +352,7 @@ const ProductScreen = function ProductScreen({
   }
 
   return (
-    <AppShell activeScreen="home" title={"Hiya " + user.name}>
+    <AppShell activeScreen="home" title={"Hiya " + user?.name}>
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Find Items</h2>
