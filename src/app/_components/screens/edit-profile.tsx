@@ -27,6 +27,8 @@ function EditProfileScreen({
 }: {
   setActiveSubScreen: (screen: string | null) => void;
 }) {
+  const utils = api.useUtils();
+
   // Fetch user profile data
   const [userProfile, { refetch: refetchProfile }] =
     api.user.getProfile.useSuspenseQuery();
@@ -146,6 +148,8 @@ function EditProfileScreen({
           }
           : {}),
       });
+
+      await utils.user.getProfile.invalidate();
     } catch (error) {
       console.error("Error updating profile:", error);
     }
