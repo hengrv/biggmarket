@@ -41,7 +41,7 @@ function BottomNavigation({ activeScreen = "home" }: BottomNavigationProps) {
           }`}
       >
         <Heart className="mb-0.5 h-6 w-6" />
-        <span className="text-[10px]">Wishlist</span>
+        <span className="text-[10px]">Swap</span>
       </Link>
 
       <Link

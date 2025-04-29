@@ -72,7 +72,7 @@ export default function SwapPage() {
             className="flex items-center rounded-lg bg-[#c1ff72] px-3 py-1 text-xs font-bold text-black shadow-lg transition-colors hover:bg-[#b4f55e]"
             onClick={() => setActiveSubScreen("sell")}
           >
-            SELL
+            SWAP
             <Plus className="ml-1 h-4 w-4" />
           </button>
         </div>
