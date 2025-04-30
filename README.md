@@ -128,7 +128,7 @@ BiggMarket/
 | **Criteria** | **Where to Find It** |
 |--------------|----------------------|
 | **Team Standards: Cohesion** | [COHESION_STANDARDS_PLACEHOLDER]|
-| **Team Standards: Documentation** | `docs/` directory, inline code comments |
+| **Team Standards: Documentation** | `docs/` directory & inline code comments |
 | **Team Standards: Version Control Workflow** | See local script in `docs/hooks/pre-commits.git` |
 | **Design & Structure** | Project structure above, `src/` directory organization |
 | **GUI: Clever and Interesting Design** | `docs/screenshots/` directory |
