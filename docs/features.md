@@ -54,13 +54,6 @@
   - Latest message preview
   - Unread message indicators
 
-### Location Services
-- **Postcode Integration**
-  - UK postcode validation
-  - Automatic coordinate conversion
-  - Distance calculation between users
-  - Location-based filtering
-
 ### User Interaction
 - **Review System**
   - User rating after swaps
@@ -76,6 +69,13 @@
 
 ## Advanced Features
 
+### Location Services
+- **Postcode Integration**
+  - UK postcode validation
+  - Automatic coordinate conversion
+  - Distance calculation between users
+  - Location-based filtering
+  
 ### User Experience
 - **Responsive Design**
   - Mobile-first approach
