@@ -140,17 +140,7 @@ BiggMarket/
 [Screenshots will be placed in the `docs/screenshots/` directory]
 
 ## Features
-
-### Core Features
-- User authentication with Google OAuth
-- Item listing and management
-- Location-based item discovery
-- Real-time messaging system
-- User profiles and reviews
-- Item swapping functionality
-
-### Advanced Features
-[ADVANCED_FEATURES_PLACEHOLDER]
+To see all features implemented in this project, please refer to the [features markdown](docs/features.md) file
 
 ## Contributing
 
