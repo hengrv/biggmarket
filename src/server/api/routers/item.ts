@@ -1,7 +1,12 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import type { SwipeDirection, machedStatus, Item, User } from "@prisma/client";
+import {
+  type SwipeDirection,
+  matchedStatus,
+  type Item,
+  type User,
+} from "@prisma/client";
 import geolib from "geolib";
 
 type ItemWithUserRating = (Item & { distance: number }) & {
@@ -357,42 +362,48 @@ export const itemRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  getMatches: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-
-    // Fetch matches for the user, including item and user details
-    const matches = await ctx.db.match.findMany({
-      where: {
-        OR: [{ user1Id: userId }, { user2Id: userId }],
-      },
-      include: {
-        useritem1: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
+  getMatches: protectedProcedure
+    .input(
+      z
+        .object({
+          userId: z.string().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = input?.userId ?? ctx.session.user.id;
+      const matches = await ctx.db.match.findMany({
+        where: {
+          OR: [{ user1Id: userId }, { user2Id: userId }],
+        },
+        include: {
+          useritem1: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+          useritem2: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
               },
             },
           },
         },
-        useritem2: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
-            },
-          },
-        },
-      },
-    });
+      });
 
-    return matches;
-  }),
+      return matches;
+    }),
 
   updateMatchStatus: protectedProcedure
     .input(
@@ -578,7 +589,7 @@ export const itemRouter = createTRPCRouter({
         },
       },
     });
-    console.log("right swipes", rightSwipes);
+
     // Filter out items that are already in a match
     const matches = await ctx.db.match.findMany({
       where: {
@@ -587,7 +598,7 @@ export const itemRouter = createTRPCRouter({
           { useritem2: { userId: userId } },
         ],
         status: {
-          notIn: ["ACCEPTED", "REJECTED"],
+          in: [matchedStatus.ACCEPTED, matchedStatus.REJECTED],
         },
       },
       select: {
@@ -626,6 +637,30 @@ export const itemRouter = createTRPCRouter({
 
     return likedItems;
   }),
+
+  unlikeItem: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // Delete the swipe record
+      await ctx.db.swipe.deleteMany({
+        where: {
+          userId: userId,
+          itemId: input.itemId,
+        },
+      });
+
+      // Delete any matches that were created from this swipe
+      await ctx.db.match.deleteMany({
+        where: {
+          OR: [{ item1id: input.itemId }, { item2id: input.itemId }],
+        },
+      });
+
+      return { success: true };
+    }),
+
   // Add a new function to get an item's distance from the user
   getItemDistance: protectedProcedure
     .input(z.object({ itemId: z.string() }))

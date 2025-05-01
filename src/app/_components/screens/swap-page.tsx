@@ -10,6 +10,7 @@ import {
   Check,
   Send,
   AlertTriangle,
+  X,
 } from "lucide-react";
 import SellItemScreen from "./sell-screen";
 import Image from "next/image";
@@ -21,6 +22,8 @@ export default function SwapPage() {
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const router = useRouter();
+
+  const { data: userId } = api.user.getCurrentlyAuthenticatedUser.useQuery();
 
   // Fetch user's items that have been swapped
   const { data: swappedItems, isLoading: loadingSwapped } =
@@ -44,6 +47,21 @@ export default function SwapPage() {
       refetchOnWindowFocus: false,
     });
 
+  const utils = api.useUtils();
+
+  const unlikeMutation = api.item.unlikeItem.useMutation({
+    onSuccess: () => {
+      // Invalidate liked items query to refresh the list
+      void utils.item.getUserLikedItems.invalidate();
+      void utils.item.getSwipeStats.invalidate();
+    },
+  });
+
+  const handleUnlike = async (itemId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the item click
+    await unlikeMutation.mutateAsync({ itemId });
+  };
+
   if (activeSubScreen === "wishlist-item" && selectedItem) {
     return (
       <WishlistItemScreen
@@ -54,12 +72,15 @@ export default function SwapPage() {
   }
 
   if (activeSubScreen === "past-orders") {
-    return <SwapsHistoryScreen setActiveSubScreen={setActiveSubScreen} />;
+    router.push(`/swaphistory/${userId}`);
+    return null;
   }
 
   if (activeSubScreen === "sell") {
     return <SellItemScreen setActiveSubScreen={setActiveSubScreen} />;
   }
+
+  console.log(likedItems);
 
   return (
     <AppShell activeScreen="swap" title="Your Swap Space">
@@ -179,6 +200,13 @@ export default function SwapPage() {
                       className="h-32 w-full object-cover"
                       draggable={false}
                     />
+                    <button
+                      onClick={(e) => handleUnlike(item.id, e)}
+                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white transition-all hover:scale-110 hover:bg-red-500/80"
+                      title="Remove from wishlist"
+                    >
+                      <Heart className="h-4 w-4 fill-current" />
+                    </button>
                   </div>
                   <div className="p-2">
                     <div className="truncate text-sm font-semibold text-foreground">
@@ -505,91 +533,6 @@ function WishlistItemScreen({
             </button>
           </div>
         </div>
-      </div>
-    </AppShell>
-  );
-}
-
-function SwapsHistoryScreen({
-  setActiveSubScreen,
-}: {
-  setActiveSubScreen: (screen: string | null) => void;
-}) {
-  // Fetch user's matches
-  const { data: matches, isLoading } = api.item.getMatches.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
-
-  return (
-    <AppShell
-      title="Swaps History"
-      showBackButton={true}
-      onBack={() => setActiveSubScreen(null)}
-      activeScreen="swap"
-    >
-      <div className="p-4">
-        {isLoading ? (
-          <div className="flex h-40 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : matches && matches.length > 0 ? (
-          <div className="space-y-4">
-            {matches.map((match) => (
-              <div
-                key={match.id}
-                className="flex cursor-pointer items-center rounded-lg bg-secondary p-4 shadow-lg transition-colors hover:bg-[#2a2a2a]"
-                onClick={() => {
-                  alert(`Viewing details for match ${match.id}`);
-                }}
-              >
-                <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
-                  <Image
-                    src={
-                      match.useritem1.images[0] ??
-                      "/item-placeholder.svg?height=64&width=64"
-                    }
-                    alt={match.useritem1.title ?? "Item"}
-                    width={64}
-                    height={64}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <div className="flex-1">
-                  <div className="font-semibold text-foreground">
-                    {match.useritem1.title ??
-                      match.useritem1.description?.substring(0, 20) ??
-                      "Item"}
-                  </div>
-                  <div className="text-xs text-muted">
-                    Swapped with {match.useritem2.user.name ?? "User"}
-                  </div>
-                  <div className="text-xs text-muted">
-                    {new Date(match.createdAt).toLocaleDateString()}
-                  </div>
-                  <div
-                    className={`mt-1 text-xs ${match.status === "ACCEPTED" ? "text-primary" : match.status === "REJECTED" ? "text-red-400" : "text-yellow-400"} font-medium`}
-                  >
-                    {match.status}
-                  </div>
-                </div>
-
-                <button className="rounded-full bg-background p-2">
-                  <ChevronRight className="h-5 w-5 text-primary" />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex h-40 flex-col items-center justify-center text-center">
-            <AlertTriangle className="mb-2 h-10 w-10 text-primary" />
-            <h3 className="mb-2 font-semibold text-foreground">No Swaps Yet</h3>
-            <p className="text-sm text-muted">
-              You haven&apos;t made any swaps yet. Start browsing items to find
-              something you like!
-            </p>
-          </div>
-        )}
       </div>
     </AppShell>
   );

@@ -18,7 +18,6 @@ import { api } from "~/trpc/react";
 import EditProfileScreen from "@components/screens/edit-profile";
 import FollowingScreen from "@components/screens/following-screen";
 import FollowersScreen from "@components/screens/followers-screen";
-import SwapsHistoryScreen from "@components/screens/swaps-history-screen";
 import FollowButton from "../profile/follow-button";
 import ReviewsSkeleton from "@/components/profile/reviews-skeleton";
 import ItemsSkeleton from "@/components/profile/items-skeleton";
@@ -143,15 +142,6 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
     );
   }
 
-  if (activeSubScreen === "swaps") {
-    return (
-      <SwapsHistoryScreen
-        setActiveSubScreen={setActiveSubScreen}
-        userId={userProfile?.id}
-      />
-    );
-  }
-
   // Show skeleton UI while loading critical data
   if (loadingProfile) {
     return <ProfileSkeleton />;
@@ -222,7 +212,7 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
           <div className="mt-4 flex justify-around border-t border-background pt-4">
             <button
               className="flex flex-col items-center"
-              onClick={() => setActiveSubScreen("swaps")}
+              onClick={() => router.push(`/swaphistory/${userProfile?.id}`)}
             >
               <div className="mb-1 flex h-8 w-8 items-center justify-center rounded-full bg-background">
                 <Package className="h-4 w-4 text-[#c1ff72]" />
