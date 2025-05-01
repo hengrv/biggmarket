@@ -56,10 +56,10 @@ model User {
     sender        Message[] @relation("sender")
     receiver      Message[] @relation("receiver")
 
-    // User can follow other users
-
-    follower  Follow[] @relation("follower")
-    following Follow[] @relation("following")
+    follower       Follow[] @relation("follower")
+    following      Follow[] @relation("following")
+    matchesAsUser1 Match[]  @relation("user1Matches")
+    matchesAsUser2 Match[]  @relation("user2Matches")
 }
 
 model Location {
@@ -121,6 +121,10 @@ model Match {
     createdAt DateTime     @default(now())
     useritem1 Item         @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
     useritem2 Item         @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+    user1Id   String
+    user2Id   String
+    user1     User         @relation("user1Matches", fields: [user1Id], references: [id], onDelete: Cascade)
+    user2     User         @relation("user2Matches", fields: [user2Id], references: [id], onDelete: Cascade)
 }
 
 // Enum for Match status

@@ -346,6 +346,8 @@ export const itemRouter = createTRPCRouter({
             data: {
               item1id: potentialMatch.id,
               item2id: input.itemId,
+              user1Id: userId, // Current user ID
+              user2Id: item.userId, // Item owner's ID
               status: "PENDING",
             },
           });
@@ -361,18 +363,7 @@ export const itemRouter = createTRPCRouter({
     // Fetch matches for the user, including item and user details
     const matches = await ctx.db.match.findMany({
       where: {
-        OR: [
-          {
-            useritem1: {
-              userId,
-            },
-          },
-          {
-            useritem2: {
-              userId,
-            },
-          },
-        ],
+        OR: [{ user1Id: userId }, { user2Id: userId }],
       },
       include: {
         useritem1: {
@@ -587,12 +578,17 @@ export const itemRouter = createTRPCRouter({
         },
       },
     });
-
+    console.log("right swipes", rightSwipes);
     // Filter out items that are already in a match
     const matches = await ctx.db.match.findMany({
       where: {
-        OR: [{ useritem1: { userId } }, { useritem2: { userId } }],
-        status: { not: "REJECTED" },
+        OR: [
+          { useritem1: { userId: userId } },
+          { useritem2: { userId: userId } },
+        ],
+        status: {
+          notIn: ["ACCEPTED", "REJECTED"],
+        },
       },
       select: {
         item1id: true,
@@ -601,10 +597,13 @@ export const itemRouter = createTRPCRouter({
     });
 
     // Create a set of matched item IDs
-    const matchedItemIds = new Set([
-      ...matches.map((m) => m.item1id),
-      ...matches.map((m) => m.item2id),
-    ]);
+    const matchedItemIds = new Set<string>();
+    matches.forEach((match) => {
+      matchedItemIds.add(match.item1id);
+      matchedItemIds.add(match.item2id);
+    });
+
+    console.log("matched items", matches);
 
     // Filter out items that are already matched
     const likedItems = rightSwipes
@@ -622,6 +621,8 @@ export const itemRouter = createTRPCRouter({
           status: item.status,
         };
       });
+
+    console.log("liked items", likedItems);
 
     return likedItems;
   }),
