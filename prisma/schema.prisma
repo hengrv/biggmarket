@@ -114,21 +114,21 @@ enum ItemStatus {
 
 // Model to keep track of item matches between user
 model Match {
-    id        String       @id @default(cuid())
+    id        String        @id @default(cuid())
     item1id   String
     item2id   String
-    status    machedStatus @default(PENDING)
-    createdAt DateTime     @default(now())
-    useritem1 Item         @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
-    useritem2 Item         @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+    status    matchedStatus @default(PENDING)
+    createdAt DateTime      @default(now())
+    useritem1 Item          @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
+    useritem2 Item          @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
     user1Id   String
     user2Id   String
-    user1     User         @relation("user1Matches", fields: [user1Id], references: [id], onDelete: Cascade)
-    user2     User         @relation("user2Matches", fields: [user2Id], references: [id], onDelete: Cascade)
+    user1     User          @relation("user1Matches", fields: [user1Id], references: [id], onDelete: Cascade)
+    user2     User          @relation("user2Matches", fields: [user2Id], references: [id], onDelete: Cascade)
 }
 
 // Enum for Match status
-enum machedStatus {
+enum matchedStatus {
     PENDING
     ACCEPTED
     REJECTED
