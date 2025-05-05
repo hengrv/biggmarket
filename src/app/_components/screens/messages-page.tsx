@@ -177,9 +177,11 @@ function ChatDetailView({
   if (messages && messages.length > 0 && !otherUserId) {
     const firstMessage = messages[0];
     setOtherUserId(
-      firstMessage.senderId === currentUserId
-        ? firstMessage.receiverId
-        : firstMessage.senderId,
+      firstMessage
+        ? firstMessage?.senderId === currentUserId
+          ? firstMessage.receiverId
+          : firstMessage.senderId
+        : "",
     );
   }
 
