@@ -77,6 +77,61 @@ const SwipeButton = memo(function SwipeButton({
 });
 SwipeButton.displayName = "SwipeButton";
 
+interface ReportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (reason: string, description: string) => void;
+}
+
+const ReportModal = memo(function({
+  isOpen,
+  onClose,
+  onSubmit,
+}: ReportModalProps) {
+  const [reason, setReason] = useState("PROHIBITED_ITEM");
+  const [description, setDescription] = useState("");
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="m-4 max-w-md rounded-lg bg-[#242424] p-4">
+        <h3 className="mb-4 text-lg font-semibold">Report Item</h3>
+        <select
+          className="mb-4 w-full rounded-lg bg-[#1a1a1a] p-2"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        >
+          <option value="PROHIBITED_ITEM">Prohibited Item</option>
+          <option value="INAPPROPRIATE_CONTENT">Inappropriate Content</option>
+          <option value="SUSPECTED_SCAM">Suspected Scam</option>
+          <option value="OTHER">Other</option>
+        </select>
+        <textarea
+          className="mb-4 h-32 w-full rounded-lg bg-[#1a1a1a] p-2"
+          placeholder="Please provide additional details..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <div className="flex justify-end gap-2">
+          <button
+            className="rounded-lg bg-[#1a1a1a] px-4 py-2"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="rounded-lg bg-[#c1ff72] px-4 py-2 text-black"
+            onClick={() => onSubmit(reason, description)}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 const ProductScreen = function ProductScreen({
   setShowProductDetails,
   setCurrentProduct,
@@ -87,9 +142,11 @@ const ProductScreen = function ProductScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Add swipe mutation
   const swipeMutation = api.item.swipeItem.useMutation();
+  const reportMutation = api.item.reportItem.useMutation();
 
   // Categories list
   const categories = [
@@ -166,16 +223,28 @@ const ProductScreen = function ProductScreen({
 
   const handleReport = useCallback(() => {
     if (filteredProducts.length === 0) return;
+    setShowReportModal(true);
+  }, [filteredProducts.length]);
 
-    const reason = window.prompt(
-      "Please select a reason for reporting this item:\n\n1. Prohibited item\n2. Inappropriate content\n3. Suspected scam\n4. Other",
+  const handleReportSubmit = (reason: string, description: string) => {
+    reportMutation.mutate(
+      {
+        itemId: product.id,
+        reason: reason as
+          | "PROHIBITED_ITEM"
+          | "INAPPROPRIATE_CONTENT"
+          | "SUSPECTED_SCAM"
+          | "OTHER",
+        description,
+      },
+      {
+        onSuccess: () => {
+          alert("Thank you for your report. Our team will review this item.");
+          setShowReportModal(false);
+        },
+      },
     );
-
-    if (reason) {
-      alert("Thank you for your report. Our team will review this item.");
-      console.log("Item reported:", product.title, "Reason:", reason);
-    }
-  }, [product.title, filteredProducts.length]);
+  };
 
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     // @ts-expect-error this code doesn't care if e is undefined
@@ -480,6 +549,11 @@ const ProductScreen = function ProductScreen({
           />
         </div>
       </div>
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReportSubmit}
+      />
     </AppShell>
   );
 };

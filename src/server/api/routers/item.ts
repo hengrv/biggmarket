@@ -446,7 +446,7 @@ export const itemRouter = createTRPCRouter({
       const updatedMatch = await ctx.db.match.update({
         where: { id: input.matchId },
         data: {
-          status: input.status as machedStatus,
+          status: input.status as matchedStatus,
         },
       });
 
@@ -493,6 +493,14 @@ export const itemRouter = createTRPCRouter({
           not: userId,
         },
         status: "AVAILABLE",
+        // This condition already filters out swiped items
+        NOT: {
+          swipes: {
+            some: {
+              userId: userId,
+            },
+          },
+        },
       },
       include: {
         user: {
@@ -507,23 +515,10 @@ export const itemRouter = createTRPCRouter({
       },
     });
 
-    // Filter out items that the user has already swiped
-    const swipedItems = await ctx.db.swipe.findMany({
-      where: {
-        userId,
-      },
-    });
-
-    // Create a set of swiped item IDs
-    const swipedItemIds = new Set(swipedItems.map((swipe) => swipe.itemId));
-
-    // Filter out items that the user has already swiped
-    const filteredItems = items.filter((item) => !swipedItemIds.has(item.id));
-
     // Filter items based on distance from user location and calculate ratings
     const result: ItemWithUserRating[] = [];
 
-    for (const item of filteredItems) {
+    for (const item of items) {
       if (!item.user.location || !userLocation?.location) {
         continue;
       }
@@ -704,5 +699,29 @@ export const itemRouter = createTRPCRouter({
       );
 
       return distance; // Distance in meters
+    }),
+
+  reportItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+        reason: z.enum([
+          "PROHIBITED_ITEM",
+          "INAPPROPRIATE_CONTENT",
+          "SUSPECTED_SCAM",
+          "OTHER",
+        ]),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.report.create({
+        data: {
+          itemId: input.itemId,
+          userId: ctx.session.user.id,
+          reason: input.reason,
+          description: input.description,
+        },
+      });
     }),
 });
