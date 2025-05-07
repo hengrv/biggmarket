@@ -2,18 +2,18 @@
 
 ## User Testing Results
 
-| Test Case | Expected Result | Actual Result | Pass |
-|-----------|----------------|---------------|------|
-| User Registration | User can create account with email and password | User successfully created account | Yes |
-| User Login | User can log in with credentials | User successfully logged in | Yes |
-| Profile Update | User can update their profile information | Profile information updated successfully | Yes |
-| Item Creation | User can create a new item listing | Item successfully created | Yes |
-| Item Update | User can modify their item details | Item details updated successfully | Yes |
-| Item Deletion | User can delete their items | Item successfully deleted | Yes |
-| Item Swiping | User can swipe left/right on items | Swipe recorded successfully | Yes |
-| Match Creation | Match created when both users swipe right | Match created successfully | Yes |
-| Location Setting | User can set their location | Location successfully set | Yes |
-| Distance-based Items | Items shown based on user's location | Items filtered by distance correctly | Yes |
+| Test Case | Data Input | Expected Result | Actual Result | Evidence | Pass |
+|-----------|------------|----------------|---------------|----------|------|
+| User Registration | `{Email: test@example.com, Password: Test123!}` | User can create account with email and password | User successfully created account | Screenshot of successful registration | Yes |
+| User Login | Email: test@example.com, Password: Test123! | User can log in with credentials | User successfully logged in | Screenshot of successful login | Yes |
+| Profile Update | Name: "Test User", Bio: "Test bio", Image: test.jpg | User can update their profile information | Profile information updated successfully | Screenshot of updated profile | Yes |
+| Item Creation | Title: "Test Item", Image: item.jpg, Category: "Electronics" | User can create a new item listing | Item successfully created | Screenshot of created item | Yes |
+| Item Update | Title: "Updated Item", Description: "New description" | User can modify their item details | Item details updated successfully | Screenshot of updated item | Yes |
+| Item Deletion | Item ID: "item123" | User can delete their items | Item successfully deleted | Screenshot of item removal | Yes |
+| Item Swiping | Item ID: "item456", Direction: "RIGHT" | User can swipe left/right on items | Swipe recorded successfully | Screenshot of swipe action | Yes |
+| Match Creation | User A swipes right on User B's item, User B swipes right on User A's item | Match created when both users swipe right | Match created successfully | Screenshot of match notification | Yes |
+| Location Setting | Postcode: "NE1 4ST", Latitude: 54.9783, Longitude: -1.6178 | User can set their location | Location successfully set | Screenshot of location settings | Yes |
+| Distance-based Items | User Location: Newcastle, Radius: 10km | Items shown based on user's location | Items filtered by distance correctly | Screenshot of nearby items | Yes |
 
 ## tRPC API Endpoints
 
