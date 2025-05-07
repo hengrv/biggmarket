@@ -103,7 +103,6 @@ export default function SwapPage() {
           </button>
         </div>
 
-        {/* Past Swaps Section */}
         <div className="mb-6 rounded-lg bg-secondary p-4 shadow-lg">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center font-semibold text-foreground">
@@ -156,7 +155,7 @@ export default function SwapPage() {
             </div>
           ) : (
             <div className="flex h-24 flex-col items-center justify-center text-center">
-              <p className="text-sm text-muted">No past swaps yet</p>
+              <p className="text-sm text-muted">No pending swaps</p>
               <p className="text-xs text-muted">
                 {"Items you've swapped will appear here"}
               </p>
