@@ -15,6 +15,10 @@ const config: Config = {
       },
     },
     extend: {
+      screens: {
+        xs: "430px",
+        "2xl": "1400px",
+      },
       fontFamily: {
         sans: ["Rubik Distressed", "cursive", ...fontFamily.sans],
         "rubik-distressed": ["Rubik Distressed", "cursive"],

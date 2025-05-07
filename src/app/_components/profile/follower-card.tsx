@@ -16,6 +16,7 @@ export default function FollowerCard({
   };
 }) {
   const router = useRouter();
+  const { data: userId } = api.user.getCurrentlyAuthenticatedUser.useQuery();
   const { data: follower } = api.user.getProfile.useQuery({
     userId: user.id,
   });
@@ -51,30 +52,32 @@ export default function FollowerCard({
         <div className="font-semibold text-foreground">
           {follower?.name ?? follower?.email}
         </div>
-        <div className="text-xs text-muted">{user.email}</div>
-        <div className="mt-1 line-clamp-1 text-xs text-muted">
-          Followed you {new Date(user.followedAt).toLocaleDateString()}
+        <div className="xs:block hidden text-xs text-muted">{user.email}</div>
+        <div className="xs:block mt-1 line-clamp-1 hidden text-xs text-muted">
+          Followed since {new Date(user.followedAt).toLocaleDateString()}
         </div>
       </div>
 
-      <button
-        className={`${isFollowing ? "border border-[#3a3a3a] bg-secondary text-foreground" : "bg-[#c1ff72] text-black"} flex items-center rounded-full px-3 py-1 text-xs font-medium`}
-        onClick={async (e) => {
-          e.stopPropagation(); // Prevent navigating when clicking the button
-          await toggleFollow();
-        }}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
-        ) : isFollowing ? (
-          "Following"
-        ) : (
-          <>
-            <UserPlus className="mr-1 h-3 w-3" /> Follow
-          </>
-        )}
-      </button>
+      {follower?.id !== userId && (
+        <button
+          className={`${isFollowing ? "border border-[#3a3a3a] bg-secondary text-foreground" : "bg-bm-green text-black"} flex items-center rounded-full px-3 py-1 text-xs font-medium`}
+          onClick={async (e) => {
+            e.stopPropagation();
+            await toggleFollow();
+          }}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : isFollowing ? (
+            "Following"
+          ) : (
+            <>
+              <UserPlus className="mr-1 h-3 w-3" /> Follow
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 }

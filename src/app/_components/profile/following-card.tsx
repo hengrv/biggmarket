@@ -55,8 +55,10 @@ function FollowingCard({
         <div className="font-semibold text-foreground">
           {followedUser?.name ?? user.email}
         </div>
-        <div className="text-xs text-muted">{user.email}</div>
-        <div className="mt-1 line-clamp-1 text-xs text-muted">
+        <div className="xs:block hidden overflow-hidden text-xs">
+          {user.email}
+        </div>
+        <div className="xs:block mt-1 line-clamp-1 hidden text-xs text-muted">
           Following since {new Date(user.followedAt).toLocaleDateString()}
         </div>
       </div>
