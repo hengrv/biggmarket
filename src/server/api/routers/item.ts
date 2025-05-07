@@ -10,7 +10,10 @@ import {
 import geolib from "geolib";
 
 type ItemWithUserRating = (Item & { distance: number }) & {
-  user: Omit<User, "username" | "email" | "emailVerified" | "bio" | "role"> & {
+  user: Omit<
+    User,
+    "username" | "email" | "emailVerified" | "bio" | "role" | "createdAt"
+  > & {
     rating: number;
   };
 };

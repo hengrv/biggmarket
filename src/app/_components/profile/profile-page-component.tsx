@@ -192,7 +192,7 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
                 {loadingCity ? "Loading location..." : (city ?? "Unknown City")}
               </div>
               <div className="mt-1 text-xs text-muted">
-                {userProfile.bio ? userProfile.bio : ""}
+                {userProfile.bio ?? ""}
               </div>
             </div>
 
