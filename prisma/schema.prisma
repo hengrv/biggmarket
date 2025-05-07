@@ -243,9 +243,9 @@ model Report {
     createdAt   DateTime @default(now())
     reason      String
     description String?
-    item        Item     @relation(fields: [itemId], references: [id])
+    item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
     itemId      String
-    user        User     @relation(fields: [userId], references: [id])
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      String
 
     closed Boolean @default(false)

@@ -152,6 +152,18 @@ export const userRouter = createTRPCRouter({
             return profile ?? null;
         }),
 
+    deleteUser: protectedProcedure
+        .input(z.object({ userId: z.string().optional() }))
+        .mutation(async ({ ctx, input }) => {
+            const userId = input.userId ? input.userId : ctx.session.user.id;
+
+            const deletedUser = await ctx.db.user.delete({
+                where: {
+                    id: userId,
+                },
+            });
+        }),
+
     // * Add review
     addProfileReview: protectedProcedure
         .input(reviewInput)
