@@ -15,6 +15,7 @@ import {
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export interface ProductOwner {
   id: string;
@@ -136,13 +137,9 @@ const ReportModal = memo(({ isOpen, onClose, onSubmit }: ReportModalProps) => {
   );
 });
 
-const ProductScreen = function ProductScreen({
-  setShowProductDetails,
-  setCurrentProduct,
-}: {
-  setShowProductDetails: (show: boolean) => void;
-  setCurrentProduct: (product: Product) => void;
-}) {
+const ProductScreen = function ProductScreen() {
+  const router = useRouter(); // Add router
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
@@ -276,15 +273,9 @@ const ProductScreen = function ProductScreen({
   // Define all hooks before any conditional returns
   const handleViewDetails = useCallback(() => {
     if (filteredProducts.length > 0) {
-      setCurrentProduct(product);
-      setShowProductDetails(true);
+      router.push(`/item/${product.id}`);
     }
-  }, [
-    product,
-    setCurrentProduct,
-    setShowProductDetails,
-    filteredProducts.length,
-  ]);
+  }, [product, router, filteredProducts.length]);
 
   const handleReport = useCallback(() => {
     if (filteredProducts.length === 0) return;
@@ -470,10 +461,7 @@ const ProductScreen = function ProductScreen({
                     ? "bg-[#c1ff72] text-black"
                     : "bg-[#1a1a1a] text-[#f3f3f3]"
                 }`}
-                onClick={() => {
-                  setSelectedCategory(null);
-                  setShowCategoryFilter(false);
-                }}
+                onClick={() => setSelectedCategory(null)}
               >
                 All Items
               </button>
@@ -485,10 +473,7 @@ const ProductScreen = function ProductScreen({
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
                   }`}
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    setShowCategoryFilter(false);
-                  }}
+                  onClick={() => setSelectedCategory(category)}
                 >
                   {category}
                 </button>

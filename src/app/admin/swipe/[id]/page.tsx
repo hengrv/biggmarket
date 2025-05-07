@@ -4,11 +4,18 @@ import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import AppShell from "@/components/app-shell";
 import { Loader2 } from "lucide-react";
+import { use } from "react";
 
-export default function SwipeDetail({ params }: { params: { id: string } }) {
+export default function SwipeDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
+
+  const { id } = use(params);
   const { data: swipe, isLoading } = api.admin.getSwipeDetail.useQuery({
-    swapId: params.id,
+    swapId: id,
   });
 
   if (isLoading) {
@@ -21,7 +28,7 @@ export default function SwipeDetail({ params }: { params: { id: string } }) {
 
   return (
     <AppShell
-      title={`Swipe Details - #${params.id}`}
+      title={`Swipe Details - #${id}`}
       activeScreen="admin"
       showBackButton
       onBack={() => router.back()}

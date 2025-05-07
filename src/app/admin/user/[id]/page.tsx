@@ -4,11 +4,18 @@ import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import AppShell from "@/components/app-shell";
 import { Loader2 } from "lucide-react";
+import { use } from "react";
 
-export default function UserDetail({ params }: { params: { id: string } }) {
+export default function UserDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
+
+  const { id } = use(params);
   const { data: user, isLoading } = api.admin.getUserDetail.useQuery({
-    userId: params.id,
+    userId: id,
   });
 
   if (isLoading) {

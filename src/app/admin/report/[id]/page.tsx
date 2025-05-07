@@ -4,12 +4,18 @@ import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import AppShell from "@/components/app-shell";
 import { Loader2 } from "lucide-react";
+import { use } from "react";
 
-export default function ReportDetail({ params }: { params: { id: string } }) {
+export default function ReportDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
 
+  const { id } = use(params);
   const { data: report, isLoading } = api.admin.getReportDetail.useQuery({
-    reportId: params.id,
+    reportId: id,
   });
 
   if (isLoading) {
@@ -22,7 +28,7 @@ export default function ReportDetail({ params }: { params: { id: string } }) {
 
   return (
     <AppShell
-      title={`Report Details - #${params.id}`}
+      title={`Report Details - #${id}`}
       activeScreen="admin"
       showBackButton
       onBack={() => router.back()}
