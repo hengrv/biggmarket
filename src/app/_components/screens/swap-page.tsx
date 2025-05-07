@@ -25,12 +25,19 @@ export default function SwapPage() {
 
   const { data: userId } = api.user.getCurrentlyAuthenticatedUser.useQuery();
 
+  const { data: matchedItems, isLoading: loadingSwaps } =
+    api.item.getMatches.useQuery();
+
+  const pendingItems = matchedItems?.filter(
+    (item) => item.status === "PENDING",
+  );
+
   // Fetch user's items that have been swapped
-  const { data: swappedItems, isLoading: loadingSwapped } =
-    api.item.getUserItems.useQuery(
-      { status: "SWAPPED" },
-      { refetchOnWindowFocus: false },
-    );
+  // const { data: swappedItems, isLoading: loadingSwapped } =
+  //   api.item.getUserItems.useQuery(
+  //     { status: "AVAILABLE" },
+  //     { refetchOnWindowFocus: false },
+  //   );
 
   // Fetch user's swipe stats to get count of right swipes
   const { data: swipeStats } = api.item.getSwipeStats.useQuery(undefined, {
@@ -80,8 +87,6 @@ export default function SwapPage() {
     return <SwapItemScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
-  console.log(likedItems);
-
   return (
     <AppShell activeScreen="swap" title="Your Swap Space">
       <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#1a1a1a] p-4">
@@ -103,7 +108,7 @@ export default function SwapPage() {
           <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center font-semibold text-foreground">
               <Clock className="mr-2 h-4 w-4 text-primary" />
-              Past Swaps
+              Pending Swaps
             </h3>
             <button
               className="flex items-center text-xs text-primary"
@@ -114,23 +119,23 @@ export default function SwapPage() {
             </button>
           </div>
 
-          {loadingSwapped ? (
+          {loadingSwaps ? (
             <div className="flex h-24 items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : swappedItems && swappedItems.length > 0 ? (
+          ) : pendingItems && pendingItems.length > 0 ? (
             <div className="scrollbar-hide flex space-x-3 overflow-x-auto pb-2">
-              {swappedItems.slice(0, 4).map((item) => (
+              {pendingItems.slice(0, 4).map((match) => (
                 <div
-                  key={item.id}
+                  key={match.id}
                   className="w-32 flex-shrink-0 overflow-hidden rounded-lg bg-background shadow-md"
                 >
                   <Image
                     src={
-                      item.images[0] ??
+                      match.useritem1.images[0] ??
                       "/item-placeholder.svg?height=100&width=80"
                     }
-                    alt={item.title ?? "Swapped item"}
+                    alt={match.useritem1.title ?? "Swapped item"}
                     width={80}
                     height={100}
                     className="h-24 w-full object-cover"
@@ -138,12 +143,12 @@ export default function SwapPage() {
                   />
                   <div className="p-2">
                     <div className="truncate text-xs font-semibold text-foreground">
-                      {item.title ??
-                        item.description?.substring(0, 20) ??
+                      {match.useritem1.title ??
+                        match.useritem1.description?.substring(0, 20) ??
                         "Item"}
                     </div>
                     <div className="text-xs text-muted">
-                      {new Date(item.updatedAt).toLocaleDateString()}
+                      {new Date(match.useritem1.updatedAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
