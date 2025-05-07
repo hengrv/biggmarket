@@ -480,10 +480,11 @@ export const itemRouter = createTRPCRouter({
       z.object({
         limit: z.number().min(1).max(20).default(5),
         cursor: z.string().optional(),
+        category: z.string().optional().nullable(), // Add category parameter
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { limit, cursor } = input;
+      const { limit, cursor, category } = input;
       const userId = ctx.session.user.id;
       const userLocation = await ctx.db.user.findUnique({
         where: {
@@ -509,6 +510,8 @@ export const itemRouter = createTRPCRouter({
             not: userId,
           },
           status: "AVAILABLE",
+          // Add category filter if provided
+          ...(category ? { category } : {}),
           // Make sure this filter is correctly applied to exclude already swiped items
           swipes: {
             none: {
