@@ -12,7 +12,7 @@ import {
   AlertTriangle,
   X,
 } from "lucide-react";
-import SellItemScreen from "./sell-screen";
+import SwapItemScreen from "./swap-screen";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
@@ -77,7 +77,7 @@ export default function SwapPage() {
   }
 
   if (activeSubScreen === "sell") {
-    return <SellItemScreen setActiveSubScreen={setActiveSubScreen} />;
+    return <SwapItemScreen setActiveSubScreen={setActiveSubScreen} />;
   }
 
   console.log(likedItems);

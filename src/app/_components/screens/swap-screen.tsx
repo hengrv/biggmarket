@@ -3,19 +3,12 @@
 import type React from "react";
 import { api } from "~/trpc/react";
 import { useState, useEffect } from "react";
-import {
-  X,
-  Camera,
-  Loader2,
-  Upload,
-  Check,
-  Send,
-} from "lucide-react";
+import { X, Camera, Loader2, Upload, Check, Send } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { ItemImageUploader } from "@/components/item/item-image-uploader";
 
-export default function SellItemScreen({
+export default function SwapItemScreen({
   setActiveSubScreen,
 }: {
   setActiveSubScreen: (screen: string | null) => void;
@@ -26,7 +19,7 @@ export default function SellItemScreen({
   const [condition, setCondition] = useState("New");
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleAddImage = (urls: string[]) => {
     setImages((prevImages) => [...prevImages, ...urls]);
   };
@@ -49,10 +42,10 @@ export default function SellItemScreen({
     try {
       setIsLoading(true);
       await createItem.mutateAsync({
-          images: images,
-          title: itemName,
-          description,
-          category,
+        images: images,
+        title: itemName,
+        description,
+        category,
       });
 
       setItemName("");
@@ -69,7 +62,7 @@ export default function SellItemScreen({
 
   return (
     <AppShell
-      title="Sell an Item"
+      title="Swap an Item"
       showBackButton={true}
       onBack={() => setActiveSubScreen(null)}
       activeScreen="swap"
@@ -81,7 +74,7 @@ export default function SellItemScreen({
               Item Photos (required)
             </label>
 
-            <ItemImageUploader onImagesUploaded={handleAddImage}/>
+            <ItemImageUploader onImagesUploaded={handleAddImage} />
 
             <div className="grid grid-cols-3 gap-2">
               {images.map((image, index) => (
