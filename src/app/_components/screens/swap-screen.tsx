@@ -132,9 +132,11 @@ export default function SwapItemScreen({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs text-muted">Category</label>
+              <label className="mb-1 block text-xs text-bm-white">
+                Category
+              </label>
               <select
-                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-bm-black p-3 text-foreground outline-none focus:border-primary"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -151,9 +153,11 @@ export default function SwapItemScreen({
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-muted">Condition</label>
+              <label className="mb-1 block text-xs text-bm-white">
+                Condition
+              </label>
               <select
-                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-bm-black p-3 text-foreground outline-none focus:border-primary"
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
               >
@@ -168,7 +172,7 @@ export default function SwapItemScreen({
 
           <button
             type="submit"
-            className="mt-4 flex w-full items-center justify-center rounded-lg bg-primary py-3 font-semibold text-black"
+            className="mt-4 flex w-full items-center justify-center rounded-lg bg-bm-green py-3 font-semibold text-bm-black"
             disabled={isLoading || images.length === 0 || !itemName}
           >
             {isLoading ? (
