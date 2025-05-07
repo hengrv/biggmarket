@@ -3,7 +3,15 @@
 import type React from "react";
 
 import { useState, useRef, useEffect, memo, useCallback, useMemo } from "react";
-import { MapPin, Eye, X, Check, AlertTriangle, Filter } from "lucide-react";
+import {
+  MapPin,
+  Eye,
+  X,
+  Check,
+  AlertTriangle,
+  Filter,
+  Loader2,
+} from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
@@ -83,11 +91,7 @@ interface ReportModalProps {
   onSubmit: (reason: string, description: string) => void;
 }
 
-const ReportModal = memo(function({
-  isOpen,
-  onClose,
-  onSubmit,
-}: ReportModalProps) {
+const ReportModal = memo(({ isOpen, onClose, onSubmit }: ReportModalProps) => {
   const [reason, setReason] = useState("PROHIBITED_ITEM");
   const [description, setDescription] = useState("");
 
@@ -143,6 +147,8 @@ const ProductScreen = function ProductScreen({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [swipedItemIds, setSwipedItemIds] = useState<Set<string>>(new Set());
 
   // Add swipe mutation
   const swipeMutation = api.item.swipeItem.useMutation();
@@ -162,21 +168,59 @@ const ProductScreen = function ProductScreen({
     "Cooking Supplies",
   ];
 
-  // get products
-  const productsData = api.item.getItemsOnLocation.useQuery();
-  const [products, setProducts] = useState<Product[]>([]);
+  // Use infinite query instead of regular query
+  const {
+    data: productsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingInitial,
+  } = api.item.getItemsOnLocation.useInfiniteQuery(
+    {
+      limit: 5, // Fetch 5 items at a time
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
 
-  // Update products when query data changes
+  // Flatten the pages data into a single array of products
+  const products = useMemo(() => {
+    if (!productsData) return [];
+    return productsData.pages.flatMap((page) => page.items);
+  }, [productsData]);
+
+  // Filter products by category if needed
+  const filteredProducts = useMemo(() => {
+    const filtered = products.filter(
+      (product) => !swipedItemIds.has(product.id),
+    );
+    return selectedCategory !== null
+      ? filtered.filter((product) => product.category === selectedCategory)
+      : filtered;
+  }, [products, selectedCategory, swipedItemIds]);
+
+  // Check if we need to load more items
   useEffect(() => {
-    if (productsData.data) {
-      setProducts(productsData.data);
+    // If we're getting close to the end of our items, fetch more
+    if (
+      filteredProducts.length > 0 &&
+      currentIndex >= filteredProducts.length - 2 &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
+      setIsLoadingMore(true);
+      fetchNextPage().then(() => {
+        setIsLoadingMore(false);
+      });
     }
-  }, [productsData.data]);
-
-  const filteredProducts =
-    selectedCategory !== null
-      ? products.filter((product) => product.category === selectedCategory)
-      : products;
+  }, [
+    currentIndex,
+    filteredProducts.length,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  ]);
 
   // reset index
   useEffect(() => {
@@ -192,9 +236,8 @@ const ProductScreen = function ProductScreen({
 
   // Get the current product safely
   const product = useMemo<Product>(() => {
-    return filteredProducts.length > 0
-      ? filteredProducts[currentIndex % filteredProducts.length]!
-      : {
+    if (filteredProducts.length === 0) {
+      return {
         id: "0",
         title: "",
         images: [],
@@ -206,6 +249,11 @@ const ProductScreen = function ProductScreen({
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+    }
+
+    // Make sure we don't go out of bounds
+    const safeIndex = currentIndex < filteredProducts.length ? currentIndex : 0;
+    return filteredProducts[safeIndex]!;
   }, [filteredProducts, currentIndex]);
 
   // Define all hooks before any conditional returns
@@ -269,10 +317,16 @@ const ProductScreen = function ProductScreen({
       if (offsetX > swipeThreshold) {
         // right swipe
         cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
+
+        // Track this item as swiped
+        setSwipedItemIds((prev) => {
+          const updated = new Set(prev);
+          updated.add(product.id);
+          return updated;
+        });
+
         setTimeout(() => {
-          setCurrentIndex(
-            (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
-          );
+          setCurrentIndex((prev) => prev + 1);
           setOffsetX(0);
 
           // Call the swipe API
@@ -285,10 +339,16 @@ const ProductScreen = function ProductScreen({
       } else if (offsetX < -swipeThreshold) {
         // left swipe
         cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
+
+        // Track this item as swiped
+        setSwipedItemIds((prev) => {
+          const updated = new Set(prev);
+          updated.add(product.id);
+          return updated;
+        });
+
         setTimeout(() => {
-          setCurrentIndex(
-            (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
-          );
+          setCurrentIndex((prev) => prev + 1);
           setOffsetX(0);
 
           // Call the swipe API
@@ -313,6 +373,13 @@ const ProductScreen = function ProductScreen({
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(-1000px) rotate(-30deg)`;
 
+      // Track this item as swiped
+      setSwipedItemIds((prev) => {
+        const updated = new Set(prev);
+        updated.add(product.id);
+        return updated;
+      });
+
       // Call the swipe API
       swipeMutation.mutate({
         itemId: product.id,
@@ -321,9 +388,7 @@ const ProductScreen = function ProductScreen({
       console.log("Swiped left");
 
       setTimeout(() => {
-        setCurrentIndex(
-          (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
-        );
+        setCurrentIndex((prev) => prev + 1);
         setOffsetX(0);
       }, 300);
     }
@@ -335,6 +400,13 @@ const ProductScreen = function ProductScreen({
     if (cardRef.current) {
       cardRef.current.style.transform = `translateX(1000px) rotate(30deg)`;
 
+      // Track this item as swiped
+      setSwipedItemIds((prev) => {
+        const updated = new Set(prev);
+        updated.add(product.id);
+        return updated;
+      });
+
       // Call the swipe API
       swipeMutation.mutate({
         itemId: product.id,
@@ -343,9 +415,7 @@ const ProductScreen = function ProductScreen({
       console.log("Swiped right");
 
       setTimeout(() => {
-        setCurrentIndex(
-          (prev) => (prev + 1) % Math.max(1, filteredProducts.length),
-        );
+        setCurrentIndex((prev) => prev + 1);
         setOffsetX(0);
       }, 300);
     }
@@ -356,6 +426,23 @@ const ProductScreen = function ProductScreen({
       cardRef.current.style.transform = `translateX(0) rotate(0)`;
     }
   }, [cardRef, currentIndex]);
+
+  // Show loading state when initially loading
+  if (isLoadingInitial) {
+    return (
+      <AppShell
+        activeScreen="home"
+        title={`Hiya ${user?.name ? user?.name : ""}`}
+      >
+        <div className="flex h-[70vh] w-full items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="mx-auto w-full animate-spin text-[#c1ff72]" />
+            <p className="mt-4 text-[#a9a9a9]">Finding items near you...</p>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   if (filteredProducts.length === 0) {
     return (
@@ -379,10 +466,11 @@ const ProductScreen = function ProductScreen({
               <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
+                  className={`rounded-full px-3 py-1 text-xs ${
+                    selectedCategory === null
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                  }`}
                   onClick={() => setSelectedCategory(null)}
                 >
                   All Items
@@ -390,10 +478,11 @@ const ProductScreen = function ProductScreen({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
+                    className={`rounded-full px-3 py-1 text-xs ${
+                      selectedCategory === category
                         ? "bg-[#c1ff72] text-black"
                         : "bg-[#1a1a1a] text-[#f3f3f3]"
-                      }`}
+                    }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category}
@@ -409,7 +498,9 @@ const ProductScreen = function ProductScreen({
             </div>
             <h3 className="mb-2 text-lg font-semibold">No items found</h3>
             <p className="mb-4 text-sm text-[#a9a9a9]">
-              There are no items in the {selectedCategory} category right now.
+              {selectedCategory
+                ? `There are no items in the ${selectedCategory} category right now.`
+                : "There are no items available right now! Come back later"}
             </p>
             <button
               className="rounded-lg bg-[#c1ff72] px-4 py-2 font-medium text-black"
@@ -444,10 +535,11 @@ const ProductScreen = function ProductScreen({
             <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
             <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
               <button
-                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
+                className={`rounded-full px-3 py-1 text-xs ${
+                  selectedCategory === null
                     ? "bg-[#c1ff72] text-black"
                     : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 All Items
@@ -455,10 +547,11 @@ const ProductScreen = function ProductScreen({
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
+                  className={`rounded-full px-3 py-1 text-xs ${
+                    selectedCategory === category
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
-                    }`}
+                  }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -548,6 +641,13 @@ const ProductScreen = function ProductScreen({
             iconColor="text-[#6efa73]"
           />
         </div>
+
+        {/* Loading indicator for fetching more items */}
+        {isFetchingNextPage && (
+          <div className="mt-4 flex justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-[#c1ff72]" />
+          </div>
+        )}
       </div>
       <ReportModal
         isOpen={showReportModal}

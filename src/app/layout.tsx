@@ -23,11 +23,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${rubik.variable}`}>
-      <head>
-      </head>
+      <head></head>
       <body suppressHydrationWarning>
         <TRPCReactProvider>
-          <div className="relative mx-auto min-h-screen max-w-md overflow-hidden bg-background-1">
+          <div className="relative mx-auto min-h-screen min-w-full max-w-md overflow-hidden bg-background-1">
             {children}
           </div>
         </TRPCReactProvider>

@@ -475,91 +475,115 @@ export const itemRouter = createTRPCRouter({
       return stats;
     }),
 
-  getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-    const userLocation = await ctx.db.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        location: true,
-      },
-    });
-
-    // Get all user items and sort by lowest distance
-    const items = await ctx.db.item.findMany({
-      where: {
-        userId: {
-          not: userId,
+  getItemsOnLocation: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(20).default(5),
+        cursor: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor } = input;
+      const userId = ctx.session.user.id;
+      const userLocation = await ctx.db.user.findUnique({
+        where: {
+          id: userId,
         },
-        status: "AVAILABLE",
-        // This condition already filters out swiped items
-        NOT: {
+        include: {
+          location: true,
+        },
+      });
+
+      // Get all user items and sort by lowest distance
+      const items = await ctx.db.item.findMany({
+        take: limit + 1, // Take one more to determine if there are more items
+        ...(cursor
+          ? {
+              cursor: {
+                id: cursor,
+              },
+            }
+          : {}),
+        where: {
+          userId: {
+            not: userId,
+          },
+          status: "AVAILABLE",
+          // Make sure this filter is correctly applied to exclude already swiped items
           swipes: {
-            some: {
+            none: {
               userId: userId,
             },
           },
         },
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            location: true,
-            reviews: true,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              location: true,
+              reviews: true,
+            },
           },
         },
-      },
-    });
-
-    // Filter items based on distance from user location and calculate ratings
-    const result: ItemWithUserRating[] = [];
-
-    for (const item of items) {
-      if (!item.user.location || !userLocation?.location) {
-        continue;
-      }
-
-      const distance = geolib.getDistance(
-        {
-          latitude: Number(userLocation.location.latitude),
-          longitude: Number(userLocation.location.longitude),
-        },
-        {
-          latitude: Number(item.user.location.latitude),
-          longitude: Number(item.user.location.longitude),
-        },
-      );
-
-      // Calculate average rating
-      let rating = 0;
-      if (item.user.reviews.length > 0) {
-        const totalRating = item.user.reviews.reduce(
-          (acc, review) => acc + review.rating,
-          0,
-        );
-        rating = totalRating / item.user.reviews.length;
-      }
-
-      // Create a new object with the correct structure
-      result.push({
-        ...item,
-        distance,
-        user: {
-          ...item.user,
-          rating,
-        },
       });
-    }
 
-    // Sort by distance
-    result.sort((a, b) => a.distance - b.distance);
+      // Filter items based on distance from user location and calculate ratings
+      const result: ItemWithUserRating[] = [];
+      let nextCursor: string | undefined = undefined;
 
-    return result;
-  }),
+      // If we have more items than the limit, we have a next page
+      if (items.length > limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      for (const item of items) {
+        if (!item.user.location || !userLocation?.location) {
+          continue;
+        }
+
+        const distance = geolib.getDistance(
+          {
+            latitude: Number(userLocation.location.latitude),
+            longitude: Number(userLocation.location.longitude),
+          },
+          {
+            latitude: Number(item.user.location.latitude),
+            longitude: Number(item.user.location.longitude),
+          },
+        );
+
+        // Calculate average rating
+        let rating = 0;
+        if (item.user.reviews.length > 0) {
+          const totalRating = item.user.reviews.reduce(
+            (acc, review) => acc + review.rating,
+            0,
+          );
+          rating = totalRating / item.user.reviews.length;
+        }
+
+        // Create a new object with the correct structure
+        result.push({
+          ...item,
+          distance,
+          user: {
+            ...item.user,
+            rating,
+          },
+        });
+      }
+
+      // Sort by distance
+      result.sort((a, b) => a.distance - b.distance);
+
+      return {
+        items: result,
+        nextCursor,
+      };
+    }),
 
   getUserLikedItems: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
