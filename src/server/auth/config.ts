@@ -41,7 +41,6 @@ export const authConfig = {
      *
      */
   ],
-  // @ts-expect-error - Fix later
   adapter: PrismaAdapter(db),
   callbacks: {
     session: ({ session, user }) => ({

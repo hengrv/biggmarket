@@ -69,8 +69,8 @@ export default function UserDetail({
             disabled={id === currentUserId || isBanning}
             className={`flex items-center rounded-lg ${id === currentUserId
                 ? "cursor-not-allowed bg-gray-500"
-                : "bg-red-600 hover:bg-red-700"
-              } px-4 py-2 text-white transition-colors`}
+                : "bg-error hover:bg-red-700"
+              } px-4 py-2 text-bm-black transition-colors`}
           >
             <UserX className="mr-2 h-5 w-5" />
             {isBanning ? "Banning..." : "Ban User"}
@@ -89,7 +89,7 @@ export default function UserDetail({
               </h3>
               <p className="mb-4 text-foreground">
                 Are you sure you want to ban{" "}
-                {user?.name || user?.email || "this user"}? This action will
+                {user?.name ?? user?.email ?? "this user"}? This action will
                 delete their account and cannot be undone.
               </p>
               <div className="flex justify-end gap-2">
@@ -102,7 +102,7 @@ export default function UserDetail({
                 <button
                   onClick={handleBanUser}
                   disabled={isBanning}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                  className="rounded-lg bg-error px-4 py-2 text-bm-black hover:bg-red-700"
                 >
                   {isBanning ? (
                     <Loader2 className="h-5 w-5 animate-spin" />

@@ -134,7 +134,7 @@ export default function SwapDetails({
         matchData={{
           id: matchid,
           otherUserId,
-          otherUserName: otherUserName || "User",
+          otherUserName: otherUserName ?? "User",
         }}
       />
     </AppShell>

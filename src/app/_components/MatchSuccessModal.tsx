@@ -93,7 +93,7 @@ const MatchSuccessModal = ({
                     className="inline-flex justify-center rounded-md border border-transparent bg-bm-green px-4 py-2 text-sm font-medium text-bm-black transition-all duration-300 hover:bg-bm-green/70 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     onClick={() => setShowRating(true)}
                   >
-                    Rate {matchData?.otherUserName || "User"}
+                    Rate {matchData?.otherUserName ?? "User"}
                   </button>
                   <button
                     type="button"
@@ -117,7 +117,7 @@ const MatchSuccessModal = ({
             ) : (
               <div className="flex flex-col">
                 <h3 className="mb-4 text-center text-lg font-medium leading-6 text-bm-white">
-                  Rate your experience with {matchData?.otherUserName || "User"}
+                  Rate your experience with {matchData?.otherUserName ?? "User"}
                 </h3>
 
                 <div className="mb-4 flex justify-center">
