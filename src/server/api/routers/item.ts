@@ -476,6 +476,17 @@ export const itemRouter = createTRPCRouter({
         },
       });
 
+      await ctx.db.item.updateMany({
+        where: {
+          id: {
+            in: [match.useritem1.id, match.useritem2.id],
+          },
+        },
+        data: {
+          status: "SWAPPED",
+        },
+      });
+
       return { success: true, match };
     }),
 
@@ -545,10 +556,10 @@ export const itemRouter = createTRPCRouter({
         take: limit + 1, // Take one more to determine if there are more items
         ...(cursor
           ? {
-              cursor: {
-                id: cursor,
-              },
-            }
+            cursor: {
+              id: cursor,
+            },
+          }
           : {}),
         where: {
           userId: {

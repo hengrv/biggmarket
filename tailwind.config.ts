@@ -16,7 +16,7 @@ const config: Config = {
     },
     extend: {
       screens: {
-        xs: "430px",
+        xs: "440px",
         "2xl": "1400px",
       },
       fontFamily: {
