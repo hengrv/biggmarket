@@ -16,7 +16,7 @@ import SwapItemScreen from "./swap-screen";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function SwapPage() {
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
@@ -63,8 +63,7 @@ export default function SwapPage() {
   };
 
   if (activeSubScreen === "past-orders") {
-    router.push(`/swaphistory/${userId}`);
-    return null;
+    redirect(`/swaphistory/${userId}`);
   }
 
   if (activeSubScreen === "sell") {
@@ -75,11 +74,11 @@ export default function SwapPage() {
     <AppShell activeScreen="swap" title="Your Swap Space">
       <div className="relative bg-gradient-to-b from-[#1a1a1a] to-[#1a1a1a] p-4">
         {/* Add a green accent at the top */}
-        <div className="absolute left-0 right-0 top-0 h-1 bg-[#c1ff72]"></div>
+        <div className="absolute left-0 right-0 top-0 h-1 bg-bm-green"></div>
 
         <div className="mb-4 flex justify-end">
           <button
-            className="flex items-center rounded-lg bg-[#c1ff72] px-3 py-1 text-xs font-bold text-black shadow-lg transition-colors hover:bg-[#b4f55e]"
+            className="flex items-center rounded-lg bg-bm-green px-3 py-1 text-xs font-bold text-black shadow-lg transition-colors hover:bg-[#b4f55e]"
             onClick={() => setActiveSubScreen("sell")}
           >
             SWAP
@@ -113,9 +112,7 @@ export default function SwapPage() {
                   key={match.id}
                   className="w-32 flex-shrink-0 overflow-hidden rounded-lg bg-background shadow-md"
                 >
-                  <button
-                    onClick={() => router.push(`/swap-details/${match.id}`)}
-                  >
+                  <button onClick={() => redirect(`/swap-details/${match.id}`)}>
                     <Image
                       src={
                         match.useritem1.images[0] ??
