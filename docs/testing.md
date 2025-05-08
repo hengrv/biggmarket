@@ -4,16 +4,17 @@
 
 | Test Case | Data Input | Expected Result | Actual Result | Evidence | Pass |
 |-----------|------------|----------------|---------------|----------|------|
-| User Registration | `{Email: test@example.com, Password: Test123!}` | User can create account with email and password | User successfully created account | Screenshot of successful registration | Yes |
-| User Login | Email: test@example.com, Password: Test123! | User can log in with credentials | User successfully logged in | Screenshot of successful login | Yes |
-| Profile Update | Name: "Test User", Bio: "Test bio", Image: test.jpg | User can update their profile information | Profile information updated successfully | Screenshot of updated profile | Yes |
-| Item Creation | Title: "Test Item", Image: item.jpg, Category: "Electronics" | User can create a new item listing | Item successfully created | Screenshot of created item | Yes |
-| Item Update | Title: "Updated Item", Description: "New description" | User can modify their item details | Item details updated successfully | Screenshot of updated item | Yes |
-| Item Deletion | Item ID: "item123" | User can delete their items | Item successfully deleted | Screenshot of item removal | Yes |
-| Item Swiping | Item ID: "item456", Direction: "RIGHT" | User can swipe left/right on items | Swipe recorded successfully | Screenshot of swipe action | Yes |
-| Match Creation | User A swipes right on User B's item, User B swipes right on User A's item | Match created when both users swipe right | Match created successfully | Screenshot of match notification | Yes |
-| Location Setting | Postcode: "NE1 4ST", Latitude: 54.9783, Longitude: -1.6178 | User can set their location | Location successfully set | Screenshot of location settings | Yes |
-| Distance-based Items | User Location: Newcastle, Radius: 10km | Items shown based on user's location | Items filtered by distance correctly | Screenshot of nearby items | Yes |
+| User Registration | `<Google Account Authentication>` | User can create account with email and password | User successfully created account | ![Signup screen](./screenshots/Log%20in%20Screen.png) | Yes |
+| User Login | `<Google Account Authentication>` | User can log in with credentials | User successfully logged in | ![Login success](./screenshots/Log%20in%20Screen.png) | Yes |
+| User Logout | `<Google Account Authentication>` | User can log out with credentials | User successfully logged out | ![Logout Success](./screenshots/Signout%20Screen.png) | Yes |
+| Profile Update | `{ name: "Test User", bio: "Test bio", image: <base64 encoded image data>, location: { postcode: "NE1 4ST", latitude: 54.9783, longitude: -1.6178 } }` | User can update their profile information | Profile information updated successfully | ![Profile Edit](./screenshots/Profile%20Edit%20Page.png) | Yes |
+| Item Creation | `{ title: "Test Item", image: <base64 encoded image data>, description: "Test description", category: "Electronics" }` | User can create a new item listing | Item successfully created | ![Item Created](./screenshots/Item%20Details%20Screen.png) | Yes |
+| Item Update | `{ id: "item123", data: { title: "Updated Item", description: "New description" } }` | User can modify their item details | Item details updated successfully | ![Edit item](./screenshots/Single%20Item%20Post%20Screen.png) | Yes |
+| Item Deletion | `{ id: "item123" }` | User can delete their items | Item successfully deleted | Screenshot of item removal | Yes |
+| Item Swiping | `{ itemId: "item456", direction: "RIGHT" }` | User can swipe left/right on items | Swipe recorded successfully | Screenshot of swipe action | Yes |
+| Match Creation | `{ itemId: "item789", direction: "RIGHT" }` (when both users swipe right) | Match created when both users swipe right | Match created successfully | ![Match creation](./screenshots/Swap%20History%20Screen.png) | Yes |
+| Location Setting | `{ postcode: "NE1 4ST", latitude: 54.9783, longitude: -1.6178 }` | User can set their location | Location successfully set | ![Location Settings](./screenshots/Profile%20Edit%20Page.png) | Yes |
+| Distance-based Items | `{ latitude: 54.9783, longitude: -1.6178 }` | Items shown based on user's location | Items filtered by distance correctly | ![Filtered by distance](./screenshots/Swap%20Screen.png) | Yes |
 
 ## tRPC API Endpoints
 
