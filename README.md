@@ -111,12 +111,13 @@ BiggMarket/
 
 ## Testing
 
-[TESTING_DOCUMENTATION_PLACEHOLDER]
+For comprehensive testing documentation, please review our [Testing Report](docs/testing.md).
 
-- Testing methodology
-- Test reports
-- Manual testing results
-- Automated test results
+Our testing strategy encompasses multiple levels:
+
+- **Integration Testing**: API route testing
+- **Manual Testing**: User acceptance testing and exploratory testing
+
 
 ## Team Standards
 
