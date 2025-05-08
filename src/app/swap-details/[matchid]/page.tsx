@@ -24,9 +24,6 @@ export default function SwapDetails({
   const acceptMatchMutation = api.item.acceptMatch.useMutation({
     onSuccess: () => {
       setShowSuccessModal(true);
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
     },
   });
 
@@ -44,7 +41,7 @@ export default function SwapDetails({
         onBack={() => router.back()}
       >
         <div className="flex h-full items-center justify-center p-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#c1ff72] border-t-transparent"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-bm-green border-t-transparent"></div>
         </div>
       </AppShell>
     );
@@ -56,6 +53,13 @@ export default function SwapDetails({
     router.push("/swap");
     return null;
   }
+
+  // Determine the other user's ID and name
+  const isUser1 = match.user1Id === userId;
+  const otherUserId = isUser1 ? match.user2Id : match.user1Id;
+  const otherUserName = isUser1
+    ? match.useritem2.user.name
+    : match.useritem1.user.name;
 
   return (
     <AppShell
@@ -123,7 +127,15 @@ export default function SwapDetails({
       </div>
       <MatchSuccessModal
         isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={() => {
+          setShowSuccessModal(false);
+          router.push("/");
+        }}
+        matchData={{
+          id: matchid,
+          otherUserId,
+          otherUserName: otherUserName || "User",
+        }}
       />
     </AppShell>
   );

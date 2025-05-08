@@ -41,6 +41,30 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
   const [message, setMessage] = useState("");
   const [sentMessage, setSentMessage] = useState(false);
 
+  // First, let's add a state for tracking delete confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Add the delete item mutation
+  const deleteItemMutation = api.item.deleteItem.useMutation({
+    onSuccess: () => {
+      router.push("/profile"); // Redirect to profile after deletion
+    },
+    onError: (error) => {
+      console.error("Failed to delete item:", error);
+      alert("Failed to delete item. Please try again.");
+    },
+  });
+
+  // Check if the current user is the owner of the item
+  const isOwner = item?.userId === currentUserId;
+
+  // Add this function to handle item deletion
+  const handleDeleteItem = () => {
+    if (!item) return;
+
+    deleteItemMutation.mutate({ id: item.id });
+  };
+
   // Set up the send message mutation
   const sendMessageMutation = api.message.sendMessage.useMutation({
     onSuccess: () => {
@@ -159,7 +183,7 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
                   />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#f3f3f3]">
+                  <div className="font-semibold text-bm-white">
                     {item.user.name}
                   </div>
                   <div className="flex items-center">
@@ -169,7 +193,7 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
                         <span
                           key={i}
                           className={`text-xs ${i < Math.floor(userRating?.averageRating ?? 0)
-                              ? "text-[#c1ff72]"
+                              ? "text-bm-green"
                               : "text-[#3a3a3a]"
                             }`}
                         >
@@ -205,42 +229,85 @@ export default function ItemDetailPage({ itemId }: { itemId: string }) {
               </div>
             </div>
 
-            {showMessageInput ? (
+            {isOwner ? (
               <div className="mb-4">
-                <div className="flex items-center rounded-lg bg-background p-2">
-                  <input
-                    type="text"
-                    placeholder={`Message to ${item.user.name}...`}
-                    className="flex-1 border-none bg-transparent text-sm text-[#f3f3f3] outline-none"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    autoFocus
-                  />
-                  <button
-                    className={`rounded-full p-2 ${message.trim() ? "bg-[#c1ff72]" : "bg-[#3a3a3a]"}`}
-                    onClick={handleSendMessage}
-                    disabled={!message.trim() || sendMessageMutation.isPending}
-                  >
-                    <Send
-                      className={`h-4 w-4 ${message.trim() ? "text-black" : "text-[#a9a9a9]"}`}
-                    />
-                  </button>
-                </div>
-                {sentMessage && (
-                  <div className="mt-2 text-center text-xs text-[#c1ff72]">
-                    Message sent to {item.user.name}!
+                {showDeleteConfirm ? (
+                  <div className="rounded-lg bg-background p-4">
+                    <p className="mb-4 text-center text-sm text-foreground">
+                      Are you sure you want to delete this item? This action
+                      cannot be undone.
+                    </p>
+                    <div className="flex justify-between gap-2">
+                      <button
+                        className="flex-1 rounded-lg bg-secondary py-3 font-semibold text-foreground"
+                        onClick={() => setShowDeleteConfirm(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="flex-1 rounded-lg bg-error py-3 font-semibold text-bm-black"
+                        onClick={handleDeleteItem}
+                        disabled={deleteItemMutation.isPending}
+                      >
+                        {deleteItemMutation.isPending
+                          ? "Deleting..."
+                          : "Delete Item"}
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  <button
+                    className="flex w-full items-center justify-center rounded-lg bg-error py-3 font-semibold text-bm-black"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    Delete Item
+                  </button>
                 )}
               </div>
             ) : (
-              <button
-                className="flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black"
-                onClick={() => setShowMessageInput(true)}
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Message {item.user.name}
-              </button>
+              <>
+                {showMessageInput ? (
+                  <div className="mb-4">
+                    <div className="flex items-center rounded-lg bg-background p-2">
+                      <input
+                        type="text"
+                        placeholder={`Message to ${item.user.name}...`}
+                        className="flex-1 border-none bg-transparent text-sm text-bm-white outline-none"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && handleSendMessage()
+                        }
+                        autoFocus
+                      />
+                      <button
+                        className={`rounded-full p-2 ${message.trim() ? "bg-[#c1ff72]" : "bg-[#3a3a3a]"}`}
+                        onClick={handleSendMessage}
+                        disabled={
+                          !message.trim() || sendMessageMutation.isPending
+                        }
+                      >
+                        <Send
+                          className={`h-4 w-4 ${message.trim() ? "text-black" : "text-[#a9a9a9]"}`}
+                        />
+                      </button>
+                    </div>
+                    {sentMessage && (
+                      <div className="mt-2 text-center text-xs text-[#c1ff72]">
+                        Message sent to {item.user.name}!
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    className="flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black"
+                    onClick={() => setShowMessageInput(true)}
+                  >
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    Message {item.user.name}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
