@@ -17,7 +17,7 @@
 | F5.1 | Users can message inside the app to discuss the trade. | R | R | R | R | R | R |R |
 | F6 | Users can report inappropriate listings or user behaviour.| R | R | R | R | R | R |R |
 | F7 | Users can rate and review other users after a successful trade.| R | R | R | R | R | R |R |
-| F8| Administrative accounts can ban/suspend users. HEN TO ADD | R | R | R | R | R | R |R |
+| F8| Administrative accounts can ban/suspend users. | R | R | R | R | R | R |R |
 | NF1.1 | User information should be stored securely.  | R | R | R | R | R | R |R |
 | NF1.2| Information stored should comply with regulations such as GDPR. | R | R | R | R | R | R |R |
 | NF1.3| Application should be secure against common web vulnerabilities such as SQL Injections. | R | R | R | R | R | R |R |

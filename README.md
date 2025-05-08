@@ -1,6 +1,6 @@
 # BiggMarket - Item Swapping Platform
 
-BiggMarket is a modern web application that allows users to swap items with others in their local area. The platform features a Tinder-like interface for item discovery, real-time messaging, and location-based matching.
+BiggMarket is a modern web application that allows users to swap items with others to promote responsible consumption and production. The platform features an engaging "swipe left-right" interface, that displays available items based on location. The application also provides a reviewing system, real-time messaging, and reporting system.
 
 Repository URL: https://github.com/hengrv/biggmarket
 
@@ -204,12 +204,12 @@ For detailed workflow documentation, see our [Version Control Guide](docs/versio
 
 | **Criteria**                                 | **Where to Find It**                                   |
 | -------------------------------------------- | ------------------------------------------------------ |
-| **Team Standards: Cohesion**                 | [COHESION_STANDARDS_PLACEHOLDER]                       |
+| **Team Standards: Cohesion**                 | `docs/code-standards.md`                       |
 | **Team Standards: Documentation**            | `docs/` directory & inline code comments               |
 | **Team Standards: Version Control Workflow** | See local script in `docs/hooks/pre-commits.git`       |
 | **Design & Structure**                       | Project structure above, `src/` directory organization |
 | **GUI: Clever and Interesting Design**       | `docs/screenshots/` directory                          |
-| **Testing Documentation**                    | [TESTING_DOCUMENTATION_PLACEHOLDER]                    |
+| **Testing Documentation**                    | `docs/testing.md`                    |
 | **Functionality and Features**               | Feature list in `docs/features.md`                     |
 
 ## Screenshots
@@ -222,7 +222,7 @@ To see all features implemented in this project, please refer to the [features m
 
 ## License
 
-[LICENSE_INFORMATION_PLACEHOLDER]
+See LICENSE file
 
 ## Team Members
 
