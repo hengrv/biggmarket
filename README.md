@@ -111,7 +111,7 @@ BiggMarket/
 
 ## Testing
 
-[TESTING_DOCUMENTATION_PLACEHOLDER]
+See full testing methodology [here](testing.md)
 
 - Testing methodology
 - Test reports
@@ -122,7 +122,7 @@ BiggMarket/
 
 ### Code Style
 
-[Code Style]() documentation
+[Code Style](code-standards.md) documentation
 
 - [eslint](https://eslint.org/) code styling
 - [prettier](https://prettier.io/) code formatting
