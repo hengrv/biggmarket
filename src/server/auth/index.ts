@@ -3,6 +3,7 @@ import { cache } from "react";
 
 import { authConfig } from "./config";
 
+// @ts-expect-error - Fix later
 const { auth: uncachedAuth, handlers, signIn, signOut } = NextAuth(authConfig);
 
 const auth = cache(uncachedAuth);

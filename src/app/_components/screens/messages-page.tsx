@@ -6,6 +6,7 @@ import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
 import { formatDistanceToNow } from "date-fns";
+import { Message } from "@prisma/client";
 
 export default function MessagesPage() {
   const [activeChat, setActiveChat] = useState<string | null>(null);
@@ -56,7 +57,7 @@ function ChatListView({
           </div>
           <h3 className="mt-4 text-lg font-semibold">No messages yet</h3>
           <p className="mt-2 text-sm text-muted">
-            When you start conversations with other users, they'll appear here.
+            When you start conversations with other users, they&apos;ll appear here.
           </p>
         </div>
       </AppShell>
@@ -103,7 +104,7 @@ function ChatPreview({
 }: {
   chatId: string;
   otherUserId: string;
-  latestMessage: any;
+  latestMessage: Message;
   onSelect: (chatId: string) => void;
 }) {
   const { data: otherUser } = api.user.getProfile.useQuery(
@@ -146,7 +147,7 @@ function ChatPreview({
         </div>
         <div className="truncate text-xs text-muted">
           {isCurrentUserSender ? "You: " : ""}
-          {latestMessage.message1 || ""}
+          {latestMessage.message1 ?? ""}
         </div>
       </div>
     </div>

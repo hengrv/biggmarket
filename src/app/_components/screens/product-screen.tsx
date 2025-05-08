@@ -136,6 +136,7 @@ const ReportModal = memo(({ isOpen, onClose, onSubmit }: ReportModalProps) => {
     </div>
   );
 });
+ReportModal.displayName = "ReportModal";
 
 const ProductScreen = function ProductScreen() {
   const router = useRouter(); // Add router
@@ -203,7 +204,7 @@ const ProductScreen = function ProductScreen() {
     // Clear swiped items when changing categories
     setSwipedItemIds(new Set());
     // Refetch data with the new category
-    refetch();
+    void refetch();
   }, [selectedCategory, refetch]);
 
   // Update the filteredProducts to only filter out swiped items (server handles category filtering)
@@ -224,7 +225,7 @@ const ProductScreen = function ProductScreen() {
       !isFetchingNextPage
     ) {
       setIsLoadingMore(true);
-      fetchNextPage().then(() => {
+      void fetchNextPage().then(() => {
         setIsLoadingMore(false);
       });
     }
@@ -438,7 +439,7 @@ const ProductScreen = function ProductScreen() {
   return (
     <AppShell
       activeScreen="home"
-      title={`Hiya ${user?.name ? user?.name : ""}`}
+      title={`Hiya ${user?.name ?? ""}`}
     >
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">

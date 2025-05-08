@@ -49,13 +49,11 @@ export const messageRouter = createTRPCRouter({
         },
       });
 
-      if (!chat) {
-        chat = await ctx.db.chat.create({
-          data: {
-            createdAt: new Date(),
-          },
-        });
-      }
+      chat ??= await ctx.db.chat.create({
+        data: {
+          createdAt: new Date(),
+        },
+      });
 
       const newMessage = await ctx.db.message.create({
         data: {

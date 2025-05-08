@@ -155,13 +155,14 @@ export const userRouter = createTRPCRouter({
     deleteUser: protectedProcedure
         .input(z.object({ userId: z.string().optional() }))
         .mutation(async ({ ctx, input }) => {
-            const userId = input.userId ? input.userId : ctx.session.user.id;
+            const userId = input.userId ?? ctx.session.user.id;
 
             const deletedUser = await ctx.db.user.delete({
                 where: {
                     id: userId,
                 },
             });
+            return deletedUser;
         }),
 
     // * Add review
@@ -522,7 +523,7 @@ export const userRouter = createTRPCRouter({
                 });
 
                 return !!follow;
-            } catch (error) {
+            } catch {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to check follow status",
@@ -546,7 +547,7 @@ export const userRouter = createTRPCRouter({
                 });
 
                 return count;
-            } catch (error) {
+            } catch {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to get follower count",
@@ -570,7 +571,7 @@ export const userRouter = createTRPCRouter({
                 });
 
                 return count;
-            } catch (error) {
+            } catch {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to get following count",

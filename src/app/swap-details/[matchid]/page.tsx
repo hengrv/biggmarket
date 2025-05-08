@@ -50,7 +50,7 @@ export default function SwapDetails({
     );
   }
 
-  const match = matches?.filter((match) => match.id === matchid)[0];
+  const match = matches?.find((match) => match.id === matchid);
 
   if (!match) {
     router.push("/swap");
