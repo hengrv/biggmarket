@@ -1,0 +1,85 @@
+#!/bin/bash
+
+# Get the commit message file path
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Define commit message types
+VALID_TYPES="feat|fix|docs|style|refactor|perf|test|chore|build|ci"
+
+# Check the first line (subject)
+SUBJECT=$(echo "$COMMIT_MSG" | head -n 1)
+
+# Rule 1: Subject line cannot be empty
+if [ -z "$SUBJECT" ]; then
+  echo "Error: Commit subject cannot be empty."
+  exit 1
+fi
+
+# Rule 2: Subject line length (allowing up to 72 for flexibility, ideal is < 50)
+if [ ${#SUBJECT} -gt 72 ]; then
+  echo "Error: Commit subject is too long (${#SUBJECT} characters). Max is 72 characters."
+  exit 1
+fi
+
+# Rule 3: Subject line should not end with a period
+if [[ "$SUBJECT" =~ \.$ ]]; then
+  echo "Error: Commit subject should not end with a period."
+  exit 1
+fi
+
+# Rule 4 & 5: Subject line format: type[(scope)]: subject
+if ! [[ "$SUBJECT" =~ ^($VALID_TYPES)(\(.+\))?: ]]; then
+  echo "Error: Commit subject does not follow the format 'type[(scope)]: subject'."
+  echo "Valid types: $VALID_TYPES"
+  exit 1
+fi
+
+# Extract type, scope, and subject part for further checks
+MSG_TYPE=$(echo "$SUBJECT" | sed -E "s/^($VALID_TYPES)(\(.+\))?:.*$/\1/")
+MSG_SCOPE=$(echo "$SUBJECT" | sed -E "s/^($VALID_TYPES)(\(.+\))?:.*$/\2/" | sed 's/[\(\)]//g')
+MSG_SUBJECT_PART=$(echo "$SUBJECT" | sed -E "s/^($VALID_TYPES)(\(.+\))?: *//")
+
+# Rule 6: Ensure a space after the colon
+if ! [[ "$SUBJECT" =~ ^($VALID_TYPES)(\(.+\))?:[[:space:]] ]]; then
+   echo "Error: There must be a space after the colon in the subject line."
+   exit 1
+fi
+
+# Rule 7: Subject part cannot contain common code comment indicators
+if [[ "$MSG_SUBJECT_PART" =~ \/\/|\/\*|\*\/ ]]; then
+  echo "Error: Commit subject part cannot contain '//', '/*', or '*/'."
+  exit 1
+fi
+
+# Rule 8: Subject part cannot be just "WIP"
+if [ "$MSG_SUBJECT_PART" == "WIP" ]; then
+  echo "Error: Commit subject part cannot be just 'WIP'."
+  exit 1
+fi
+
+
+# Check the body
+BODY=$(echo "$COMMIT_MSG" | tail -n +2)
+
+# Rule 9: Separate subject from body with a blank line
+if [ -n "$BODY" ]; then
+  BLANK_LINE=$(echo "$COMMIT_MSG" | sed -n '2p')
+  if [ -n "$BLANK_LINE" ]; then
+    echo "Error: There must be a blank line between the subject and the body."
+    exit 1
+  fi
+
+  # Rule 10: Limit line length of the body (allowing up to 100 for flexibility, ideal is < 72)
+  echo "$BODY" | while IFS= read -r line
+  do
+    if [ ${#line} -gt 100 ]; then
+      echo "Error: Body line is too long (${#line} characters). Max is 100 characters."
+      echo "Line: '$line'"
+      exit 1
+    fi
+  done
+fi
+
+# If all checks pass
+exit 0
