@@ -312,135 +312,108 @@
 
   [Report Screen Capture](../docs/screenshots/Report%20Screen.png)
 
-### F7 Users can rate and review other users after a successful trade.
+### F7 Users can rate and review other users after a successful trade. HEN TO ADD
 * Users can leave a "1 out-of 5 star" review to users they traded with, by selecting Leave A Review in the Swap page, after a successful trade. 
-* Users can also check the reviews made by  users they previously traded with.
+* Users can also check the reviews made by users they previously traded with.
 
   Please see:
 
-  [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
-
-  [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
-
   [Leave A Review Capture](../docs/screenshots/Swap%20History%20Screen.png)
-  
-  [User Profile Reviews Capture](../docs/screenshots/Swap%20History%20Screen.png)
+
 
 
 ### F8 Administrative accounts can ban/suspend users. HEN TO ADD
-* Admins are able to ban accounts through the Admin Dashboard
+* Admins are able to ban accounts through the Admin Dashboard.
 * Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Admin Dashboard](../docs/screenshots/Admin%20Dashboard.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
+  [Admin Report Screen](../docs/screenshots/Admin%20Report%20Screen.png)
+
+  [Report Details Screen](../docs/screenshots/Admin%20Report%20Details%20Screen.png)
 
   [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
 
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png)
+  [Admin Ban Screen ???](../docs/screenshots/Swap%20History%20Screen.png)
 
+<br> 
 
 ## Non-Functional Requirements(NF):
 
 ### NF1.1 User information should be stored securely. 
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* The application uses Prisma to store data type-safely in a PostgreSQL database.
+* The application also uses parameterized queries to protect against SQL injections. 
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Prisma Database Screen ](../docs/screenshots/Prisma%20Database%20Screen.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
-
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
-
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png)
 
 ### NF1.2 Information stored should comply with regulations such as GDPR. 
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* User information is stored securely in Prisma, which ensures type safety and structured data management.
+* The application only collects necessary user information, such as Full Name, Username, Email, Bio, and Location, which is relevant for its functionality (e.g., matching users, location-based filtering).
+* Users can edit their profile information, including Full Name, Username, Email, Bio, and Location.
+* Users can also delete their profile, which likely removes their personal data from the database, complying with GDPR's "Right to Erasure".
+* In addition, the application uses a Role-Based Access Control(RBAC) system to ensure only administrative personnel can manage sensitive information.
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Prisma Database Capture](../docs/screenshots/Prisma%20Database%20Screen.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
+  [User Information Capture](../docs/screenshots/Profile%20Edit%20Page.png)
 
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [Profile Delete Capture](../docs/screenshots/Settings%20Page%20Deletion%20Confirmation.png)
 
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [RBAC Capture](../docs/screenshots/RBAC%20Screen.png)
+
 
 ### NF1.3 Application should be secure against common web vulnerabilities such as SQL Injections.  
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
-
-  Please see:
-
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
-
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
-
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
-
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
+* The application uses Prisma to automatically generate parameterized queries, which prevent SQL injections by ensuring that user inputs are treated as data and not executable SQL code.
+* The application also uses zod for schema validation to ensure that user input conforms to the expected format.
+* Sensitive operations such as database modifications or administrative actions, are restricted to authorized users through RBAC. This minimizes the risk of unauthorized users injecting malicious queries.
 
 ### NF2.1 App will be usable on both desktop and mobile devices – responsive design. 
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* The application functions and renders correctly in desktop and mobile devices.
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Desktop Sample](../docs/screenshots/Desktop%20Screen.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
+  [iPhone 12 Pro Sample](../docs/screenshots/iPhone12%20Screen.png)
 
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
-
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
-PArtial-
-Attempt to make design work on many devices 
+  [iPad Air Sample](../docs/screenshots/iPad%20Screen.png)
 
 ### NF3.1 User Interface will be accessible to a range of visual impairments.
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* The GUI consists of two main colours, black and light green to allow a distinguishable contrast, even for visually impaired users
+* Simulation: [color-blindness.com](https://www.color-blindness.com/coblis-color-blindness-simulator/)
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Normal View](../docs/screenshots/Desktop%20Screen.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
+  [Anomalous Trichromatic View: Red-Weak/Protanomaly](../docs/screenshots/Anomalous%20Trich.png)
 
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [Dichromatic View: Green-Blind/Deuteranopia](../docs/screenshots/Dichromatic.png)
 
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [Monochromatic View: Monochromacy/Achromatopsia](../docs/screenshots/Monochromacy.png)
 
 ### NF4 Users must be able to accept or reject Matches with other Users.
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* Users have the option to whether accept or reject matches from interested users.
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
+  [Match Pending Capture](../docs/screenshots/Match%20Pending%20Screen.png)
 
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
+  [Match Rejected Capture](../docs/screenshots/Match%20Rejected%20Screen.png)
 
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
-
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [Match Accepted Capture](../docs/screenshots/Match%20Accepted%20Screen.png)
 
 ### NF5 User review should be seen by other users.
-* Admins are able to ban accounts through the Admin Dashboard
-* Depending on the item and report type, the admins will delete user's item, or ban their account from the platform.
+* Reviews in user profiles can be seen by all users. This includes an average of all the received ratings, and review comments.
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Swap%20Screen.png)
-
-  [Admin Report Screen](../docs/screenshots/Swap%20Screen.png)
-
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
-
-  [[Admin Ban Screen]](../docs/screenshots/Swap%20History%20Screen.png) 
+  [Profile Review](../docs/screenshots/Profile%20Review%20Screen.png)
 
