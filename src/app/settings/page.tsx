@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function SettingsPage() {
   const deleteMutation = api.user.deleteUser.useMutation();
   const { data: userId } = api.user.getCurrentlyAuthenticatedUser.useQuery();
-  const [showModel, setShowModal] = useState<boolean>(true);
+  const [showModel, setShowModal] = useState<boolean>(false);
   const router = useRouter();
 
   const openDeleteModal = () => {
@@ -21,16 +21,28 @@ export default function SettingsPage() {
 
   return (
     <>
-      <AppShell title={"Settings Page"}>
+      <AppShell
+        title={"Settings Page"}
+        showBackButton
+        onBack={() => router.back()}
+      >
         <div className="min-h-full p-4 text-bm-white">
           <div className="mb-6 rounded-lg bg-secondary p-4 shadow-lg">
             <div className="">
-              <button
-                className={"rounded-lg bg-zinc-800 p-2"}
-                onClick={openDeleteModal}
-              >
-                Delete my Account
-              </button>
+              <div className="flex flex-col">
+                <button
+                  className={"my-3 rounded-lg bg-zinc-800 p-2"}
+                  onClick={openDeleteModal}
+                >
+                  Delete my Account
+                </button>
+                <button
+                  className={"my-3 rounded-lg bg-zinc-800 p-2"}
+                  onClick={() => router.push("/api/auth/signout")}
+                >
+                  Sign Out
+                </button>
+              </div>
               {showModel && (
                 <div className="justify-left items-center rounded-lg bg-zinc-800 p-3 transition-opacity duration-300">
                   <h1 className="pb-3 text-error">

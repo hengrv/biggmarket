@@ -456,6 +456,48 @@ export const itemRouter = createTRPCRouter({
       return updatedMatch;
     }),
 
+  acceptMatch: protectedProcedure
+    .input(
+      z.object({
+        matchId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const match = await ctx.db.match.update({
+        where: {
+          id: input.matchId,
+        },
+        data: {
+          status: "ACCEPTED",
+        },
+        include: {
+          useritem1: true,
+          useritem2: true,
+        },
+      });
+
+      return { success: true, match };
+    }),
+
+  rejectMatch: protectedProcedure
+    .input(
+      z.object({
+        matchId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const match = await ctx.db.match.update({
+        where: {
+          id: input.matchId,
+        },
+        data: {
+          status: "REJECTED",
+        },
+      });
+
+      return match;
+    }),
+
   getSwipeStats: protectedProcedure
     .input(
       z

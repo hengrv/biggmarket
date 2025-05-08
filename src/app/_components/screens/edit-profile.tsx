@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import AppShell from "@/components/app-shell";
 import { api } from "~/trpc/react";
 import { ProfileImageUploader } from "../profile/image-uploader";
+import { useRouter } from "next/navigation";
 
 // Client-Side validators
 const inputParser = z.object({
@@ -27,6 +28,7 @@ function EditProfileScreen({
 }: {
   setActiveSubScreen: (screen: string | null) => void;
 }) {
+  const router = useRouter();
   const utils = api.useUtils();
 
   // Fetch user profile data
@@ -237,7 +239,7 @@ function EditProfileScreen({
           <div className="pt-4">
             <button
               type="submit"
-              className="flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black"
+              className="flex w-full items-center justify-center rounded-lg bg-bm-green py-3 font-semibold text-bm-black"
               disabled={updateProfileMutation.isPending}
             >
               {updateProfileMutation.isPending ? (
@@ -248,6 +250,14 @@ function EditProfileScreen({
               ) : (
                 "Save Profile"
               )}
+            </button>
+          </div>
+          <div className="pt-4">
+            <button
+              onClick={() => router.push("/settings")}
+              className="flex w-full items-center justify-center rounded-lg bg-bm-white/60 py-3 font-semibold text-black"
+            >
+              User Settings
             </button>
           </div>
         </form>

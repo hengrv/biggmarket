@@ -59,9 +59,7 @@ export default function SwapHistoryPage({
                 <div
                   key={match.id}
                   className="flex cursor-pointer items-center rounded-lg bg-secondary p-4 shadow-lg transition-colors hover:bg-[#2a2a2a]"
-                  onClick={() => {
-                    alert(`Viewing details for match ${match.id}`);
-                  }}
+                  onClick={() => router.push(`/swap-details/${match.id}`)}
                 >
                   <div className="mr-4 h-16 w-16 overflow-hidden rounded-lg">
                     <Image
@@ -83,19 +81,18 @@ export default function SwapHistoryPage({
                         "Item"}
                     </div>
                     <div className="text-xs text-muted">
-                      Swapped with {match.useritem2.user.name ?? "User"}
+                      Matched with {match.useritem1.user.name ?? "User"}
                     </div>
                     <div className="text-xs text-muted">
                       {new Date(match.createdAt).toLocaleDateString()}
                     </div>
                     <div
-                      className={`mt-1 text-xs ${
-                        match.status === "ACCEPTED"
+                      className={`mt-1 text-xs ${match.status === "ACCEPTED"
                           ? "text-bm-green"
                           : match.status === "REJECTED"
                             ? "text-red-400"
                             : "text-yellow-400"
-                      } font-medium`}
+                        } font-medium`}
                     >
                       {match.status}
                     </div>
