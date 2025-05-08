@@ -2,9 +2,33 @@
 
 # Contribution Matrix
 
-| **Task** | William Forkes (230333572) | Henry Groves (230054149)| Robin Husbands (230458358) | Teodora Ilic (230497195) | Dario Labrador Alonso (23041691) | Guoxin Zhu (23067186) |
-|----------|----------------------------|-------------------------|----------------------------|--------------------------|----------------------------------|-----------------------|
-|          |                            |                         |                            |                          |                                  |                       |
+| **Task** | Task Details | William Forkes (230333572) | Henry Groves (230054149) | Robin Husbands (230458358) | Teodora Ilic (230497195) | Dario Labrador Alonso (23041691) | Guoxin Zhu (23067186) |Lama Mohammed A AlMulla (230361933)|
+|---|---|---|---|---|---|---|---|---|
+| F1.1 | User can create an account, with their details stored in the database. | R | R | R | R | R | R |R |
+| F1.2| Users can edit their profile and settings. | R | R | R | R | R | R |R |
+| F2.1 | Users can create Items with pictures, description, and category.  | R | R | R | R | R | R |R |
+| F2.2 | Users must be able to view their Items and edit/delete if wanted.  | R | R | R | R | R | R |R |
+| F3.1 | User should be able to see other user’s items and can ‘swipe’ through each other's items. | R | R | R | R | R | R |R |
+| F3.2 | Swipes for Items should be stored in database. | R | R | R | R | R | R |R |
+| F3.3| Users can browse Items based on filters such as location and category. | R | R | R | R | R | R |R |
+| F3.4 | Users can see what items they have swiped and potentially remove their interest.  | R | R | R | R | R | R |R |
+| F4.1 | The app will match users who have shown interest in each other’s items. | R | R | R | R | R | R |R |
+| F4.3 | Users can accept or reject matches. | R | R | R | R | R | R |R |
+| F5.1 | Users can message inside the app to discuss the trade. | R | R | R | R | R | R |R |
+| F6 | Users can report inappropriate listings or user behaviour.| R | R | R | R | R | R |R |
+| F7 | Users can rate and review other users after a successful trade.| R | R | R | R | R | R |R |
+| F8| Administrative accounts can ban/suspend users. HEN TO ADD | R | R | R | R | R | R |R |
+| NF1.1 | User information should be stored securely.  | R | R | R | R | R | R |R |
+| NF1.2| Information stored should comply with regulations such as GDPR. | R | R | R | R | R | R |R |
+| NF1.3| Application should be secure against common web vulnerabilities such as SQL Injections. | R | R | R | R | R | R |R |
+| NF2.1| App will be usable on both desktop and mobile devices – responsive design.| R | R | R | R | R | R |R |
+| NF3.1| User Interface will be accessible to a range of visual impairments.| R | R | R | R | R | R |R |
+| NF4| Users must be able to accept or reject Matches with other Users. | R | R | R | R | R | R |R |
+| NF5| User review should be seen by other users. | R | R | R | R | R | R |R |
+
+
+
+
 
 
 ## Core Features
