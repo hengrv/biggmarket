@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type OurFileRouter, UploadButton } from "~/utils/uploadthing";
+import { UploadButton } from "~/utils/uploadthing";
 import { api } from "~/trpc/react";
 import { Loader2, Upload } from "lucide-react";
 

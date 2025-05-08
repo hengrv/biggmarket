@@ -3,11 +3,9 @@
 import type React from "react";
 
 import AppShell from "@components/app-shell";
-import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { useFollow } from "~/hooks/useFollow";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
 
 import FollowingCard from "@components/profile/following-card";
 
@@ -23,7 +21,7 @@ function FollowingScreen({
   );
   const { data: currentUserId } =
     api.user.getCurrentlyAuthenticatedUser.useQuery();
-  const { useFollowing, useFollowActions } = useFollow();
+  const { useFollowing } = useFollow();
 
   const isOwnProfile = !userId || userId === currentUserId;
 

@@ -1,6 +1,5 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from "geist/font/sans";
 import { Rubik_Distressed } from "next/font/google";
 import type { Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";

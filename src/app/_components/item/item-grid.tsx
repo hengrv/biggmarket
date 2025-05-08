@@ -16,7 +16,6 @@ interface ItemGridProps {
 
 export default function ItemGrid({
   items,
-  isLoading,
   emptyMessage,
   emptyActionButton,
 }: ItemGridProps) {

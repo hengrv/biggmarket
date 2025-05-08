@@ -323,7 +323,7 @@ export const itemRouter = createTRPCRouter({
       }
 
       // Create swipe record
-      const swipe = await ctx.db.swipe.create({
+      await ctx.db.swipe.create({
         data: {
           userId,
           itemId: input.itemId,

@@ -1,6 +1,6 @@
 "use client";
 
-import { set, z } from "zod";
+import { z } from "zod";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import AppShell from "@/components/app-shell";
@@ -218,6 +218,8 @@ function EditProfileScreen({
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell us about yourself"
             ></textarea>
+
+            {bioError && <h3 className="text-sm text-error">{bioError}</h3>}
           </div>
 
           <div>

@@ -2,7 +2,6 @@
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import ProfilePageComponent from "@components/profile/profile-page-component";
-import { use } from "react";
 
 export default async function Page({
   params,

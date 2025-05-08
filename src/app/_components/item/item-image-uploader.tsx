@@ -1,16 +1,14 @@
 "use client";
-import Image from "next/image";
-import { Camera, Loader2 } from "lucide-react";
-import { useState, useCallback, useEffect } from "react";
+import { Camera } from "lucide-react";
+import { useState, useCallback } from "react";
 import { useUploadThing } from "~/utils/uploadthing";
-import { on } from "events";
 
 // Custom hook for managing profile image uploads
 function useItemImageUpload({
-    onImagesUploaded,
-  }: { 
-    onImagesUploaded: (urls: string[]) => void;
-  }) {
+  onImagesUploaded,
+}: {
+  onImagesUploaded: (urls: string[]) => void;
+}) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -48,17 +46,18 @@ function useItemImageUpload({
 }
 
 export function ItemImageUploader({
+  onImagesUploaded,
+}: {
+  onImagesUploaded: (urls: string[]) => void;
+}) {
+  const { isUploading, uploadError, handleUpload } = useItemImageUpload({
     onImagesUploaded,
-  }: { 
-    onImagesUploaded: (urls: string[]) => void;
-  }) {
-
-  const { isUploading, uploadError, handleUpload } = useItemImageUpload({onImagesUploaded});
+  });
 
   const handleFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files ?? []);
-      
+
       if (files.length > 0) {
         await handleUpload(files);
       }
@@ -78,7 +77,10 @@ export function ItemImageUploader({
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-2" onClick={isUploading ? undefined : handleClick}>
+      <div
+        className="grid grid-cols-3 gap-2"
+        onClick={isUploading ? undefined : handleClick}
+      >
         <button
           type="button"
           className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#3a3a3a] bg-secondary"
@@ -86,8 +88,7 @@ export function ItemImageUploader({
           <Camera className="mb-1 h-6 w-6 text-primary" />
           <span className="text-xs text-muted">Add Photo</span>
         </button>
-
-       </div>
+      </div>
 
       {/* Hidden file input */}
       <input

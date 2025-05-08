@@ -36,7 +36,7 @@ export default function AdminDashboard() {
     if (!userLoading && !isAdmin) {
       router.push("/");
     }
-  }, [user, userLoading, router]);
+  }, [user, userLoading, router, isAdmin]);
 
   if (userLoading) {
     return (
@@ -177,4 +177,4 @@ export default function AdminDashboard() {
       </div>
     </AppShell>
   );
-} 
+}

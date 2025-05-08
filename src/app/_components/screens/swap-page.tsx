@@ -1,17 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Clock,
-  Heart,
-  ChevronRight,
-  Plus,
-  Loader2,
-  Check,
-  Send,
-  AlertTriangle,
-  X,
-} from "lucide-react";
+import { Clock, Heart, ChevronRight, Plus, Loader2 } from "lucide-react";
 import SwapItemScreen from "./swap-screen";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
@@ -20,7 +10,6 @@ import { redirect, useRouter } from "next/navigation";
 
 export default function SwapPage() {
   const [activeSubScreen, setActiveSubScreen] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const router = useRouter();
 
   const { data: userId } = api.user.getCurrentlyAuthenticatedUser.useQuery();

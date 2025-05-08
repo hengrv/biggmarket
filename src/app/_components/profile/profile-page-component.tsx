@@ -62,12 +62,6 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
       { enabled: !!userProfile?.id, refetchOnWindowFocus: false },
     );
 
-  const { data: swipeStats, isLoading: loadingSwipeStats } =
-    api.item.getSwipeStats.useQuery(
-      { userId: userProfile?.id },
-      { enabled: !!userProfile?.id, refetchOnWindowFocus: false },
-    );
-
   const { data: city, isLoading: loadingCity } =
     api.user.getCityFromPostcode.useQuery(
       userProfile?.location?.postcode ?? "NE1 1AA",
@@ -109,9 +103,10 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
       },
     );
 
-  const { data: matches } = api.item.getMatches.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: matches, isLoading: loadingMatches } =
+    api.item.getMatches.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+    });
 
   const totalSwaps = matches?.filter(
     (swipe) => swipe.status === "ACCEPTED",
@@ -218,7 +213,7 @@ export default function ProfilePageComponent({ userId }: { userId?: string }) {
                 <Package className="h-4 w-4 text-[#c1ff72]" />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {loadingSwipeStats ? "..." : totalSwaps} Swaps
+                {loadingMatches ? "..." : totalSwaps} Swaps
               </span>
             </button>
 

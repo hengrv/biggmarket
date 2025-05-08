@@ -2,8 +2,8 @@
 
 import type React from "react";
 import { api } from "~/trpc/react";
-import { useState, useEffect } from "react";
-import { X, Camera, Loader2, Upload, Check, Send } from "lucide-react";
+import { useState } from "react";
+import { X, Loader2, Upload } from "lucide-react";
 import Image from "next/image";
 import AppShell from "@/components/app-shell";
 import { ItemImageUploader } from "@/components/item/item-image-uploader";

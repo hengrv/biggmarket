@@ -1,7 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { DefaultSession, NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { UserRole } from "@prisma/client";
+import type { UserRole } from "@prisma/client";
 import { env } from "~/env";
 
 import { db } from "~/server/db";
@@ -21,7 +21,6 @@ declare module "next-auth" {
 
   interface User {
     username?: string;
-    role: UserRole;
   }
 }
 
@@ -49,7 +48,6 @@ export const authConfig = {
         ...session.user,
         id: user.id,
         username: user.username,
-        role: user.role,
       },
     }),
   },

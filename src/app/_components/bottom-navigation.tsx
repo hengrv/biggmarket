@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Search, Heart, MessageSquare, User } from "lucide-react";
+import { Home, Heart, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 

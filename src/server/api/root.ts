@@ -2,7 +2,6 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { userRouter } from "~/server/api/routers/user";
 import { itemRouter } from "~/server/api/routers/item";
 import { messageRouter } from "~/server/api/routers/message";
-import { algoRouter } from "./routers/algorithm";
 import { adminRouter } from "./routers/admin";
 
 /**
@@ -13,7 +12,6 @@ import { adminRouter } from "./routers/admin";
 export const appRouter = createTRPCRouter({
   user: userRouter,
   item: itemRouter,
-  algorithm: algoRouter,
   message: messageRouter,
   admin: adminRouter,
 });
