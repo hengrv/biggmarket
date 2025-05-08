@@ -1,6 +1,11 @@
 # BiggMarket Features Documentation
 
+This document contains the project's Functionalities and Features, including Core Features, Advanced Features and Future Enhancements. The document also contains the Project's Functional and Non-Functional Requirements and their fulfilment.
+
+<br>
+
 # Contribution Matrix
+The following table shows the team's contributions in terms of Functional Requirements and Non-Functional Requirements. 
 
 | **Task** | Task Details                                                                                 | William Forkes (230333572) | Henry Groves (230054149) | Robin Husbands (230458358) | Teodora Ilic (230497195) | Dario Labrador Alonso (23041691) | Guoxin Zhu (23067186) | Lama Mohammed A AlMulla (230361933) |
 | ---------- | ---------------------------------------------------------------------------------------------- | ---------------------------- | -------------------------- | ---------------------------- | -------------------------- | ---------------------------------- | ----------------------- | ------------------------------------- |
@@ -26,12 +31,9 @@
 | NF4      | Users must be able to accept or reject Matches with other Users.                             | R                          | C,M,T                    | R                          | M,R                      | R                                | R                     | M,R                                 |
 | NF5      | User review should be seen by other users.                                                   | R                          | C,M,T                    | R                          | M,R                      | R                                | R                     | M,R                                 |
 
+<br>
 
-
-
-
-
-## Core Features
+# Core Features
 
 ### Authentication & User Management
 - **Google OAuth Integration**
@@ -98,7 +100,9 @@
   - Username changes
   - Profile visibility settings
 
-## Advanced Features
+<br>
+
+# Advanced Features
 
 ### Location Services
 - **Postcode Integration**
@@ -159,15 +163,17 @@
   - Git hooks for code validation
   - Automated testing setup
 
-## Future Enhancements
-- Push notifications
-- In-app video calling
-- Item categories expansion
-- Advanced search filters
-- Social media integration
-- Item recommendation system
-- User verification system
-- Premium features 
+<br>
+
+# Future Enhancements
+  - Push notifications
+  - In-app video calling
+  - Item categories expansion
+  - Advanced search filters
+  - Social media integration
+  - Item recommendation system
+  - User verification system
+  - Premium features 
 
 <br>
 
@@ -178,7 +184,7 @@
 
   Please see:
   
-  [Log-in Screen Capture](../docs/screenshots/Log%20in%20Screen.png)
+  - [Log-in Screen Capture](../docs/screenshots/Log%20in%20Screen.png)
 
 ### F1.2 Users can edit their profile and settings.
 * Users can access their profiles and upload or edit their profile picture.
@@ -187,15 +193,15 @@
 
   Please see:
 
-  [Profile Capture](../docs/screenshots/User%20Profile%20Screen.png)
+  - [Profile Capture](../docs/screenshots/User%20Profile%20Screen.png)
 
-  [Profile Edit Capture](../docs/screenshots/Profile%20Edit%20Page.png)
+  - [Profile Edit Capture](../docs/screenshots/Profile%20Edit%20Page.png)
 
-  [Profile Settings Capture](../docs/screenshots/Settings%20Page.png)
+  - [Profile Settings Capture](../docs/screenshots/Settings%20Page.png)
 
-  [Profile Settings Deletion Capture](../docs/screenshots/Settings%20Page%20Deletion%20Confirmation.png)
+  - [Profile Settings Deletion Capture](../docs/screenshots/Settings%20Page%20Deletion%20Confirmation.png)
 
-  [Profile Settings Signout Capture](../docs/screenshots/Signout%20Screen.png)
+  - [Profile Settings Signout Capture](../docs/screenshots/Signout%20Screen.png)
   
   
 ### F2.1 Users can create Items with pictures, description, and category. 
@@ -204,17 +210,17 @@
 
   Please see:
 
-  [Profile Capture](../docs/screenshots/User%20Profile%20Screen.png)
+  - [Profile Capture](../docs/screenshots/User%20Profile%20Screen.png)
 
-  [Empty Item Capture](../docs/screenshots/Empty%20Post%20Screen.png)
+  - [Empty Item Capture](../docs/screenshots/Empty%20Post%20Screen.png)
   
-  [Item Posting Capture](../docs/screenshots/Single%20Item%20Post%20Screen.png)
+  - [Item Posting Capture](../docs/screenshots/Single%20Item%20Post%20Screen.png)
   
-  [Item Posting Multiple Pictures Capture](../docs/screenshots/2%20Image%20Post%20Screen.png)
+  - [Item Posting Multiple Pictures Capture](../docs/screenshots/2%20Image%20Post%20Screen.png)
 
-  [Set of Categories Capture](../docs/screenshots/Post%20Items%20condition.png)
+  - [Set of Categories Capture](../docs/screenshots/Post%20Items%20condition.png)
   
-  [Set of Conditions Capture](../docs/screenshots/Post%20Items%20categories.png)
+  - [Set of Conditions Capture](../docs/screenshots/Post%20Items%20categories.png)
 
 
 ### F2.2 Users must be able to view their Items and edit/delete if wanted. 
@@ -222,9 +228,9 @@
 
   Please see:
 
-  [User Items Capture ](../docs/screenshots/User%20Profile%20Screen.png)
+  - [User Items Capture ](../docs/screenshots/User%20Profile%20Screen.png)
 
-  [Item Details Capture](../docs/screenshots/Item%20Details%20Screen.png)
+  - [Item Details Capture](../docs/screenshots/Item%20Details%20Screen.png)
  
 
 ### F3.1 User should be able to see other user’s items and can ‘swipe’ through each other's items.
@@ -233,9 +239,9 @@
 
   Please see:
 
-  [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
+  - [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
 
-  [Other User Profile Capture](../docs/screenshots/Other%20User%Profile.png)
+  - [Other User Profile Capture](../docs/screenshots/Other%20User%Profile.png)
 
 
 ### F3.2 Swipes for Items should be stored in database.
@@ -243,9 +249,9 @@
 
   Please see:
 
-  [Database Recent Swipes Capture](../docs/screenshots/Admin%20Recent%20Swipes.png)
+  - [Database Recent Swipes Capture](../docs/screenshots/Admin%20Recent%20Swipes.png)
 
-  [Database Swipe Details Capture](../docs/screenshots/Admin%20Swipe%20Details.png)
+  - [Database Swipe Details Capture](../docs/screenshots/Admin%20Swipe%20Details.png)
 
 ### F3.3 Users can browse Items based on filters such as location and category.
 * Items are automatically filtered by location at the Home Page.
@@ -253,7 +259,7 @@
 
   Please see:
 
-  [Browse Category Capture](../docs/screenshots/Sort%20Items%20Function.png)
+  - [Browse Category Capture](../docs/screenshots/Sort%20Items%20Function.png)
 
 ### F3.4 Users can see what items they have swiped and potentially remove their interest. 
 * Users can view liked items in Swap page.
@@ -261,7 +267,7 @@
 
   Please see:
 
-  [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
+  - [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
 
 ### F4.1 The app will match users who have shown interest in each other’s items. 
 * Users can see other users who liked their items in the Pending Swaps section in the Swap page.
@@ -269,9 +275,9 @@
 
   Please see:
 
-  [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
+  - [Swap Screen Capture](../docs/screenshots/Swap%20Screen.png)
   
-  [Swap History Capture](../docs/screenshots/Swap%20History%20Screen.png)
+  - [Swap History Capture](../docs/screenshots/Swap%20History%20Screen.png)
 
 
 ### F4.3 Users can accept or reject matches.
@@ -279,15 +285,15 @@
 
   Please see:
   
-  [Swap History Capture](../docs/screenshots/Swap%20History%20Screen.png)
+  - [Swap History Capture](../docs/screenshots/Swap%20History%20Screen.png)
 
-  [Match Pending Capture](../docs/screenshots/Match%20Pending%20Screen.png)
+  - [Match Pending Capture](../docs/screenshots/Match%20Pending%20Screen.png)
 
-  [Match Rejected Capture](../docs/screenshots/Match%20Rejected%20Screen.png)
+  - [Match Rejected Capture](../docs/screenshots/Match%20Rejected%20Screen.png)
 
-  [Match Accepted Capture](../docs/screenshots/Match%20Accepted%20Screen.png)
+  - [Match Accepted Capture](../docs/screenshots/Match%20Accepted%20Screen.png)
 
-  [Match Accepted Confirmation Capture](../docs/screenshots/Match%20Accepted%20Page.png)
+  - [Match Accepted Confirmation Capture](../docs/screenshots/Match%20Accepted%20Page.png)
 
 ### F5.1 Users can message inside the app to discuss the trade.
 * Users can initiate conversations in the Home page, by clicking View Details on another user's profile. The user will then be routed to a page where they can message the other user.
@@ -296,11 +302,11 @@
 
   Please see:
 
-  [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
+  - [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
 
-  [Initial Message Capture](../docs/screenshots/Meassaging%20over%20an%20item.png)
+  - [Initial Message Capture](../docs/screenshots/Meassaging%20over%20an%20item.png)
 
-  [Messages Screen Capture](../docs/screenshots/Messages%20Screen.png)
+  - [Messages Screen Capture](../docs/screenshots/Messages%20Screen.png)
 
 
 ### F6 Users can report inappropriate listings or user behaviour.
@@ -308,9 +314,9 @@
 
   Please see:
 
-  [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
+  - [Home Screen Capture](../docs/screenshots/Home%20Screen.png)
 
-  [Report Screen Capture](../docs/screenshots/Report%20Screen.png)
+  - [Report Screen Capture](../docs/screenshots/Report%20Screen.png)
 
 ### F7 Users can rate and review other users after a successful trade. HEN TO ADD
 * Users can leave a "1 out-of 5 star" review to users they traded with, by selecting Leave A Review in the Swap page, after a successful trade. 
@@ -318,7 +324,7 @@
 
   Please see:
 
-  [Leave A Review Capture](../docs/screenshots/Swap%20History%20Screen.png)
+  - [Leave A Review Capture ???](../docs/screenshots/Swap%20History%20Screen.png)
 
 
 
@@ -328,15 +334,15 @@
 
   Please see:
 
-  [Admin Dashboard](../docs/screenshots/Admin%20Dashboard.png)
+  - [Admin Dashboard](../docs/screenshots/Admin%20Dashboard.png)
 
-  [Admin Report Screen](../docs/screenshots/Admin%20Report%20Screen.png)
+  - [Admin Report Screen](../docs/screenshots/Admin%20Report%20Screen.png)
 
-  [Report Details Screen](../docs/screenshots/Admin%20Report%20Details%20Screen.png)
+  - [Report Details Screen](../docs/screenshots/Admin%20Report%20Details%20Screen.png)
 
-  [[Admin Item Delete Screen ???]](../docs/screenshots/Swap%20History%20Screen.png) 
+  - [Admin Item Delete Screen ???](../docs/screenshots/Swap%20History%20Screen.png) 
 
-  [Admin Ban Screen ???](../docs/screenshots/Swap%20History%20Screen.png)
+  - [Admin Ban Screen ???](../docs/screenshots/Swap%20History%20Screen.png)
 
 <br> 
 
@@ -348,7 +354,7 @@
 
   Please see:
 
-  [Prisma Database Screen ](../docs/screenshots/Prisma%20Database%20Screen.png)
+  - [Prisma Database Capture](../docs/screenshots/Prisma%20Database%20Screen.jpg)
 
 
 ### NF1.2 Information stored should comply with regulations such as GDPR. 
@@ -360,13 +366,13 @@
 
   Please see:
 
-  [Prisma Database Capture](../docs/screenshots/Prisma%20Database%20Screen.png)
+  - [Prisma Database Capture](../docs/screenshots/Prisma%20Database%20Screen.jpg)
 
-  [User Information Capture](../docs/screenshots/Profile%20Edit%20Page.png)
+  - [User Information Capture](../docs/screenshots/Profile%20Edit%20Page.png)
 
-  [Profile Delete Capture](../docs/screenshots/Settings%20Page%20Deletion%20Confirmation.png)
+  - [Profile Delete Capture](../docs/screenshots/Settings%20Page%20Deletion%20Confirmation.png)
 
-  [RBAC Capture](../docs/screenshots/RBAC%20Screen.png)
+  - [RBAC Capture](../docs/screenshots/RBAC%20Screen.jpg)
 
 
 ### NF1.3 Application should be secure against common web vulnerabilities such as SQL Injections.  
@@ -379,41 +385,41 @@
 
   Please see:
 
-  [Desktop Sample](../docs/screenshots/Desktop%20Screen.png)
+  - [Desktop Sample](../docs/screenshots/Desktop%20Screen.png)
 
-  [iPhone 12 Pro Sample](../docs/screenshots/iPhone12%20Screen.png)
+  - [iPhone 12 Pro Sample](../docs/screenshots/iPhone12%20Screen.png)
 
-  [iPad Air Sample](../docs/screenshots/iPad%20Screen.png)
+  - [iPad Air Sample](../docs/screenshots/iPad%20Screen.png)
 
 ### NF3.1 User Interface will be accessible to a range of visual impairments.
 * The GUI consists of two main colours, black and light green to allow a distinguishable contrast, even for visually impaired users
-* Simulation: [color-blindness.com](https://www.color-blindness.com/coblis-color-blindness-simulator/)
+* Simulation: - [color-blindness.com](https://www.color-blindness.com/coblis-color-blindness-simulator/)
 
   Please see:
 
-  [Normal View](../docs/screenshots/Desktop%20Screen.png)
+  - [Normal View](../docs/screenshots/Desktop%20Screen.png)
 
-  [Anomalous Trichromatic View: Red-Weak/Protanomaly](../docs/screenshots/Anomalous%20Trich.png)
+  - [Anomalous Trichromatic View: Red-Weak/Protanomaly](../docs/screenshots/Anomalous%20Trich.png)
 
-  [Dichromatic View: Green-Blind/Deuteranopia](../docs/screenshots/Dichromatic.png)
+  - [Dichromatic View: Green-Blind/Deuteranopia](../docs/screenshots/Dichromatic.png)
 
-  [Monochromatic View: Monochromacy/Achromatopsia](../docs/screenshots/Monochromacy.png)
+  - [Monochromatic View: Monochromacy/Achromatopsia](../docs/screenshots/Monochromacy.png)
 
 ### NF4 Users must be able to accept or reject Matches with other Users.
 * Users have the option to whether accept or reject matches from interested users.
 
   Please see:
 
-  [Match Pending Capture](../docs/screenshots/Match%20Pending%20Screen.png)
+  - [Match Pending Capture](../docs/screenshots/Match%20Pending%20Screen.png)
 
-  [Match Rejected Capture](../docs/screenshots/Match%20Rejected%20Screen.png)
+  - [Match Rejected Capture](../docs/screenshots/Match%20Rejected%20Screen.png)
 
-  [Match Accepted Capture](../docs/screenshots/Match%20Accepted%20Screen.png)
+  - [Match Accepted Capture](../docs/screenshots/Match%20Accepted%20Screen.png)
 
 ### NF5 User review should be seen by other users.
 * Reviews in user profiles can be seen by all users. This includes an average of all the received ratings, and review comments.
 
   Please see:
 
-  [Profile Review](../docs/screenshots/Profile%20Review%20Screen.png)
+  - [Profile Review](../docs/screenshots/Profile%20Review%20Screen.png)
 
