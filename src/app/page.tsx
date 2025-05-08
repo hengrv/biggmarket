@@ -13,11 +13,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="mx-auto flex min-h-screen flex-col items-center justify-center bg-background-1 text-text-1">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-4 lg:py-16">
-          <HomeScreen />
-        </div>
-      </main>
+      <HomeScreen />
     </HydrateClient>
   );
 }

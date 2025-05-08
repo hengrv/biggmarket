@@ -27,7 +27,11 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <TRPCReactProvider>
           <div className="relative mx-auto min-h-screen min-w-full max-w-md overflow-hidden bg-background-1">
-            {children}
+            <main className="mx-auto flex min-h-screen flex-col items-center justify-center bg-background-1 text-text-1">
+              <div className="container flex flex-col items-center justify-center gap-12 px-4 py-4 lg:py-16">
+                {children}
+              </div>
+            </main>
           </div>
         </TRPCReactProvider>
       </body>
