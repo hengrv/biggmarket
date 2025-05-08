@@ -123,7 +123,7 @@ Our testing strategy encompasses multiple levels:
 
 ### Code Style
 
-[Code Style]() documentation
+[Code Style](code-standards.md) documentation
 
 - [eslint](https://eslint.org/) code styling
 - [prettier](https://prettier.io/) code formatting
