@@ -110,110 +110,37 @@ BiggMarket/
 - [Database Schema](prisma/schema.prisma)
 
 ## Testing
-Please review our full testing report [here](docs/testing.md)
+
+[TESTING_DOCUMENTATION_PLACEHOLDER]
+
+- Testing methodology
+- Test reports
+- Manual testing results
+- Automated test results
 
 ## Team Standards
 
-### Development Practices & Team Collaboration
+### Code Style
 
-#### Code Style & Consistency
-We maintain consistent code quality and style across our team using several tools:
+[Code Style]() documentation
 
-- **ESLint**: Our ESLint configuration enforces consistent code style and catches potential errors. Key rules include:
-  - Strict TypeScript checking
-  - React best practices
-  - Import ordering
-  - No unused variables
-  - Consistent spacing and formatting
+- [eslint](https://eslint.org/) code styling
+- [prettier](https://prettier.io/) code formatting
 
-- **Prettier**: We use Prettier for automatic code formatting with the following configuration:
-  - Single quotes for strings
-  - 2 spaces for indentation
-  - Trailing commas in multiline
-  - Semicolons required
-  - 100 character line length
+### Version Control Workflow
 
-- **TypeScript**: We leverage TypeScript's type system for:
-  - Strict type checking
-  - Interface-first development
-  - Proper type definitions for all components and functions
-  - No implicit any types
+[VERSION_CONTROL_WORKFLOW_PLACEHOLDER]
 
-#### Version Control & Collaboration
-- **Git Flow**: We follow a structured branching strategy:
-  - `main` branch for production code
-  - `develop` branch for integration
-  - Feature branches for new development
-  - Release branches for versioning
-  - Hotfix branches for urgent fixes
+- Branch naming conventions
+- Commit message format
+- Pull request process
+- Pre commit hooks
 
-- **Commit Conventions**: We use conventional commits format:
-  - `feat:` for new features
-  - `fix:` for bug fixes
-  - `docs:` for documentation
-  - `style:` for formatting
-  - `refactor:` for code restructuring
-  - `test:` for testing
-  - `chore:` for maintenance
+### Documentation Standards
 
-#### CI/CD Pipeline
-We use Vercel for our CI/CD pipeline, which provides:
-
-- **Automatic Deployments**:
-  - Preview deployments for pull requests
-  - Production deployments on merge to main
-  - Automatic environment variable management
-
-- **Build Process**:
-  - TypeScript compilation
-  - ESLint and Prettier checks
-  - Build optimization
-  - Asset optimization
-
-- **Quality Checks**:
-  - Automated testing
-  - Performance monitoring
-  - Error tracking
-  - Analytics integration
-
-#### Development Workflow
-1. **Local Development**:
-   - Developers work on feature branches
-   - Local testing with Next.js development server
-   - Pre-commit hooks for code quality
-
-2. **Code Review Process**:
-   - Pull request template with checklist
-   - Required approvals before merge
-   - Automated checks must pass
-   - Manual review for code quality
-
-3. **Testing Strategy**:
-   - Unit tests for utilities and hooks
-   - Integration tests for API routes
-   - End-to-end tests for critical flows
-   - Performance testing for key features
-
-#### Configuration Files
-Our development environment is configured through several key files:
-
-- `.eslintrc.js`: ESLint configuration
-- `.prettierrc`: Prettier formatting rules
-- `tsconfig.json`: TypeScript compiler options
-- `next.config.js`: Next.js configuration
-- `package.json`: Project dependencies and scripts
-- `.gitignore`: Version control exclusions
-- `vercel.json`: Deployment configuration
-
-#### Documentation
-We maintain documentation for:
-- API endpoints and types
-- Component usage and props
-- Database schema
-- Environment setup
-- Deployment procedures
-
-This structured approach ensures consistent code quality, efficient collaboration, and reliable deployments across our team.
+- All public methods and interfaces must be documented
+- Complex logic requires inline comments
+- README files in each major directory
 
 ## Mapping Criteria
 
