@@ -1,172 +1,8 @@
 # BiggMarket Features Documentation
 
-This document contains the project's Functionalities and Features, including Core Features, Advanced Features and Future Enhancements. The document also contains the Project's Functional and Non-Functional Requirements and their fulfilment.
+This document also contains the Project's Functional and Non-Functional Requirements and their fulfilment.
 
-# Core Features
-
-### Authentication & User Management
-
-- **Google OAuth Integration**
-
-  - Secure user authentication using Google accounts
-  - Automatic profile creation with email verification
-  - Unique username generation based on email
-- **User Profiles**
-
-  - Customizable profile information
-  - Profile image upload and management
-  - Location settings with postcode validation
-  - User rating and review system
-
-### Item Management
-
-- **Item Listing**
-
-  - Create and manage item listings
-  - Multiple image upload support
-  - Detailed item descriptions
-  - Category organization
-  - Item status tracking (Available, Swapped, Hidden)
-- **Item Discovery**
-
-  - Location-based item suggestions
-  - Distance-based sorting
-  - Category filtering
-  - Search functionality
-
-### Swapping System
-
-- **Match Algorithm**
-
-  - Swipe interface
-  - Location-based matching
-  - Category filtering
-
-- **Swap Management**
-
-  - Track swap status
-  - Swap history
-  - Swap confirmation system
-  - User feedback after swaps
-
-### Messaging System
-
-- **Real-time Chat**
-
-  - Instant messaging between matched users
-  - Chat history preservation
-  - Message notifications
-  - Chat list management
-- **Chat Features**
-
-  - Message deletion
-  - Chat organization
-  - Latest message preview
-  - Unread message indicators
-
-### User Interaction
-
-- **Review System**
-
-  - User rating after swaps
-  - Written reviews
-  - Average rating calculation
-  - Review history
-- **Profile Management**
-
-  - Profile customization
-  - Location updates
-  - Username changes
-  - Profile visibility settings
-
-<br>
-
-# Advanced Features
-
-### Location Services
-
-- **Postcode Integration**
-  - UK postcode validation
-  - Automatic coordinate conversion
-  - Distance calculation between users
-  - Location-based filtering
-
-### User Experience
-
-- **Responsive Design**
-
-  - Mobile-first approach
-  - Dark theme implementation
-  - Smooth animations
-  - Intuitive navigation
-- **Loading States**
-
-  - Skeleton loading
-  - Progress indicators
-  - Error handling
-  - Success notifications
-
-### Security Features
-
-- **Authentication**
-
-  - Protected routes
-  - Session management
-  - Secure API endpoints
-  - Role-based access control
-- **Data Protection**
-
-  - Input validation
-  - Error handling
-  - Secure file uploads
-  - Data sanitization
-
-### Performance Optimizations
-
-- **Image Handling**
-
-  - Image optimization
-  - Lazy loading
-  - Responsive images
-  - Upload progress tracking
-- **Data Management**
-
-  - Efficient database queries
-  - Caching strategies
-  - Pagination
-  - Data prefetching
-
-### Technical Features
-
-- **Modern Stack**
-
-  - Next.js 13+ with App Router
-  - TypeScript for type safety
-  - Prisma for database management
-  - tRPC for type-safe API
-- **Development Tools**
-
-  - ESLint for code quality
-  - Prettier for code formatting
-  - Git hooks for code validation
-  - Automated testing setup
-
-<br>
-
-# Future Enhancements
-
-- Push notifications
-- In-app video calling
-- Item categories expansion
-- Advanced search filters
-- Social media integration
-- Item recommendation system
-- User verification system
-- Premium features
-
-<br>
-
-# Functional Requirements (F):
+## Functional Requirements (F):
 ### F1.1 User can create an account, with their details stored in the database.
 * The user can use their Google account for authentication to create or sign in to their account. Account details such as Full Name, Username and Email, are stored in a PostgreSQL database. 
 * Username by default is the user email's local part.  
@@ -402,3 +238,14 @@ This document contains the project's Functionalities and Features, including Cor
   Please see:
 
   - [Profile Review](../docs/screenshots/Profile%20Review%20Screen.png)
+
+# Future Enhancements
+
+- Push notifications
+- In-app video calling
+- Item categories expansion
+- Advanced search filters
+- Social media integration
+- Item recommendation system
+- User verification system
+- Premium features
