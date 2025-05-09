@@ -47,7 +47,7 @@ This document also contains the Project's Functional and Non-Functional Requirem
   - [Set of Conditions Capture](../docs/screenshots/Post%20Items%20categories.png)
 
 ### F2.2 Users must be able to view their Items and edit/delete if wanted. 
-* The users can view all their items in the Profile page, and edit/delete them by clicking them individually.
+* The users can view all their items in the Profile page, and delete them by clicking them individually.
 
   Please see:
 
