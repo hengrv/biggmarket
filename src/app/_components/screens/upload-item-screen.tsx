@@ -1,84 +1,93 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Camera, Trash2, Upload, Loader2, Info } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react";
+import { Camera, Trash2, Upload, Loader2, Info } from "lucide-react";
+import Image from "next/image";
 
 export default function UploadItemScreen({
   handleItemUpload,
 }: {
-  handleItemUpload: () => void
+  handleItemUpload: () => void;
 }) {
-  const [itemName, setItemName] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("Furniture")
-  const [condition, setCondition] = useState("New")
-  const [images, setImages] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [itemName, setItemName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Furniture");
+  const [condition, setCondition] = useState("New");
+  const [images, setImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAddImage = () => {
-    
-    const newImage = `/placeholder.svg?height=${200 + Math.floor(Math.random() * 100)}&width=${200 + Math.floor(Math.random() * 100)}`
-    setImages([...images, newImage])
-  }
+    const newImage = `/generic-placeholder.svg?height=${200 + Math.floor(Math.random() * 100)}&width=${200 + Math.floor(Math.random() * 100)}`;
+    setImages([...images, newImage]);
+  };
 
   const handleRemoveImage = (index: number) => {
-    const newImages = [...images]
-    newImages.splice(index, 1)
-    setImages(newImages)
-  }
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    
     setTimeout(() => {
-      setIsLoading(false)
-      handleItemUpload()
-    }, 1500)
-  }
+      setIsLoading(false);
+      handleItemUpload();
+    }, 1500);
+  };
 
   return (
-    <div className="h-full pb-16 overflow-auto">
+    <div className="h-full overflow-auto pb-16">
       <div className="p-4">
-        <div className="flex items-center mb-6">
-          <h2 className="text-foreground text-xl font-bold flex-1">Upload Your First Item</h2>
+        <div className="mb-6 flex items-center">
+          <h2 className="flex-1 text-xl font-bold text-foreground">
+            Upload Your First Item
+          </h2>
         </div>
 
-        <div className="bg-secondary rounded-lg p-4 mb-6">
-          <p className="text-foreground text-sm mb-4">
-            <span className="text-[#c1ff72] font-semibold">Welcome to BiggMarket!</span> To start swapping, you need to
-            upload at least one item. This helps create a community of sharers.
+        <div className="mb-6 rounded-lg bg-secondary p-4">
+          <p className="mb-4 text-sm text-foreground">
+            <span className="font-semibold text-[#c1ff72]">
+              Welcome to BiggMarket!
+            </span>{" "}
+            To start swapping, you need to upload at least one item. This helps
+            create a community of sharers.
           </p>
 
-          <div className="flex items-center text-muted text-xs">
-            <Info className="w-4 h-4 mr-1 text-[#c1ff72]" />
+          <div className="flex items-center text-xs text-muted">
+            <Info className="mr-1 h-4 w-4 text-[#c1ff72]" />
             <span>You&apos;ll be able to browse and swap after uploading.</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-muted text-xs block">Item Photos (required)</label>
+            <label className="block text-xs text-muted">
+              Item Photos (required)
+            </label>
             <div className="grid grid-cols-3 gap-2">
               {images.map((image, index) => (
-                <div key={index} className="relative aspect-square bg-secondary rounded-lg overflow-hidden">
+                <div
+                  key={index}
+                  className="relative aspect-square overflow-hidden rounded-lg bg-secondary"
+                >
                   <Image
-                    src={image || "/placeholder.svg"}
+                    src={image || "/item-placeholder.svg"}
                     alt={`Item photo ${index + 1}`}
                     width={100}
                     height={100}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
+                    draggable={false}
                   />
                   <button
                     type="button"
-                    className="absolute top-1 right-1 bg-black/50 rounded-full p-1"
+                    className="absolute right-1 top-1 rounded-full bg-black/50 p-1"
                     onClick={() => handleRemoveImage(index)}
                   >
-                    <Trash2 className="w-3 h-3 text-white" />
+                    <Trash2 className="h-3 w-3 text-white" />
                   </button>
                 </div>
               ))}
@@ -86,23 +95,29 @@ export default function UploadItemScreen({
               {images.length < 5 && (
                 <button
                   type="button"
-                  className="aspect-square bg-secondary border-2 border-dashed border-[#3a3a3a] rounded-lg flex flex-col items-center justify-center"
+                  className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-[#3a3a3a] bg-secondary"
                   onClick={handleAddImage}
                 >
-                  <Camera className="w-6 h-6 text-primary mb-1" />
-                  <span className="text-muted text-xs">Add Photo</span>
+                  <Camera className="mb-1 h-6 w-6 text-primary" />
+                  <span className="text-xs text-muted">Add Photo</span>
                 </button>
               )}
             </div>
-            {images.length === 0 && <p className="text-red-400 text-xs">At least one photo is required</p>}
+            {images.length === 0 && (
+              <p className="text-xs text-red-400">
+                At least one photo is required
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="text-muted text-xs block mb-1">Item Name (required)</label>
+            <label className="mb-1 block text-xs text-muted">
+              Item Name (required)
+            </label>
             <input
               type="text"
               placeholder="e.g. Vintage Chair"
-              className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary"
+              className="w-full rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               required
@@ -110,10 +125,10 @@ export default function UploadItemScreen({
           </div>
 
           <div>
-            <label className="text-muted text-xs block mb-1">Description</label>
+            <label className="mb-1 block text-xs text-muted">Description</label>
             <textarea
               placeholder="Describe your item..."
-              className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary h-24 resize-none"
+              className="h-24 w-full resize-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
@@ -121,24 +136,28 @@ export default function UploadItemScreen({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-muted text-xs block mb-1">Category</label>
+              <label className="mb-1 block text-xs text-muted">Category</label>
               <select
-                className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary appearance-none"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option>Furniture</option>
-                <option>Clothing</option>
+                <option>Home & Living</option>
+                <option>Fashion & Apparel</option>
                 <option>Electronics</option>
-                <option>Books</option>
-                <option>Other</option>
+                <option>Books & Entertainment</option>
+                <option>Pet Supplies</option>
+                <option>Health & Beauty</option>
+                <option>Sports & Outdoors</option>
+                <option>Kids & Baby</option>
+                <option>Automative & Tools</option>
               </select>
             </div>
 
             <div>
-              <label className="text-muted text-xs block mb-1">Condition</label>
+              <label className="mb-1 block text-xs text-muted">Condition</label>
               <select
-                className="w-full bg-secondary text-foreground rounded-lg p-3 outline-none border border-[#3a3a3a] focus:border-primary appearance-none"
+                className="w-full appearance-none rounded-lg border border-[#3a3a3a] bg-secondary p-3 text-foreground outline-none focus:border-primary"
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
               >
@@ -153,14 +172,18 @@ export default function UploadItemScreen({
 
           <button
             type="submit"
-            className="w-full bg-[#c1ff72] text-black font-semibold rounded-lg py-3 mt-4 flex items-center justify-center shadow-lg hover:bg-[#b4f55e] transition-colors"
+            className="mt-4 flex w-full items-center justify-center rounded-lg bg-[#c1ff72] py-3 font-semibold text-black shadow-lg transition-colors hover:bg-[#b4f55e]"
             disabled={isLoading || images.length === 0 || !itemName}
           >
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Upload className="w-5 h-5 mr-2" />}
+            {isLoading ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-5 w-5" />
+            )}
             {isLoading ? "Uploading..." : "Upload Item & Continue"}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type OurFileRouter, UploadButton } from "~/utils/uploadthing";
+import { UploadButton } from "~/utils/uploadthing";
 import { api } from "~/trpc/react";
 import { Loader2, Upload } from "lucide-react";
 
@@ -21,23 +21,18 @@ export function ProfileImageUpload() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <UploadButton<OurFileRouter, "profileImage">
+      <UploadButton<"profileImage">
         endpoint="profileImage"
         onClientUploadComplete={(res) => {
           // Do something with the response
           if (res && res.length > 0) {
             setIsUploading(true);
-            console.log("Upload completed, file URL:", res[0]?.ufsUrl);
 
             // Update the profile with the new image URL
             updateProfile.mutate(
               { image: res[0]?.ufsUrl },
               {
                 onSuccess: () => {
-                  console.log(
-                    "Profile updated successfully with new image:",
-                    res[0]?.ufsUrl,
-                  );
                   setIsUploading(false);
                   setUploadError(null);
                 },
@@ -58,7 +53,7 @@ export function ProfileImageUpload() {
           console.error("Upload error:", error);
           setUploadError(error.message);
         }}
-        className="ut-button:bg-blue-500 ut-button:hover:bg-blue-600 ut-button:text-white ut-button:rounded ut-button:px-4 ut-button:py-2 ut-button:flex ut-button:items-center ut-button:gap-2"
+        className="ut-button:flex ut-button:items-center ut-button:gap-2 ut-button:rounded ut-button:bg-blue-500 ut-button:px-4 ut-button:py-2 ut-button:text-white ut-button:hover:bg-blue-600"
         content={{
           button({ ready }) {
             if (isUploading) {

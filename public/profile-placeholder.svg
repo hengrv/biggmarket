@@ -1,0 +1,9 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#242424"/>
+  <!-- Profile silhouette -->
+  <circle cx="100" cy="80" r="40" fill="#c1ff72" opacity="0.2"/>
+  <circle cx="100" cy="80" r="30" fill="#c1ff72"/>
+  <path d="M60,150 C60,120 140,120 140,150 L140,170 L60,170 Z" fill="#c1ff72"/>
+</svg>
+
+
