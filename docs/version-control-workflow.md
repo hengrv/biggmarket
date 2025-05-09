@@ -46,6 +46,7 @@
    - Invalid commit messages
 
 #### Commit Conventions
+[Github Commit Conventions](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
 We follow conventional commits format enforced by a pre-commit hook:
 - `feat:` New features
 - `fix:` Bug fixes

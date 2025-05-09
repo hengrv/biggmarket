@@ -5,12 +5,8 @@ BiggMarket is a modern web application that allows users to swap items with othe
 Repository URL: https://github.com/hengrv/biggmarket
 Live website: https://bigg-market.vercel.app
 
-## Group Documents
-
-- [Planning Document](https://docs.google.com/document/d/1fKAm-ThGSWcT_wdQAW1xUyvlBsldpEAbiKgfMQTacuw/edit?tab=t.0)
-- [Github Commit Conventions](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
-- [Technical Design](https://newcastle-my.sharepoint.com/:w:/g/personal/c3005414_newcastle_ac_uk/EU-gbdc3oJ1NrAvxX6B8_cUBShfckSblFnh5h4swO6oAAQ?e=mahw2E)
-- [Gantt Chart](https://newcastle-my.sharepoint.com/:x:/g/personal/c3049719_newcastle_ac_uk/EZLO5Mt3cWdJij1rsOzIcf4BRksxWHKmKAm6HBRdW9rZJg?e=Z1YbPS)
+## Contribution Matrix
+- [Contribution Matrix](./docs/contribution-matrix.md)
 
 ## Table of Contents
 
@@ -112,7 +108,7 @@ BiggMarket/
 
 ## Testing
 
-For comprehensive testing documentation, please review our [Testing Report](docs/testing.md).
+For comprehensive testing documentation, please review our [Testing Report](./docs/testing.md).
 
 Our testing strategy encompasses multiple levels:
 
@@ -124,7 +120,7 @@ Our testing strategy encompasses multiple levels:
 
 ### Code Style
 
-[Code Style](code-standards.md) documentation
+[Code Style](./docs/code-standards.md) documentation
 
 - [eslint](https://eslint.org/) code styling
 - [prettier](https://prettier.io/) code formatting
@@ -157,7 +153,7 @@ For detailed information on our version control strategies, please refer to our 
 
 ## Features
 
-To see all features implemented in this project, please refer to the [features markdown](docs/features.md) file
+To see all features implemented in this project, please refer to the [features markdown](./docs/features.md) file
 
 ## License
 
