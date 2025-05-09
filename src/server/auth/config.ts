@@ -4,7 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import type { UserRole } from "@prisma/client";
 import { env } from "~/env";
 
-import { db } from "~/server/db";
+import { db } from "~/server/db"
 
 /**
  * Module augmentation for `next-auth` types. Add custom properties to the `session`

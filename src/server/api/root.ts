@@ -6,6 +6,7 @@ import { adminRouter } from "./routers/admin";
 
 /**
  * This is the primary router for the server.
+ * This is the primary router for the server.
  *
  * All routers added in /api/routers should be manually added here.
  */
