@@ -49,17 +49,25 @@ model User {
     items         Item[]
     reviews       Review[]  @relation("reviewedUser")
     reviewed      Review[]  @relation("reviewerUser")
-    role          String    @default("end_user")
+    role          UserRole  @default(END_USER)
     location      Location?
     logs          Log[]
     swipes        Swipe[]
     sender        Message[] @relation("sender")
     receiver      Message[] @relation("receiver")
 
-    // User can follow other users
+    follower       Follow[] @relation("follower")
+    following      Follow[] @relation("following")
+    matchesAsUser1 Match[]  @relation("user1Matches")
+    matchesAsUser2 Match[]  @relation("user2Matches")
+    reports        Report[]
 
-    follower  Follow[] @relation("follower")
-    following Follow[] @relation("following")
+    createdAt DateTime @default(now())
+}
+
+enum UserRole {
+    END_USER
+    ADMIN
 }
 
 model Location {
@@ -86,9 +94,9 @@ model Review {
 model Item {
     id          String     @id @default(cuid())
     title       String     @default("title")
-    image       String // URL
+    images      String[] // URLs
     userId      String
-    description String?
+    description String
     category    String     @default("Other")
     status      ItemStatus @default(AVAILABLE)
     review      Float?     @default(0) @db.DoublePrecision
@@ -102,7 +110,8 @@ model Item {
     givenTransactions    Transaction[] @relation("giver")
     receivedTransactions Transaction[] @relation("receiver")
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    reports Report[]
 }
 
 // Enum for Item status
@@ -114,17 +123,21 @@ enum ItemStatus {
 
 // Model to keep track of item matches between user
 model Match {
-    id        String       @id @default(cuid())
+    id        String        @id @default(cuid())
     item1id   String
     item2id   String
-    status    machedStatus @default(PENDING)
-    createdAt DateTime     @default(now())
-    useritem1 Item         @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
-    useritem2 Item         @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+    status    matchedStatus @default(PENDING)
+    createdAt DateTime      @default(now())
+    useritem1 Item          @relation(name: "user1", fields: [item1id], references: [id], onDelete: Cascade)
+    useritem2 Item          @relation(name: "user2", fields: [item2id], references: [id], onDelete: Cascade)
+    user1Id   String
+    user2Id   String
+    user1     User          @relation("user1Matches", fields: [user1Id], references: [id], onDelete: Cascade)
+    user2     User          @relation("user2Matches", fields: [user2Id], references: [id], onDelete: Cascade)
 }
 
 // Enum for Match status
-enum machedStatus {
+enum matchedStatus {
     PENDING
     ACCEPTED
     REJECTED
@@ -223,4 +236,20 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Report {
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    reason      String
+    description String?
+    item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+    itemId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
+
+    closed Boolean @default(false)
+
+    @@index([itemId])
+    @@index([userId])
 }

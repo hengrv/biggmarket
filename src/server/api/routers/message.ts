@@ -28,22 +28,32 @@ export const messageRouter = createTRPCRouter({
 
       let chat = await ctx.db.chat.findFirst({
         where: {
-          messages: {
-            some: {
-              senderId: input.senderId,
-              receiverId: input.receiverId,
+          OR: [
+            {
+              messages: {
+                some: {
+                  senderId: input.senderId,
+                  receiverId: input.receiverId,
+                },
+              },
             },
-          },
+            {
+              messages: {
+                some: {
+                  receiverId: input.senderId,
+                  senderId: input.receiverId,
+                },
+              },
+            },
+          ],
         },
       });
 
-      if (!chat) {
-        chat = await ctx.db.chat.create({
-          data: {
-            createdAt: new Date(),
-          },
-        });
-      }
+      chat ??= await ctx.db.chat.create({
+        data: {
+          createdAt: new Date(),
+        },
+      });
 
       const newMessage = await ctx.db.message.create({
         data: {
@@ -101,6 +111,12 @@ export const messageRouter = createTRPCRouter({
           message: "No chats found for this user",
         });
       }
+
+      chats.sort((a, b) => {
+        const aDate = a.messages[0]?.createdAt.getTime() ?? 0;
+        const bDate = b.messages[0]?.createdAt.getTime() ?? 0;
+        return bDate - aDate;
+      });
 
       return chats;
     }),

@@ -28,7 +28,9 @@
     "paths": {
       "~/*": ["./src/*"],
       "@components/*": ["./src/app/_components/*"],
-      "@/components/*": ["./src/app/_components/*"]
+      "@/components/*": ["./src/app/_components/*"],
+      "@screens/*": ["./src/app/_components/screens/*"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   },
   "include": [

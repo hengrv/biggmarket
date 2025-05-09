@@ -1,13 +1,33 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import type { SwipeDirection, machedStatus } from "@prisma/client";
+import {
+  type SwipeDirection,
+  matchedStatus,
+  type Item,
+  type User,
+} from "@prisma/client";
 import geolib from "geolib";
 
+// Custom type Containing an Item, a distance, and the associated user and rating
+type ItemWithUserRating = (Item & { distance: number }) & {
+  user: Omit<
+    User,
+    "username" | "email" | "emailVerified" | "bio" | "role" | "createdAt"
+  > & {
+    rating: number;
+  };
+};
+
+// Defines the input shape for an item
 const itemInputSchema = z.object({
-  title: z.string(),
-  image: z.string().url("Must be a valid URL"),
-  description: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  images: z
+    .string()
+    .url("Must be a valid URL")
+    .array()
+    .min(1, "At least one image is required"),
+  description: z.string(),
   category: z.string().min(1, "Category is required"), // ! Change to enum
   status: z.enum(["AVAILABLE", "SWAPPED", "HIDDEN"]).optional(),
 });
@@ -154,7 +174,7 @@ export const itemRouter = createTRPCRouter({
   getUserItems: protectedProcedure
     .input(
       z.object({
-        userId: z.string().optional(), // If not provided, gets current user's items
+        userId: z.string().optional(),
         status: z.enum(["AVAILABLE", "SWAPPED", "HIDDEN"]).optional(),
       }),
     )
@@ -266,74 +286,6 @@ export const itemRouter = createTRPCRouter({
 
       return updatedItem;
     }),
-  //   getNextItem: protectedProcedure
-  //     .input(
-  //       z.object({
-  //         // Optional last seen item id to ensure we don't show the same item
-  //         lastSeenItemId: z.string().optional(),
-  //       }),
-  //     )
-  //     .query(async ({ ctx, input }) => {
-  //       const userId = ctx.session.user.id;
-
-  //       // Get an item that:
-  //       // 1. User hasn't swiped on
-  //       // 2. Isn't their own item
-  //       // 3. Is still available
-  //       // 4. Isn't the last seen item
-  //       const nextItem = await ctx.db.item.findFirst({
-  //         where: {
-  //           AND: [
-  //             // Exclude items user has already swiped on
-  //             {
-  //               NOT: {
-  //                 swipes: {
-  //                   some: {
-  //                     userId,
-  //                   },
-  //                 },
-  //               },
-  //             },
-  //             // Exclude user's own items
-  //             {
-  //               NOT: {
-  //                 userId,
-  //               },
-  //             },
-  //             // Only available items
-  //             {
-  //               status: "AVAILABLE",
-  //             },
-  //             // Exclude last seen item if provided
-  //             input.lastSeenItemId
-  //               ? {
-  //                 NOT: {
-  //                   id: input.lastSeenItemId,
-  //                 },
-  //               }
-  //               : {},
-  //           ],
-  //         },
-  //         include: {
-  //           user: {
-  //             select: {
-  //               id: true,
-  //               name: true,
-  //               image: true,
-  //             },
-  //           },
-  //         },
-  //       });
-
-  //       if (!nextItem) {
-  //         throw new TRPCError({
-  //           code: "NOT_FOUND",
-  //           message: "No more items available",
-  //         });
-  //       }
-
-  //       return nextItem;
-  //     }),
 
   swipeItem: protectedProcedure
     .input(
@@ -357,8 +309,23 @@ export const itemRouter = createTRPCRouter({
         });
       }
 
+      // Check if the user has already swiped this item
+      const existingSwipe = await ctx.db.swipe.findFirst({
+        where: {
+          userId,
+          itemId: input.itemId,
+        },
+      });
+
+      if (existingSwipe) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `You have already swiped this item`,
+        });
+      }
+
       // Create swipe record
-      const swipe = await ctx.db.swipe.create({
+      await ctx.db.swipe.create({
         data: {
           userId,
           itemId: input.itemId,
@@ -389,6 +356,8 @@ export const itemRouter = createTRPCRouter({
             data: {
               item1id: potentialMatch.id,
               item2id: input.itemId,
+              user1Id: userId, // Current user ID
+              user2Id: item.userId, // Item owner's ID
               status: "PENDING",
             },
           });
@@ -398,61 +367,49 @@ export const itemRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  getMatches: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-
-    // Fetch matches for the user, including item and user details
-    const matches = await ctx.db.match.findMany({
-      where: {
-        OR: [
-          {
-            useritem1: {
-              userId,
+  getMatches: protectedProcedure
+    .input(
+      z
+        .object({
+          userId: z.string().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = input?.userId ?? ctx.session.user.id;
+      const matches = await ctx.db.match.findMany({
+        where: {
+          OR: [{ user1Id: userId }, { user2Id: userId }],
+        },
+        include: {
+          useritem1: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
             },
           },
-          {
-            useritem2: {
-              userId,
-            },
-          },
-        ],
-      },
-      include: {
-        useritem1: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
+          useritem2: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
               },
             },
           },
         },
-        useritem2: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
-            },
-          },
-        },
-      },
-    });
+      });
 
-    return matches;
-  }),
+      return matches;
+    }),
 
-  /**
-   * updateMatchStatus - take in a matchId and set the status
-   *
-   * @param matchId
-   * @param status
-   *
-   * */
   updateMatchStatus: protectedProcedure
     .input(
       z.object({
@@ -494,61 +451,359 @@ export const itemRouter = createTRPCRouter({
       const updatedMatch = await ctx.db.match.update({
         where: { id: input.matchId },
         data: {
-          status: input.status as machedStatus,
+          status: input.status as matchedStatus,
         },
       });
 
       return updatedMatch;
     }),
 
-  /**
-   *  getSwipeStats - returns the statitics about how many swipes a user has made
-   * */
-  getSwipeStats: protectedProcedure.query(async ({ ctx }) => {
+  acceptMatch: protectedProcedure
+    .input(
+      z.object({
+        matchId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const match = await ctx.db.match.update({
+        where: {
+          id: input.matchId,
+        },
+        data: {
+          status: "ACCEPTED",
+        },
+        include: {
+          useritem1: true,
+          useritem2: true,
+        },
+      });
+
+      await ctx.db.item.updateMany({
+        where: {
+          id: {
+            in: [match.useritem1.id, match.useritem2.id],
+          },
+        },
+        data: {
+          status: "SWAPPED",
+        },
+      });
+
+      return { success: true, match };
+    }),
+
+  rejectMatch: protectedProcedure
+    .input(
+      z.object({
+        matchId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const match = await ctx.db.match.update({
+        where: {
+          id: input.matchId,
+        },
+        data: {
+          status: "REJECTED",
+        },
+      });
+
+      return match;
+    }),
+
+  getSwipeStats: protectedProcedure
+    .input(
+      z
+        .object({
+          userId: z.string().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = input?.userId ?? ctx.session.user.id;
+
+      const stats = await ctx.db.swipe.groupBy({
+        by: ["direction"],
+        where: {
+          userId,
+        },
+        _count: true,
+      });
+
+      return stats;
+    }),
+
+  getItemsOnLocation: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(20).default(5),
+        cursor: z.string().optional(),
+        category: z.string().optional().nullable(), // Add category parameter
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, cursor, category } = input;
+      const userId = ctx.session.user.id;
+      const userLocation = await ctx.db.user.findUnique({
+        where: {
+          id: userId,
+        },
+        include: {
+          location: true,
+        },
+      });
+
+      // Get all user items and sort by lowest distance
+      const items = await ctx.db.item.findMany({
+        take: limit + 1, // Take one more to determine if there are more items
+        ...(cursor
+          ? {
+            cursor: {
+              id: cursor,
+            },
+          }
+          : {}),
+        where: {
+          userId: {
+            not: userId,
+          },
+          status: "AVAILABLE",
+          // Add category filter if provided
+          ...(category ? { category } : {}),
+          // Make sure this filter is correctly applied to exclude already swiped items
+          swipes: {
+            none: {
+              userId: userId,
+            },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              location: true,
+              reviews: true,
+            },
+          },
+        },
+      });
+
+      // Filter items based on distance from user location and calculate ratings
+      const result: ItemWithUserRating[] = [];
+      let nextCursor: string | undefined = undefined;
+
+      // If we have more items than the limit, we have a next page
+      if (items.length > limit) {
+        const nextItem = items.pop();
+        nextCursor = nextItem?.id;
+      }
+
+      for (const item of items) {
+        if (!item.user.location || !userLocation?.location) {
+          continue;
+        }
+
+        // calculate distance away
+        const distance = geolib.getDistance(
+          {
+            latitude: Number(userLocation.location.latitude),
+            longitude: Number(userLocation.location.longitude),
+          },
+          {
+            latitude: Number(item.user.location.latitude),
+            longitude: Number(item.user.location.longitude),
+          },
+        );
+
+        // Calculate average rating
+        let rating = 0;
+        if (item.user.reviews.length > 0) {
+          const totalRating = item.user.reviews.reduce(
+            (acc, review) => acc + review.rating,
+            0,
+          );
+          rating = totalRating / item.user.reviews.length;
+        }
+
+        // Create a new object with the correct structure
+        result.push({
+          ...item,
+          distance,
+          user: {
+            ...item.user,
+            rating,
+          },
+        });
+      }
+
+      // Sort by distance
+      result.sort((a, b) => a.distance - b.distance);
+
+      return {
+        items: result,
+        nextCursor,
+      };
+    }),
+
+  getUserLikedItems: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id;
 
-    const stats = await ctx.db.swipe.groupBy({
-      by: ["direction"],
+    // Get items the user has swiped right on
+    const rightSwipes = await ctx.db.swipe.findMany({
       where: {
         userId,
-      },
-      _count: true,
-    });
-
-    return stats;
-  }),
-
-  getItemsOnLocation: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id;
-    const userLocation = await ctx.db.user.findUnique({
-      where: {
-        id: userId,
+        direction: "RIGHT",
       },
       include: {
-        location: true,
-      },
-    });
-
-    // Get all user items and sort by lowest distance
-    const items = await ctx.db.item.findMany({
-      where: {
-        userId: {
-          not: userId,
-        },
-        status: "AVAILABLE",
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
+        item: {
           include: {
-            location: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
           },
         },
       },
     });
+
+    // Filter out items that are already in a match
+    const matches = await ctx.db.match.findMany({
+      where: {
+        OR: [
+          { useritem1: { userId: userId } },
+          { useritem2: { userId: userId } },
+        ],
+        status: {
+          in: [matchedStatus.ACCEPTED, matchedStatus.REJECTED],
+        },
+      },
+      select: {
+        item1id: true,
+        item2id: true,
+      },
+    });
+
+    // Create a set of matched item IDs
+    const matchedItemIds = new Set<string>();
+    matches.forEach((match) => {
+      matchedItemIds.add(match.item1id);
+      matchedItemIds.add(match.item2id);
+    });
+
+    // Filter out items that are already matched
+    const likedItems = rightSwipes
+      .filter((swipe) => !matchedItemIds.has(swipe.itemId))
+      .map((swipe) => {
+        const { item } = swipe;
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          images: item.images,
+          user: item.user,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+          status: item.status,
+        };
+      });
+
+    return likedItems;
   }),
+
+  unlikeItem: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // Delete the swipe record
+      await ctx.db.swipe.deleteMany({
+        where: {
+          userId: userId,
+          itemId: input.itemId,
+        },
+      });
+
+      // Delete any matches that were created from this swipe
+      await ctx.db.match.deleteMany({
+        where: {
+          OR: [{ item1id: input.itemId }, { item2id: input.itemId }],
+        },
+      });
+
+      return { success: true };
+    }),
+
+  // function to get an item's distance from the user
+  getItemDistance: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      // Get user's location
+      const userLocation = await ctx.db.user.findUnique({
+        where: { id: userId },
+        include: { location: true },
+      });
+
+      if (!userLocation?.location) {
+        return null; // User has no location set
+      }
+
+      // Get the item and its owner's location
+      const item = await ctx.db.item.findUnique({
+        where: { id: input.itemId },
+        include: {
+          user: {
+            include: { location: true },
+          },
+        },
+      });
+
+      if (!item || !item.user.location) {
+        return null; // Item not found or owner has no location
+      }
+
+      // Calculate distance using geolib
+      const distance = geolib.getDistance(
+        {
+          latitude: Number(userLocation.location.latitude),
+          longitude: Number(userLocation.location.longitude),
+        },
+        {
+          latitude: Number(item.user.location.latitude),
+          longitude: Number(item.user.location.longitude),
+        },
+      );
+
+      return distance; // Distance in meters
+    }),
+
+  reportItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+        reason: z.enum([
+          "PROHIBITED_ITEM",
+          "INAPPROPRIATE_CONTENT",
+          "SUSPECTED_SCAM",
+          "OTHER",
+        ]),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.report.create({
+        data: {
+          itemId: input.itemId,
+          userId: ctx.session.user.id,
+          reason: input.reason,
+          description: input.description,
+        },
+      });
+    }),
 });
