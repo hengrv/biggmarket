@@ -7,7 +7,7 @@ import {
   type Item,
   type User,
 } from "@prisma/client";
-import geolib from "geolib";
+import { getDistance } from "geolib";
 
 // Custom type Containing an Item, a distance, and the associated user and rating
 type ItemWithUserRating = (Item & { distance: number }) & {
@@ -606,7 +606,7 @@ export const itemRouter = createTRPCRouter({
         }
 
         // calculate distance away
-        const distance = geolib.getDistance(
+        const distance = getDistance(
           {
             latitude: Number(userLocation.location.latitude),
             longitude: Number(userLocation.location.longitude),
@@ -769,7 +769,7 @@ export const itemRouter = createTRPCRouter({
       }
 
       // Calculate distance using geolib
-      const distance = geolib.getDistance(
+      const distance = getDistance(
         {
           latitude: Number(userLocation.location.latitude),
           longitude: Number(userLocation.location.longitude),
