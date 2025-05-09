@@ -139,13 +139,17 @@ For detailed information on our version control strategies, please refer to our 
 
 | **Criteria**                                 | **Where to Find It**                                   |
 | -------------------------------------------- | ------------------------------------------------------ |
-| **Team Standards: Cohesion**                 | `docs/code-standards.md`                       |
+| **Team Standards: Cohesion, Documentation**                 | `docs/code-standards.md`                       |
 | **Team Standards: Documentation**            | `docs/` directory & inline code comments               |
-| **Team Standards: Version Control Workflow** | See local script in `docs/hooks/pre-commits.git`       |
+| **Team Standards: Version Control Workflow** | `docs/version-control-workflow.md` & See local script in `docs/hooks/pre-commits.git`       |
 | **Design & Structure**                       | Project structure above, `src/` directory organization |
 | **GUI: Clever and Interesting Design**       | `docs/screenshots/` directory                          |
 | **Testing Documentation**                    | `docs/testing.md`                    |
 | **Functionality and Features**               | Feature list in `docs/features.md`                     |
+| **Server Documentation**               | Feature list in `docs/server-api-documentation.md`                     |
+| **Frontend Documentation**               | Feature list in `docs/frontend-documentation.md`                     |
+
+
 
 ## Screenshots
 
