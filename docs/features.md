@@ -38,10 +38,10 @@ This document contains the project's Functionalities and Features, including Cor
 
 - **Match Algorithm**
 
-  - Tinder-like swipe interface
+  - Swipe interface
   - Location-based matching
-  - Mutual interest detection
-  - Match notifications
+  - Category filtering
+
 - **Swap Management**
 
   - Track swap status
