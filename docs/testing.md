@@ -59,12 +59,6 @@ Therefore, we will use the application, providing both valid and invalid data an
 | `item.updateMatchStatus`    | Mutation | Update match status         | Yes                     |
 | `item.getSwipeStats`        | Query    | Get user's swipe statistics | Yes                     |
 
-### Algorithm Router
-
-| Endpoint                       | Method | Description                  | Authentication Required |
-| ------------------------------ | ------ | ---------------------------- | ----------------------- |
-| `algorithm.getItemsByDistance` | Query  | Get items sorted by distance | Yes                     |
-
 ## Notes
 
 - All protected endpoints require user authentication
