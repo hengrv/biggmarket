@@ -31,11 +31,7 @@ export default function SwapItemScreen({
   };
 
   // API Hooks
-  const createItem = api.item.createItem.useMutation({
-    onSuccess: () => {
-      console.log("Item created successfully");
-    },
-  });
+  const createItem = api.item.createItem.useMutation({});
 
   const handleCreateItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

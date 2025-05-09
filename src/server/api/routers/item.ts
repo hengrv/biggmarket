@@ -9,6 +9,7 @@ import {
 } from "@prisma/client";
 import geolib from "geolib";
 
+// Custom type Containing an Item, a distance, and the associated user and rating
 type ItemWithUserRating = (Item & { distance: number }) & {
   user: Omit<
     User,
@@ -18,6 +19,7 @@ type ItemWithUserRating = (Item & { distance: number }) & {
   };
 };
 
+// Defines the input shape for an item
 const itemInputSchema = z.object({
   title: z.string().min(1, "Title is required"),
   images: z
@@ -172,7 +174,7 @@ export const itemRouter = createTRPCRouter({
   getUserItems: protectedProcedure
     .input(
       z.object({
-        userId: z.string().optional(), // If not provided, gets current user's items
+        userId: z.string().optional(),
         status: z.enum(["AVAILABLE", "SWAPPED", "HIDDEN"]).optional(),
       }),
     )
@@ -603,6 +605,7 @@ export const itemRouter = createTRPCRouter({
           continue;
         }
 
+        // calculate distance away
         const distance = geolib.getDistance(
           {
             latitude: Number(userLocation.location.latitude),
@@ -692,8 +695,6 @@ export const itemRouter = createTRPCRouter({
       matchedItemIds.add(match.item2id);
     });
 
-    console.log("matched items", matches);
-
     // Filter out items that are already matched
     const likedItems = rightSwipes
       .filter((swipe) => !matchedItemIds.has(swipe.itemId))
@@ -710,8 +711,6 @@ export const itemRouter = createTRPCRouter({
           status: item.status,
         };
       });
-
-    console.log("liked items", likedItems);
 
     return likedItems;
   }),
@@ -739,7 +738,7 @@ export const itemRouter = createTRPCRouter({
       return { success: true };
     }),
 
-  // Add a new function to get an item's distance from the user
+  // function to get an item's distance from the user
   getItemDistance: protectedProcedure
     .input(z.object({ itemId: z.string() }))
     .query(async ({ ctx, input }) => {

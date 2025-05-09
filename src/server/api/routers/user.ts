@@ -7,6 +7,7 @@ import {
 } from "~/server/api/trpc";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
+// Item shape for a user's profile
 const userProfileInput = z.object({
     image: z.string().url("Must be a valid URL").optional(),
     email: z.string().email("Must be a valid email").optional(),
@@ -131,6 +132,8 @@ export const userRouter = createTRPCRouter({
                 data: {
                     ...userData,
                     username,
+                    // If location is inside the new data, check if the user
+                    // already has location attached - if not, create it
                     location: location
                         ? {
                             upsert: {
@@ -203,6 +206,7 @@ export const userRouter = createTRPCRouter({
             });
             return reviews;
         }),
+
     getAverageRating: protectedProcedure
         .input(
             z
@@ -214,6 +218,7 @@ export const userRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const userId = input?.userId ?? ctx.session.user.id;
 
+            // Aggrerate rating
             const result = await ctx.db.review.aggregate({
                 where: {
                     userId,
@@ -251,6 +256,7 @@ export const userRouter = createTRPCRouter({
             const formattedPostcode = input.replace(/\s+/g, "");
 
             try {
+                // Try convert postcode to coordinates
                 const response = await fetch(
                     `https://api.postcodes.io/postcodes/${formattedPostcode}`,
                 );
@@ -281,8 +287,6 @@ export const userRouter = createTRPCRouter({
                     throw error;
                 }
 
-                // Otherwise, wrap it in a TRPCError
-                console.error("Error converting postcode:", error);
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Failed to convert postcode to coordinates",
@@ -380,7 +384,7 @@ export const userRouter = createTRPCRouter({
                 });
             }
         }),
-    // Get followers of a user
+    // Get followers of a user - with pagination
     getFollowers: publicProcedure
         .input(
             z.object({
@@ -455,6 +459,7 @@ export const userRouter = createTRPCRouter({
             const { userId, limit, cursor } = input;
 
             try {
+                // Find all users a user is following and return their id and email
                 const following = await ctx.db.follow.findMany({
                     where: {
                         followerId: userId,
@@ -578,10 +583,12 @@ export const userRouter = createTRPCRouter({
                 });
             }
         }),
+
     getCityFromPostcode: protectedProcedure
         .input(postcodeInput)
         .query(async ({ input }) => {
             try {
+                // Try convert postcode to city
                 const response = await fetch(
                     `https://api.postcodes.io/postcodes/${input}`,
                 );

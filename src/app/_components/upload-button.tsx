@@ -27,17 +27,12 @@ export function ProfileImageUpload() {
           // Do something with the response
           if (res && res.length > 0) {
             setIsUploading(true);
-            console.log("Upload completed, file URL:", res[0]?.ufsUrl);
 
             // Update the profile with the new image URL
             updateProfile.mutate(
               { image: res[0]?.ufsUrl },
               {
                 onSuccess: () => {
-                  console.log(
-                    "Profile updated successfully with new image:",
-                    res[0]?.ufsUrl,
-                  );
                   setIsUploading(false);
                   setUploadError(null);
                 },

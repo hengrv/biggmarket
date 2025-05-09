@@ -343,7 +343,6 @@ const ProductScreen = function ProductScreen() {
             itemId: product.id,
             direction: "RIGHT",
           });
-          console.log("Swiped right");
         }, 300);
       } else if (offsetX < -swipeThreshold) {
         // left swipe
@@ -365,7 +364,6 @@ const ProductScreen = function ProductScreen() {
             itemId: product.id,
             direction: "LEFT",
           });
-          console.log("Swiped left");
         }, 300);
       } else {
         cardRef.current.style.transform = `translateX(0) rotate(0)`;
@@ -394,7 +392,6 @@ const ProductScreen = function ProductScreen() {
         itemId: product.id,
         direction: "LEFT",
       });
-      console.log("Swiped left");
 
       setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
@@ -421,7 +418,6 @@ const ProductScreen = function ProductScreen() {
         itemId: product.id,
         direction: "RIGHT",
       });
-      console.log("Swiped right");
 
       setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
@@ -437,10 +433,7 @@ const ProductScreen = function ProductScreen() {
   }, [cardRef, currentIndex]);
 
   return (
-    <AppShell
-      activeScreen="home"
-      title={`Hiya ${user?.name ?? ""}`}
-    >
+    <AppShell activeScreen="home" title={`Hiya ${user?.name ?? ""}`}>
       <div className="p-4">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Find Items</h2>
@@ -457,11 +450,10 @@ const ProductScreen = function ProductScreen() {
             <h3 className="mb-2 text-sm font-medium">Filter by Category</h3>
             <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
               <button
-                className={`rounded-full px-3 py-1 text-xs ${
-                  selectedCategory === null
+                className={`rounded-full px-3 py-1 text-xs ${selectedCategory === null
                     ? "bg-[#c1ff72] text-black"
                     : "bg-[#1a1a1a] text-[#f3f3f3]"
-                }`}
+                  }`}
                 onClick={() => setSelectedCategory(null)}
               >
                 All Items
@@ -469,11 +461,10 @@ const ProductScreen = function ProductScreen() {
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`rounded-full px-3 py-1 text-xs ${
-                    selectedCategory === category
+                  className={`rounded-full px-3 py-1 text-xs ${selectedCategory === category
                       ? "bg-[#c1ff72] text-black"
                       : "bg-[#1a1a1a] text-[#f3f3f3]"
-                  }`}
+                    }`}
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
