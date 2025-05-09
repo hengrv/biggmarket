@@ -1,15 +1,16 @@
-
-#### Branching Strategy
+## Branching Strategy
 - **Feature Branches**: Each new feature is developed in its own branch
   - Format: `feature/description-of-feature`
   - Example: `feature/user-authentication`
+    Features are squash-merged into dev branch to ensure a linear history
+    Merge commits are used to merge into main.
 - **Bug Fix Branches**: Dedicated branches for bug fixes
   - Format: `description-of-fix`
 - **Main Branches**:
   - `main`: Production-ready code
   - `dev`: Integration branch for features
   
-#### Development Process
+## Development Process
 1. **Feature Development**:
    - Create feature branch from `dev`
    - Develop and test locally
@@ -17,12 +18,11 @@
 
 2. **Code Review**:
    - Pull request template with checklist
-   - Minimum 2 team member approvals required
+   - Minimum 1 team member approvals required
    - Automated checks must pass:
      - ESLint validation
      - TypeScript compilation
      - Build verification
-     - Test suite execution
 
 3. **Preview Deployments**:
    - Automatic Vercel preview deployments for each PR
@@ -34,18 +34,18 @@
    - Automated deployment to staging
    - Final testing before production release
 
-5. **Pre-commit Hooks**:
+5. **Pre-commit Checks**:
    - **Code Formatting**: Prettier automatically formats code
    - **Linting**: ESLint checks for code style and potential errors
    - **Type Checking**: TypeScript validates type safety
-   - **Commit Message**: Enforces conventional commit format
+   - **Commit Message Hook**: Enforces conventional commit format
    These hooks run automatically when you try to commit, preventing:
    - Inconsistent code formatting
    - Type errors
    - Linting violations
    - Invalid commit messages
 
-#### Commit Conventions
+### Commit Conventions
 [Github Commit Conventions](https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13)
 We follow conventional commits format enforced by a pre-commit hook:
 - `feat:` New features
