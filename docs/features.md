@@ -238,9 +238,8 @@ The following table shows the team's contributions in terms of Functional Requir
   - [Set of Categories Capture](../docs/screenshots/Post%20Items%20condition.png)
   - [Set of Conditions Capture](../docs/screenshots/Post%20Items%20categories.png)
 
-### F2.2 Users must be able to view their Items and edit/delete if wanted.
-
-* The users can only view all their items in their profiles, and can view them individually by clicking on them.
+### F2.2 Users must be able to view their Items and edit/delete if wanted. 
+* The users can view all their items in the Profile page, and delete them by clicking them individually.
 
   Please see:
 
