@@ -146,14 +146,14 @@ For detailed information on our version control strategies, please refer to our 
 | **GUI: Clever and Interesting Design**       | `docs/screenshots/` directory                          |
 | **Testing Documentation**                    | `docs/testing.md`                    |
 | **Functionality and Features**               | Feature list in `docs/features.md`                     |
-| **Server Documentation**               | Feature list in `docs/server-api-documentation.md`                     |
-| **Frontend Documentation**               | Feature list in `docs/frontend-documentation.md`                     |
+| **Server Documentation**               | Documentation in `docs/server-api-documentation.md`                     |
+| **Frontend Documentation**               | Documentation in `docs/frontend-documentation.md`                     |
 
 
 
 ## Screenshots
 
-[Screenshots will be placed in the `docs/screenshots/` directory]
+Screenshots are placed in the [docs/screenshots](docs/screenshots/) directory
 
 ## Features
 
