@@ -90,8 +90,8 @@ pnpm start
 BiggMarket/
 ├── src/
 │   ├── app/                 # Next.js app directory
+│   ├── app/_components/     # Shared React components
 │   ├── server/              # Backend API and database
-│   ├── components/          # Shared React components
 │   └── styles/              # Global styles
 │   └── trpc/                # trpc configuration
 │   └── utils/               # utils functions
@@ -99,6 +99,8 @@ BiggMarket/
 ├── public/                  # Static assets
 └── docs/                    # Documentation
 ```
+
+Each route of the website is defined using a folder under `app/` (for example, `./src/app/home/page.tsx` would be `<url>/home`).
 
 ## Documentation
 
