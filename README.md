@@ -3,6 +3,7 @@
 BiggMarket is a modern web application that allows users to swap items with others to promote responsible consumption and production. The platform features an engaging "swipe left-right" interface, that displays available items based on location. The application also provides a reviewing system, real-time messaging, and reporting system.
 
 Repository URL: https://github.com/hengrv/biggmarket
+Live website: https://bigg-market.vercel.app
 
 ## Group Documents
 
