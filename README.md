@@ -3,6 +3,7 @@
 BiggMarket is a modern web application that allows users to swap items with others to promote responsible consumption and production. The platform features an engaging "swipe left-right" interface, that displays available items based on location. The application also provides a reviewing system, real-time messaging, and reporting system.
 
 Repository URL: https://github.com/hengrv/biggmarket
+
 Live website: https://bigg-market.vercel.app
 
 ## Contribution Matrix
@@ -26,6 +27,7 @@ Live website: https://bigg-market.vercel.app
 - npm or pnpm
 - PostgreSQL database
 - Google OAuth credentials (for authentication)
+- UploadThing token
 
 ### Setup
 
@@ -52,6 +54,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/biggmarket"
 NEXTAUTH_SECRET="your-secret-key"
 GOOGLE_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
+UPLOADTHING_TOKEN="your-upload-thing-token"
 ```
 
 4. Initialize the database:
@@ -135,7 +138,6 @@ For detailed information on our version control strategies, please refer to our 
 
 - All public methods and interfaces must be documented
 - Complex logic requires inline comments
-- README files in each major directory
 
 ## Mapping Criteria
 
@@ -150,7 +152,6 @@ For detailed information on our version control strategies, please refer to our 
 | **Functionality and Features**               | Feature list in `docs/features.md`                     |
 | **Server Documentation**               | Documentation in `docs/server-api-documentation.md`                     |
 | **Frontend Documentation**               | Documentation in `docs/frontend-documentation.md`                     |
-
 
 
 ## Screenshots
